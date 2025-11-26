@@ -1,7 +1,7 @@
 <h1 align="center">⚡️- Image<br><sub><sup>An Efficient Image Generation Foundation Model with Single-Stream Diffusion Transformer</sup></sub></h1>
 
 <div align="center">
-    
+
 [![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20Checkpoint-Z--Image--Turbo-yellow)](https://huggingface.co/Tongyi-MAI/Z-Image-Turbo)&#160;
 [![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20Online_Demo-Z--Image--Turbo-blue)](https://huggingface.co/spaces/Tongyi-MAI/Z-Image-Turbo)&#160;
 [![ModelScope Model](https://img.shields.io/badge/🤖%20Checkpoint-Z--Image--Turbo-624aff)](https://www.modelscope.cn/models/Tongyi-MAI/Z-Image-Turbo)&#160;
@@ -68,7 +68,20 @@ According to the Elo-based Human Preference Evaluation (on [AI Arena](https://ai
 </p>
 
 ### 🚀 Quick Start
+Install the latest version of diffusers, use the following command:
+<details>
+  <summary><sup>Click here for details for why you need to install diffusers from source</sup></summary>
 
+  We have submitted two pull requests ([#12703](https://github.com/huggingface/diffusers/pull/12703) and [#12715](https://github.com/huggingface/diffusers/pull/12704)) to the 🤗 diffusers repository to add support for Z-Image. Both PRs have been merged into the latest official diffusers release.
+  Therefore, you need to install diffusers from source for the latest features and Z-Image support.
+
+</details>
+
+```bash
+pip install git+https://github.com/huggingface/diffusers
+```
+
+Then, try the following code to generate an image:
 ```python
 import torch
 from diffusers import ZImagePipeline,
