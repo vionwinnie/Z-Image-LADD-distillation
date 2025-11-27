@@ -60,11 +60,11 @@ We adopt a **Scalable Single-Stream DiT** (S3-DiT) architecture. In this setup, 
 ![Architecture of Z-Image and Z-Image-Edit](assets/architecture.webp)
 
 ### 📈 Performance
-According to the Elo-based Human Preference Evaluation (on [AI Arena](https://aiarena.alibaba-inc.com/corpora/arena/leaderboard?arenaType=T2I)), Z-Image-Turbo shows highly competitive performance against other leading models, while achieving state-of-the-art results among open-source models.
+According to the Elo-based Human Preference Evaluation (on [*Alibaba AI Arena*](https://aiarena.alibaba-inc.com/corpora/arena/leaderboard?arenaType=T2I)), Z-Image-Turbo shows highly competitive performance against other leading models, while achieving state-of-the-art results among open-source models.
 
 <p align="center">
   <a href="https://aiarena.alibaba-inc.com/corpora/arena/leaderboard?arenaType=T2I">
-    <img src="assets/leaderboard.webp" alt="Z-Image Elo Rating on AI Arena"/><br />
+    <img src="assets/leaderboard.png" alt="Z-Image Elo Rating on AI Arena"/><br />
     <span style="font-size:1.05em; cursor:pointer; text-decoration:underline;"> Click to view the full leaderboard</span>
   </a>
 </p>
@@ -167,3 +167,6 @@ If you find our work useful in your research, please consider citing:
   howpublished={\url{https://github.com/Tongyi-MAI/Z-Image}}
 }
 ```
+## 🚀 Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=Tongyi-MAI/Z-Image&type=date&legend=top-left)](https://www.star-history.com/#Tongyi-MAI/Z-Image&type=date&legend=top-left)
