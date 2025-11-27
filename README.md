@@ -86,7 +86,7 @@ pip install git+https://github.com/huggingface/diffusers
 Then, try the following code to generate an image:
 ```python
 import torch
-from diffusers import ZImagePipeline,
+from diffusers import ZImagePipeline
 
 # 1. Load the pipeline
 # Use bfloat16 for optimal performance on supported GPUs
