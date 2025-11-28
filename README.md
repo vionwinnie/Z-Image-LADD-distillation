@@ -155,7 +155,7 @@ Our core insight behind DMDR is that Reinforcement Learning (RL) and Distributio
 
 ## 🎉 Community Works
 
-[Cache-DiT](https://github.com/vipshop/cache-dit) offers inference acceleration support for Z-Image with DBCache, Context Parallelism and Tensor Parallelism. Visit their [example](https://github.com/vipshop/cache-dit/blob/main/examples/parallelism/run_zimage_cp.py) for more details.
+- [Cache-DiT](https://github.com/vipshop/cache-dit) offers inference acceleration support for Z-Image with DBCache, Context Parallelism and Tensor Parallelism. Visit their [example](https://github.com/vipshop/cache-dit/blob/main/examples/parallelism/run_zimage_cp.py) for more details.
 
 |Baseline L20x1| Ulysses 2 + compile | Ulysses 2 + DBCache F8B1 + compile| 
 |:---:|:---:|:---:|
