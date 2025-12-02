@@ -127,7 +127,7 @@ image.save("example.png")
 
 ## 🔬 Decoupled-DMD: The Acceleration Magic Behind Z-Image
 
-[![arXiv](https://img.shields.io/badge/Paper-b5212f.svg?logo=arxiv)](https://arxiv.org/abs/2511.22677)
+[![arXiv](https://img.shields.io/badge/arXiv-2511.22677-b31b1b.svg)](https://arxiv.org/abs/2511.22677)
 
 Decoupled-DMD is the core few-step distillation algorithm that empowers the 8-step Z-Image model.
 
