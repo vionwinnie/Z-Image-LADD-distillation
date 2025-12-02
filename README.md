@@ -159,23 +159,23 @@ Our core insight behind DMDR is that Reinforcement Learning (RL) and Distributio
 - [stable-diffusion.cpp](https://github.com/leejet/stable-diffusion.cpp) is a pure C++ diffusion model inference engine that supports fast and memory-efficient Z-Image inference across multiple platforms (CUDA, Vulkan, etc.). You can use stable-diffusion.cpp to generate images with Z-Image on machines with as little as 4GB of VRAM. For more information, please refer to [How to Use Z‐Image on a GPU with Only 4GB VRAM](https://github.com/leejet/stable-diffusion.cpp/wiki/How-to-Use-Z%E2%80%90Image-on-a-GPU-with-Only-4GB-VRAM)
 
 
+## 🚀 Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=Tongyi-MAI/Z-Image&type=date&legend=top-left)](https://www.star-history.com/#Tongyi-MAI/Z-Image&type=date&legend=top-left)
+
+
 ## 📜 Citation
 
 If you find our work useful in your research, please consider citing:
 
 ```bibtex
-@misc{z-image-2025,
+@article{team2025zimage,
   title={Z-Image: An Efficient Image Generation Foundation Model with Single-Stream Diffusion Transformer},
-  author={Tongyi Lab},
-  year={2025},
-  publisher={GitHub},
-  journal={GitHub repository},
-  howpublished={\url{https://github.com/Tongyi-MAI/Z-Image}}
+  author={Z-Image Team},
+  journal={arXiv preprint arXiv:2511.22699},
+  year={2025}
 }
 ```
-## 🚀 Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=Tongyi-MAI/Z-Image&type=date&legend=top-left)](https://www.star-history.com/#Tongyi-MAI/Z-Image&type=date&legend=top-left)
 
 ## 🤝 We're Hiring!
 
