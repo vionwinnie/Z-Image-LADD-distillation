@@ -175,6 +175,20 @@ If you find our work useful in your research, please consider citing:
   journal={arXiv preprint arXiv:2511.22699},
   year={2025}
 }
+
+@article{liu2025decoupled,
+  title={Decoupled DMD: CFG Augmentation as the Spear, Distribution Matching as the Shield},
+  author={Dongyang Liu and Peng Gao and David Liu and Ruoyi Du and Zhen Li and Qilong Wu and Xin Jin and Sihan Cao and Shifeng Zhang and Hongsheng Li and Steven Hoi},
+  journal={arXiv preprint arXiv:2511.22677},
+  year={2025}
+}
+
+@article{jiang2025distribution,
+  title={Distribution Matching Distillation Meets Reinforcement Learning},
+  author={Jiang, Dengyang and Liu, Dongyang and Wang, Zanyi and Wu, Qilong and Jin, Xin and Liu, David and Li, Zhen and Wang, Mengmeng and Gao, Peng and Yang, Harry},
+  journal={arXiv preprint arXiv:2511.13649},
+  year={2025}
+}
 ```
 
 ## 🤝 We're Hiring!
