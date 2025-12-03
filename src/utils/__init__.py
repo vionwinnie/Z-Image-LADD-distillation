@@ -1,12 +1,8 @@
 """Utilities for Z-Image."""
 
-from .loader import load_from_local_dir
+from .attention import AttentionBackend, dispatch_attention, set_attention_backend
 from .helpers import format_bytes, print_memory_stats
-from .attention import (
-    AttentionBackend,
-    set_attention_backend,
-    dispatch_attention,
-)
+from .loader import load_from_local_dir
 
 __all__ = [
     "load_from_local_dir",
@@ -16,4 +12,3 @@ __all__ = [
     "set_attention_backend",
     "dispatch_attention",
 ]
-

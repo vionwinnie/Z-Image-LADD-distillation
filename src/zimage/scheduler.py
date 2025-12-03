@@ -1,9 +1,12 @@
 """FlowMatchEulerDiscreteScheduler implementation."""
+
 # Modified from https://github.com/huggingface/diffusers/blob/main/src/diffusers/schedulers/scheduling_flow_match_euler_discrete.py
-import math, torch
-import numpy as np
 from dataclasses import dataclass
+import math
 from typing import List, Optional, Tuple, Union
+
+import numpy as np
+import torch
 
 
 @dataclass
@@ -17,7 +20,7 @@ class SchedulerConfig:
 
     def get(self, key, default=None):
         return self.__dict__.get(key, default)
-        
+
     def __getattr__(self, name):
         return self.__dict__.get(name)
 
@@ -44,7 +47,7 @@ class FlowMatchEulerDiscreteScheduler:
         timesteps = np.linspace(1, num_train_timesteps, num_train_timesteps, dtype=np.float32)[::-1].copy()
         timesteps = torch.from_numpy(timesteps).to(dtype=torch.float32)
         sigmas = timesteps / num_train_timesteps
-        
+
         if not use_dynamic_shifting:
             sigmas = shift * sigmas / (1 + (shift - 1) * sigmas)
 
@@ -85,7 +88,7 @@ class FlowMatchEulerDiscreteScheduler:
             sigmas = self.shift * sigmas / (1 + (self.shift - 1) * sigmas)
 
         sigmas = torch.from_numpy(sigmas).to(dtype=torch.float32, device=device)
-        
+
         if passed_timesteps is None:
             timesteps = sigmas * self.num_train_timesteps
         else:
@@ -130,7 +133,7 @@ class FlowMatchEulerDiscreteScheduler:
         sigma_idx = self._step_index
         sigma = self.sigmas[sigma_idx]
         sigma_next = self.sigmas[sigma_idx + 1]
-        
+
         dt = sigma_next - sigma
         prev_sample = sample + dt * model_output
         self._step_index += 1

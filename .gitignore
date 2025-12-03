@@ -208,3 +208,5 @@ __marimo__/
 
 # Z-Image
 ckpts/
+.isort.cfg
+.pre-commit-config.yaml
