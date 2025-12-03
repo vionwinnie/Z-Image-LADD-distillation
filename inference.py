@@ -1,29 +1,37 @@
 """Z-Image PyTorch Native Inference."""
-import torch, warnings, time
+
+import time
+import warnings
+
+import torch
+
 warnings.filterwarnings("ignore")
-from zimage import generate
 from utils import load_from_local_dir, set_attention_backend
+from zimage import generate
+
 
 # Before starting, put `ckpts/Z-Image-Turbo` in `ckpts` folder after download from `Tongyi-MAI/Z-Image-Turbo`
-def main():    
+def main():
     model_path = "ckpts/Z-Image-Turbo"
     device = "cuda"
     dtype = torch.bfloat16
-    compile = False # default False for compatibility
+    compile = False  # default False for compatibility
     output_path = "example.png"
     height = 1024
     width = 1024
     num_inference_steps = 8
     guidance_scale = 0.0
     seed = 42
-    prompt = ("Young Chinese woman in red Hanfu, intricate embroidery. Impeccable makeup, red floral forehead pattern. "
+    prompt = (
+        "Young Chinese woman in red Hanfu, intricate embroidery. Impeccable makeup, red floral forehead pattern. "
         "Elaborate high bun, golden phoenix headdress, red flowers, beads. Holds round folding fan with lady, trees, bird. "
         "Neon lightning-bolt lamp (⚡️), bright yellow glow, above extended left palm. Soft-lit outdoor night background, "
-        "silhouetted tiered pagoda (西安大雁塔), blurred colorful distant lights.")
+        "silhouetted tiered pagoda (西安大雁塔), blurred colorful distant lights."
+    )
 
     # Load models
     components = load_from_local_dir(model_path, device=device, dtype=dtype, compile=compile)
-    set_attention_backend("_native_flash") # default is "native", this one is a torch native impl ops for your convient
+    set_attention_backend("_native_flash")  # default is "native", this one is a torch native impl ops for your convient
     # may also try `_flash_3`(FA3) or `flash`(FA2), but you may install that env from its official repository
 
     # Gen an image

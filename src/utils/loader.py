@@ -1,64 +1,61 @@
 """Model loading utilities for Z-Image components."""
-import os
+
 import json
-import sys
+import os
 from pathlib import Path
-from typing import Union, Optional
+import sys
+from typing import Optional, Union
 
-import torch
-from safetensors.torch import load_file
-from transformers import AutoTokenizer, AutoModel
 from loguru import logger
+from safetensors.torch import load_file
+import torch
+from transformers import AutoModel, AutoTokenizer
 
-from zimage.scheduler import FlowMatchEulerDiscreteScheduler
-from zimage.autoencoder import AutoencoderKL as LocalAutoencoderKL
 from config import (
-    DEFAULT_TRANSFORMER_PATCH_SIZE,
-    DEFAULT_TRANSFORMER_F_PATCH_SIZE,
-    DEFAULT_TRANSFORMER_IN_CHANNELS,
-    DEFAULT_TRANSFORMER_DIM,
-    DEFAULT_TRANSFORMER_N_LAYERS,
-    DEFAULT_TRANSFORMER_N_REFINER_LAYERS,
-    DEFAULT_TRANSFORMER_N_HEADS,
-    DEFAULT_TRANSFORMER_N_KV_HEADS,
-    DEFAULT_TRANSFORMER_NORM_EPS,
-    DEFAULT_TRANSFORMER_QK_NORM,
-    DEFAULT_TRANSFORMER_CAP_FEAT_DIM,
-    DEFAULT_TRANSFORMER_T_SCALE,
-    ROPE_THETA,
-    ROPE_AXES_DIMS,
-    ROPE_AXES_LENS,
-    DEFAULT_VAE_IN_CHANNELS,
-    DEFAULT_VAE_OUT_CHANNELS,
-    DEFAULT_VAE_LATENT_CHANNELS,
-    DEFAULT_VAE_NORM_NUM_GROUPS,
-    DEFAULT_VAE_SCALING_FACTOR,
     DEFAULT_SCHEDULER_NUM_TRAIN_TIMESTEPS,
     DEFAULT_SCHEDULER_SHIFT,
     DEFAULT_SCHEDULER_USE_DYNAMIC_SHIFTING,
+    DEFAULT_TRANSFORMER_CAP_FEAT_DIM,
+    DEFAULT_TRANSFORMER_DIM,
+    DEFAULT_TRANSFORMER_F_PATCH_SIZE,
+    DEFAULT_TRANSFORMER_IN_CHANNELS,
+    DEFAULT_TRANSFORMER_N_HEADS,
+    DEFAULT_TRANSFORMER_N_KV_HEADS,
+    DEFAULT_TRANSFORMER_N_LAYERS,
+    DEFAULT_TRANSFORMER_N_REFINER_LAYERS,
+    DEFAULT_TRANSFORMER_NORM_EPS,
+    DEFAULT_TRANSFORMER_PATCH_SIZE,
+    DEFAULT_TRANSFORMER_QK_NORM,
+    DEFAULT_TRANSFORMER_T_SCALE,
+    DEFAULT_VAE_IN_CHANNELS,
+    DEFAULT_VAE_LATENT_CHANNELS,
+    DEFAULT_VAE_NORM_NUM_GROUPS,
+    DEFAULT_VAE_OUT_CHANNELS,
+    DEFAULT_VAE_SCALING_FACTOR,
+    ROPE_AXES_DIMS,
+    ROPE_AXES_LENS,
+    ROPE_THETA,
 )
+from zimage.autoencoder import AutoencoderKL as LocalAutoencoderKL
+from zimage.scheduler import FlowMatchEulerDiscreteScheduler
 
 DIFFUSERS_AVAILABLE = False
 
 
 def load_config(config_path: str) -> dict:
-    with open(config_path, 'r') as f:
+    with open(config_path, "r") as f:
         return json.load(f)
 
 
-def load_sharded_safetensors(
-    weight_dir: Path, 
-    device: str = "cuda", 
-    dtype: Optional[torch.dtype] = None
-) -> dict:
+def load_sharded_safetensors(weight_dir: Path, device: str = "cuda", dtype: Optional[torch.dtype] = None) -> dict:
     """Load sharded safetensors from a directory."""
     weight_dir = Path(weight_dir)
     index_files = list(weight_dir.glob("*.safetensors.index.json"))
-    
+
     state_dict = {}
     if index_files:
         # Load sharded weights
-        with open(index_files[0], 'r') as f:
+        with open(index_files[0], "r") as f:
             index = json.load(f)
         weight_map = index.get("weight_map", {})
         shard_files = set(weight_map.values())
@@ -72,48 +69,48 @@ def load_sharded_safetensors(
         if not safetensors_files:
             raise FileNotFoundError(f"No safetensors files found in {weight_dir}")
         state_dict = load_file(str(safetensors_files[0]), device=str(device))
-    
+
     # Cast to target dtype if specified
     if dtype is not None:
         state_dict = {k: v.to(dtype) if v.dtype != dtype else v for k, v in state_dict.items()}
-                
+
     return state_dict
 
 
 def load_from_local_dir(
-    model_dir: Union[str, Path], 
-    device: str = "cuda", 
+    model_dir: Union[str, Path],
+    device: str = "cuda",
     dtype: torch.dtype = torch.bfloat16,
     verbose: bool = False,
-    compile: bool = False
+    compile: bool = False,
 ) -> dict:
     """
     Load all Z-Image components from local directory.
-    
+
     Args:
         model_dir: Path to model directory
         device: Device to load models on
         dtype: Data type for model weights
         verbose: Whether to display loading logs
         compile: Whether to compile transformer and vae with torch.compile
-        
+
     Returns:
         Dictionary containing transformer, vae, text_encoder, tokenizer, and scheduler
     """
     model_dir = Path(model_dir)
-    
+
     sys.path.insert(0, str(model_dir.parent.parent / "Z-Image" / "src"))
     from zimage.transformer import ZImageTransformer2DModel
-    
+
     if verbose:
         logger.info(f"Loading Z-Image from: {model_dir}")
-    
+
     # DiT
     if verbose:
         logger.info("Loading DiT...")
     transformer_dir = model_dir / "transformer"
     config = load_config(str(transformer_dir / "config.json"))
-    
+
     with torch.device("meta"):
         transformer = ZImageTransformer2DModel(
             all_patch_size=tuple(config.get("all_patch_size", DEFAULT_TRANSFORMER_PATCH_SIZE)),
@@ -132,24 +129,24 @@ def load_from_local_dir(
             axes_dims=config.get("axes_dims", ROPE_AXES_DIMS),
             axes_lens=config.get("axes_lens", ROPE_AXES_LENS),
         ).to(dtype)
-    
+
     # DiT (weights to CPU then move to GPU to optimize memory)
     state_dict = load_sharded_safetensors(transformer_dir, device="cpu", dtype=dtype)
     transformer.load_state_dict(state_dict, strict=False, assign=True)
     del state_dict
-    
+
     if verbose:
         logger.info("Moving DiT to GPU...")
     transformer = transformer.to(device)
     torch.cuda.empty_cache()
     transformer.eval()
-    
+
     # VAE
     if verbose:
         logger.info("Loading VAE...")
     vae_dir = model_dir / "vae"
     vae_config = load_config(str(vae_dir / "config.json"))
-    
+
     vae = LocalAutoencoderKL(
         in_channels=vae_config.get("in_channels", DEFAULT_VAE_IN_CHANNELS),
         out_channels=vae_config.get("out_channels", DEFAULT_VAE_OUT_CHANNELS),
@@ -165,7 +162,7 @@ def load_from_local_dir(
         use_post_quant_conv=vae_config.get("use_post_quant_conv", True),
         mid_block_add_attention=vae_config.get("mid_block_add_attention", True),
     )
-    
+
     # VAE (fp32 for better precision)
     vae_state_dict = load_sharded_safetensors(vae_dir, device="cpu")
     vae.load_state_dict(vae_state_dict, strict=False)
@@ -173,7 +170,7 @@ def load_from_local_dir(
     vae.to(device=device, dtype=torch.float32)
     vae.eval()
     torch.cuda.empty_cache()
-    
+
     # Text Encoder
     if verbose:
         logger.info("Loading Text Encoder...")
@@ -186,7 +183,7 @@ def load_from_local_dir(
     )
     text_encoder.to(device)
     text_encoder.eval()
-    
+
     # Tokenizer
     os.environ["TOKENIZERS_PARALLELISM"] = "false"
     if verbose:
@@ -196,7 +193,7 @@ def load_from_local_dir(
         str(tokenizer_dir) if tokenizer_dir.exists() else str(text_encoder_dir),
         trust_remote_code=True,
     )
-    
+
     # Scheduler
     if verbose:
         logger.info("Loading Scheduler...")
@@ -207,16 +204,16 @@ def load_from_local_dir(
         shift=scheduler_config.get("shift", DEFAULT_SCHEDULER_SHIFT),
         use_dynamic_shifting=scheduler_config.get("use_dynamic_shifting", DEFAULT_SCHEDULER_USE_DYNAMIC_SHIFTING),
     )
-    
+
     if compile:
         if verbose:
             logger.info("Compiling DiT and VAE...")
         transformer = torch.compile(transformer)
         vae = torch.compile(vae)
-    
+
     if verbose:
         logger.success("All components loaded successfully")
-    
+
     return {
         "transformer": transformer,
         "vae": vae,

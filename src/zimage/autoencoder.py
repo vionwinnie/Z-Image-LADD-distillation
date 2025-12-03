@@ -1,9 +1,11 @@
 """AutoencoderKL implementation compatible with diffusers weights."""
+
 # Modified from https://github.com/black-forest-labs/flux/blob/main/src/flux/modules/autoencoder.py
-import torch
-import torch.nn as nn
 from dataclasses import dataclass
 from typing import Optional, Tuple
+
+import torch
+import torch.nn as nn
 
 
 @dataclass
@@ -17,7 +19,7 @@ class AutoencoderConfig:
 
     def get(self, key, default=None):
         return self.__dict__.get(key, default)
-    
+
     def __getattr__(self, name):
         return self.__dict__.get(name)
 
@@ -70,7 +72,7 @@ class Attention(nn.Module):
         self.heads = heads
         self.in_channels = in_channels
         self.group_norm = nn.GroupNorm(num_groups=groups, num_channels=in_channels, eps=eps, affine=True)
-        
+
         self.to_q = nn.Linear(in_channels, in_channels)
         self.to_k = nn.Linear(in_channels, in_channels)
         self.to_v = nn.Linear(in_channels, in_channels)
@@ -81,17 +83,18 @@ class Attention(nn.Module):
         residual = hidden_states
         hidden_states = self.group_norm(hidden_states)
         hidden_states = hidden_states.view(b, c, -1).transpose(1, 2)  # (B, H*W, C)
-        
+
         query = self.to_q(hidden_states)
         key = self.to_k(hidden_states)
         value = self.to_v(hidden_states)
-        
+
         import torch.nn.functional as F
+
         hidden_states = F.scaled_dot_product_attention(query, key, value)
-        
+
         hidden_states = self.to_out[0](hidden_states)
         hidden_states = hidden_states.transpose(1, 2).view(b, c, h, w)
-        
+
         return residual + hidden_states
 
 
@@ -102,7 +105,7 @@ class Downsample2D(nn.Module):
         self.with_conv = with_conv
         if with_conv:
             self.conv = nn.Conv2d(channels, out_channels, kernel_size=3, stride=2, padding=padding)
-    
+
     def forward(self, hidden_states):
         if self.with_conv:
             return self.conv(hidden_states)
@@ -117,7 +120,7 @@ class Upsample2D(nn.Module):
         self.with_conv = with_conv
         if with_conv:
             self.conv = nn.Conv2d(channels, out_channels, kernel_size=3, stride=1, padding=1)
-    
+
     def forward(self, hidden_states):
         hidden_states = torch.nn.functional.interpolate(hidden_states, scale_factor=2.0, mode="nearest")
         if self.with_conv:
@@ -133,24 +136,24 @@ class DownEncoderBlock2D(nn.Module):
             in_c = in_channels if i == 0 else out_channels
             resnets.append(ResnetBlock2D(in_c, out_channels, eps=resnet_eps, groups=resnet_groups))
         self.resnets = nn.ModuleList(resnets)
-        
+
         if add_downsample:
-            self.downsamplers = nn.ModuleList([
-                Downsample2D(out_channels, with_conv=True, out_channels=out_channels, padding=0)
-            ])
+            self.downsamplers = nn.ModuleList(
+                [Downsample2D(out_channels, with_conv=True, out_channels=out_channels, padding=0)]
+            )
         else:
             self.downsamplers = None
 
     def forward(self, hidden_states):
         for resnet in self.resnets:
             hidden_states = resnet(hidden_states)
-        
+
         if self.downsamplers is not None:
             for downsampler in self.downsamplers:
                 pad = (0, 1, 0, 1)
                 hidden_states = torch.nn.functional.pad(hidden_states, pad, mode="constant", value=0)
                 hidden_states = downsampler(hidden_states)
-        
+
         return hidden_states
 
 
@@ -162,7 +165,7 @@ class UpDecoderBlock2D(nn.Module):
             in_c = in_channels if i == 0 else out_channels
             resnets.append(ResnetBlock2D(in_c, out_channels, eps=resnet_eps, groups=resnet_groups))
         self.resnets = nn.ModuleList(resnets)
-        
+
         if add_upsample:
             self.upsamplers = nn.ModuleList([Upsample2D(out_channels, with_conv=True, out_channels=out_channels)])
         else:
@@ -171,24 +174,24 @@ class UpDecoderBlock2D(nn.Module):
     def forward(self, hidden_states):
         for resnet in self.resnets:
             hidden_states = resnet(hidden_states)
-        
+
         if self.upsamplers is not None:
             for upsampler in self.upsamplers:
                 hidden_states = upsampler(hidden_states)
-        
+
         return hidden_states
 
 
 class UNetMidBlock2D(nn.Module):
     def __init__(self, in_channels, resnet_eps=1e-6, resnet_groups=32, attention_head_dim=None):
         super().__init__()
-        self.resnets = nn.ModuleList([
-            ResnetBlock2D(in_channels, in_channels, eps=resnet_eps, groups=resnet_groups),
-            ResnetBlock2D(in_channels, in_channels, eps=resnet_eps, groups=resnet_groups)
-        ])
-        self.attentions = nn.ModuleList([
-            Attention(in_channels, heads=1, groups=resnet_groups, eps=resnet_eps)
-        ])
+        self.resnets = nn.ModuleList(
+            [
+                ResnetBlock2D(in_channels, in_channels, eps=resnet_eps, groups=resnet_groups),
+                ResnetBlock2D(in_channels, in_channels, eps=resnet_eps, groups=resnet_groups),
+            ]
+        )
+        self.attentions = nn.ModuleList([Attention(in_channels, heads=1, groups=resnet_groups, eps=resnet_eps)])
 
     def forward(self, hidden_states):
         hidden_states = self.resnets[0](hidden_states)
@@ -210,14 +213,14 @@ class Encoder(nn.Module):
     ):
         super().__init__()
         self.conv_in = nn.Conv2d(in_channels, block_out_channels[0], kernel_size=3, stride=1, padding=1)
-        
+
         self.down_blocks = nn.ModuleList([])
         output_channel = block_out_channels[0]
         for i, block_out_channel in enumerate(block_out_channels):
             input_channel = output_channel
             output_channel = block_out_channel
             is_final_block = i == len(block_out_channels) - 1
-            
+
             block = DownEncoderBlock2D(
                 input_channel,
                 output_channel,
@@ -226,15 +229,15 @@ class Encoder(nn.Module):
                 add_downsample=not is_final_block,
             )
             self.down_blocks.append(block)
-            
+
         self.mid_block = UNetMidBlock2D(
             block_out_channels[-1],
             resnet_groups=norm_num_groups,
         )
-        
+
         self.conv_norm_out = nn.GroupNorm(num_channels=block_out_channels[-1], num_groups=norm_num_groups, eps=1e-6)
         self.conv_act = nn.SiLU()
-        
+
         conv_out_channels = 2 * out_channels if double_z else out_channels
         self.conv_out = nn.Conv2d(block_out_channels[-1], conv_out_channels, 3, padding=1)
 
@@ -260,16 +263,16 @@ class Decoder(nn.Module):
     ):
         super().__init__()
         self.conv_in = nn.Conv2d(in_channels, block_out_channels[-1], kernel_size=3, stride=1, padding=1)
-        
+
         self.mid_block = UNetMidBlock2D(
             block_out_channels[-1],
             resnet_groups=norm_num_groups,
         )
-        
+
         self.up_blocks = nn.ModuleList([])
         reversed_block_out_channels = list(reversed(block_out_channels))
         output_channel = reversed_block_out_channels[0]
-        
+
         for i, block_out_channel in enumerate(reversed_block_out_channels):
             input_channel = output_channel
             output_channel = block_out_channel
@@ -282,7 +285,7 @@ class Decoder(nn.Module):
                 add_upsample=not is_final_block,
             )
             self.up_blocks.append(block)
-            
+
         self.conv_norm_out = nn.GroupNorm(num_channels=block_out_channels[0], num_groups=norm_num_groups, eps=1e-6)
         self.conv_act = nn.SiLU()
         self.conv_out = nn.Conv2d(block_out_channels[0], out_channels, kernel_size=3, padding=1)
@@ -329,7 +332,7 @@ class AutoencoderKL(nn.Module):
             scaling_factor=scaling_factor,
             shift_factor=shift_factor,
         )
-        
+
         self.encoder = Encoder(
             in_channels=in_channels,
             out_channels=latent_channels,
@@ -338,7 +341,7 @@ class AutoencoderKL(nn.Module):
             norm_num_groups=norm_num_groups,
             double_z=True,
         )
-        
+
         self.decoder = Decoder(
             in_channels=latent_channels,
             out_channels=out_channels,
@@ -346,7 +349,7 @@ class AutoencoderKL(nn.Module):
             layers_per_block=layers_per_block,
             norm_num_groups=norm_num_groups,
         )
-        
+
         self.quant_conv = nn.Conv2d(2 * latent_channels, 2 * latent_channels, 1) if use_quant_conv else None
         self.post_quant_conv = nn.Conv2d(latent_channels, latent_channels, 1) if use_post_quant_conv else None
 
@@ -357,10 +360,10 @@ class AutoencoderKL(nn.Module):
     def decode(self, z: torch.FloatTensor, return_dict: bool = True) -> AutoencoderKLOutput:
         if self.post_quant_conv is not None:
             z = self.post_quant_conv(z)
-            
+
         dec = self.decoder(z)
-        
+
         if not return_dict:
             return (dec,)
-            
+
         return AutoencoderKLOutput(sample=dec)
