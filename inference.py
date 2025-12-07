@@ -15,8 +15,19 @@ from zimage import generate
 
 # Before starting, weights will be auto-downloaded to `ckpts/Z-Image-Turbo` if missing.
 def ensure_weights(model_path: str, repo_id: str = "Tongyi-MAI/Z-Image-Turbo") -> Path:
-    """Download model weights if they are not already present locally."""
+    """
+    Download model weights if they are not already present locally.
 
+    Args:
+        model_path: Local directory path where model weights should be stored.
+        repo_id: HuggingFace repository ID to download from.
+
+    Returns:
+        Path: The target directory containing the model weights.
+
+    Raises:
+        FileNotFoundError: If the config file is not found after download.
+    """
     target_dir = Path(model_path)
     config_path = target_dir / "transformer" / "config.json"
 
