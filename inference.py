@@ -1,18 +1,46 @@
 """Z-Image PyTorch Native Inference."""
 
+import os
 import time
 import warnings
+from pathlib import Path
 
 import torch
+from huggingface_hub import snapshot_download
 
 warnings.filterwarnings("ignore")
 from utils import load_from_local_dir, set_attention_backend
 from zimage import generate
 
 
-# Before starting, put `ckpts/Z-Image-Turbo` in `ckpts` folder after download from `Tongyi-MAI/Z-Image-Turbo`
+# Before starting, weights will be auto-downloaded to `ckpts/Z-Image-Turbo` if missing.
+def ensure_weights(model_path: str, repo_id: str = "Tongyi-MAI/Z-Image-Turbo") -> Path:
+    """Download model weights if they are not already present locally."""
+
+    target_dir = Path(model_path)
+    config_path = target_dir / "transformer" / "config.json"
+
+    if config_path.exists():
+        return target_dir
+
+    target_dir.mkdir(parents=True, exist_ok=True)
+    print(f"Downloading {repo_id} to {target_dir}...")
+    snapshot_download(
+        repo_id=repo_id,
+        local_dir=str(target_dir),
+        local_dir_use_symlinks=False,
+        resume_download=True,
+    )
+
+    if not config_path.exists():
+        raise FileNotFoundError(f"Expected config not found at {config_path} after download")
+
+    print("Download complete.")
+    return target_dir
+
+
 def main():
-    model_path = "ckpts/Z-Image-Turbo"
+    model_path = ensure_weights("ckpts/Z-Image-Turbo")
     dtype = torch.bfloat16
     compile = False  # default False for compatibility
     output_path = "example.png"
@@ -21,6 +49,7 @@ def main():
     num_inference_steps = 8
     guidance_scale = 0.0
     seed = 42
+    attn_backend = os.environ.get("ZIMAGE_ATTENTION", "native")
     prompt = (
         "Young Chinese woman in red Hanfu, intricate embroidery. Impeccable makeup, red floral forehead pattern. "
         "Elaborate high bun, golden phoenix headdress, red flowers, beads. Holds round folding fan with lady, trees, bird. "
@@ -48,8 +77,8 @@ def main():
                 print("Chosen device: cpu")
     # Load models
     components = load_from_local_dir(model_path, device=device, dtype=dtype, compile=compile)
-    set_attention_backend("_native_flash")  # default is "native", this one is a torch native impl ops for your convient
-    # may also try `_flash_3`(FA3) or `flash`(FA2), but you may install that env from its official repository
+    set_attention_backend(attn_backend)
+    print(f"Attention backend: {attn_backend} (set ZIMAGE_ATTENTION to override, e.g., '_flash_3', 'flash', '_native_flash', 'native')")
 
     # Gen an image
     start_time = time.time()
