@@ -10,22 +10,21 @@ from inference import ensure_weights
 from utils import load_from_local_dir, set_attention_backend
 from zimage import generate
 
-PROMPTS = [
-    "A single ripe strawberry on a white ceramic plate, high-resolution studio photograph, shallow depth of field.",
-    "A sleepy orange cat curled up on a stack of physics textbooks, digital painting, soft brush strokes.",
-    "An abandoned lighthouse on a rocky coast during a storm, oil painting on canvas, visible brush texture.",
-    "A small campsite in a dense pine forest at night, only lit by a campfire, cinematic wide shot.",
-    "A futuristic electric motorcycle parked in a neon-lit alley, 3D render, glossy materials, reflective puddles.",
-    "A tiny houseplant growing out of a computer keyboard, minimalist flat illustration, pastel color palette.",
-    "A mountain lake at sunrise, thick fog over the water, soft golden hour lighting, wide landscape panorama.", 
-    "A lone tree in a vast desert, harsh midday sun, strong shadows, centered composition.", 
-    "A close-up of a honeybee collecting pollen from a vibrant sunflower, macro photography, detailed textures.",
-    "A whimsical treehouse village built among giant mushrooms, fantasy art, colorful and imaginative style.",
-    "A serene beach at sunset with gentle waves and a pastel sky, impressionist painting style.",
-    "A bustling city street during a rainstorm, reflections on wet pavement, cinematic noir style.",
-    "A rainy city street at night viewed from above, long‑exposure look with light trails from cars."
-]
 
+def read_prompts(path: str) -> list[str]:
+    """Read prompts from a text file (one per line, empty lines skipped)."""
+
+    prompt_path = Path(path)
+    if not prompt_path.exists():
+        raise FileNotFoundError(f"Prompt file not found: {prompt_path}")
+    with prompt_path.open("r", encoding="utf-8") as f:
+        prompts = [line.strip() for line in f if line.strip()]
+    if not prompts:
+        raise ValueError(f"No prompts found in {prompt_path}")
+    return prompts
+
+
+PROMPTS = read_prompts(os.environ.get("PROMPTS_FILE", "prompts/prompt1.txt"))
 
 def slugify(text: str, max_len: int = 60) -> str:
     """Create a filesystem-safe slug from the prompt."""
