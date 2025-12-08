@@ -213,3 +213,5 @@ ckpts/
 
 # Ignore generated images
 /*.png
+
+*.DS_Store
