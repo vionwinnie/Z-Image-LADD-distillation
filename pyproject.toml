@@ -14,7 +14,8 @@ dependencies = [
     "safetensors",
     "loguru",
     "pillow",
-    "accelerate"
+    "accelerate",
+    "huggingface_hub>=0.25.0"
 ]
 
 [project.optional-dependencies]
