@@ -3,55 +3,15 @@
 import os
 import time
 import warnings
-from pathlib import Path
-
 import torch
-from huggingface_hub import snapshot_download
 
 warnings.filterwarnings("ignore")
-from utils import load_from_local_dir, set_attention_backend
+from utils import load_from_local_dir, set_attention_backend, ensure_model_weights
 from zimage import generate
 
 
-# Before starting, weights will be auto-downloaded to `ckpts/Z-Image-Turbo` if missing.
-def ensure_weights(model_path: str, repo_id: str = "Tongyi-MAI/Z-Image-Turbo") -> Path:
-    """
-    Download model weights if they are not already present locally.
-
-    Args:
-        model_path: Local directory path where model weights should be stored.
-        repo_id: HuggingFace repository ID to download from.
-
-    Returns:
-        Path: The target directory containing the model weights.
-
-    Raises:
-        FileNotFoundError: If the config file is not found after download.
-    """
-    target_dir = Path(model_path)
-    config_path = target_dir / "transformer" / "config.json"
-
-    if config_path.exists():
-        return target_dir
-
-    target_dir.mkdir(parents=True, exist_ok=True)
-    print(f"Downloading {repo_id} to {target_dir}...")
-    snapshot_download(
-        repo_id=repo_id,
-        local_dir=str(target_dir),
-        local_dir_use_symlinks=False,
-        resume_download=True,
-    )
-
-    if not config_path.exists():
-        raise FileNotFoundError(f"Expected config not found at {config_path} after download")
-
-    print("Download complete.")
-    return target_dir
-
-
 def main():
-    model_path = ensure_weights("ckpts/Z-Image-Turbo")
+    model_path = ensure_model_weights("ckpts/Z-Image-Turbo", verify=False) # True to verify with md5
     dtype = torch.bfloat16
     compile = False  # default False for compatibility
     output_path = "example.png"
