@@ -28,6 +28,12 @@ Z-Image is a powerful and highly efficient image generation model with **6B** pa
 
 - ✍️ **Z-Image-Edit** – A variant fine-tuned on Z-Image specifically for image editing tasks. It supports creative image-to-image generation with impressive instruction-following capabilities, allowing for precise edits based on natural language prompts.
 
+### 📣 News
+
+*   **[2025-12-08]** 🏆 Z-Image-Turbo ranked 8th overall on the **Artificial Analysis Text-to-Image Leaderboard**, making it the 🥇 <strong style="color: #FFC300;">#1 open-source model</strong>! [Check out the full leaderboard](https://artificialanalysis.ai/image/leaderboard/text-to-image).
+*   **[2025-12-01]** 🎉 Our technical report for Z-Image is now available on [arXiv](https://arxiv.org/abs/2511.22699).
+*   **[2025-11-26]** 🔥 **Z-Image-Turbo is released!** We have released the model checkpoint on [Hugging Face](https://huggingface.co/Tongyi-MAI/Z-Image-Turbo) and [ModelScope](https://www.modelscope.cn/models/Tongyi-MAI/Z-Image-Turbo). Try our [online demo](https://huggingface.co/spaces/Tongyi-MAI/Z-Image-Turbo)!
+
 ### 📥 Model Zoo
 
 | Model | Hugging Face                                                                                                                                                                                                                                                                                                              | ModelScope                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
@@ -60,16 +66,50 @@ We adopt a **Scalable Single-Stream DiT** (S3-DiT) architecture. In this setup, 
 ![Architecture of Z-Image and Z-Image-Edit](assets/architecture.webp)
 
 ### 📈 Performance
-According to the Elo-based Human Preference Evaluation (on [*Alibaba AI Arena*](https://aiarena.alibaba-inc.com/corpora/arena/leaderboard?arenaType=T2I)), Z-Image-Turbo shows highly competitive performance against other leading models, while achieving state-of-the-art results among open-source models.
+
+Z-Image-Turbo's performance has been validated on multiple independent benchmarks, where it consistently demonstrates state-of-the-art results, especially as the leading open-source model.
+
+#### Artificial Analysis Text-to-Image Leaderboard
+On the highly competitive [Artificial Analysis Leaderboard](https://artificialanalysis.ai/image/leaderboard/text-to-image), Z-Image-Turbo ranked **8th overall** and secured the top position as the 🥇 <strong style="color: gold;">#1 Open-Source Model</strong>, outperforming all other open-source alternatives.
+
+
+<p align="center">
+  <a href="https://artificialanalysis.ai/image/leaderboard/text-to-image">
+    <img src="assets/image_arena_all.jpg" alt="Z-Image Rank on Artificial Analysis Leaderboard"/><br />
+    <span style="font-size:1.05em; cursor:pointer; text-decoration:underline;"> Artificial Analysis Leaderboard</span>
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://artificialanalysis.ai/image/leaderboard/text-to-image">
+    <img src="assets/image_arena_os.jpg" alt="Z-Image Rank on Artificial Analysis Leaderboard (Open-Source Model Only)"/><br />
+    <span style="font-size:1.05em; cursor:pointer; text-decoration:underline;"> Artificial Analysis Leaderboard (Open-Source Model Only)</span>
+  </a>
+</p>
+
+#### Alibaba AI Arena Text-to-Image Leaderboard
+According to the Elo-based Human Preference Evaluation on [*Alibaba AI Arena*](https://aiarena.alibaba-inc.com/corpora/arena/leaderboard?arenaType=T2I), Z-Image-Turbo also achieves state-of-the-art results among open-source models and shows highly competitive performance against leading proprietary models.
 
 <p align="center">
   <a href="https://aiarena.alibaba-inc.com/corpora/arena/leaderboard?arenaType=T2I">
     <img src="assets/leaderboard.png" alt="Z-Image Elo Rating on AI Arena"/><br />
-    <span style="font-size:1.05em; cursor:pointer; text-decoration:underline;"> Click to view the full leaderboard</span>
+    <span style="font-size:1.05em; cursor:pointer; text-decoration:underline;"> Alibaba AI Arena Text-to-Image Leaderboard</span>
   </a>
 </p>
 
+
 ### 🚀 Quick Start
+#### (1) PyTorch Native Inference
+Build a virtual environment you like and then install the dependencies:
+```bash
+pip install -e .
+```
+Then run the following code to generate an image:
+```bash
+python inference.py
+```
+
+#### (2) Diffusers Inference
 #### (1) PyTorch Native Inference
 Build a virtual environment you like and then install the dependencies:
 ```bash
@@ -85,7 +125,7 @@ Install the latest version of diffusers, use the following command:
 <details>
   <summary>Click here for details for why you need to install diffusers from source</summary>
 
-  We have submitted two pull requests ([#12703](https://github.com/huggingface/diffusers/pull/12703) and [#12715](https://github.com/huggingface/diffusers/pull/12704)) to the 🤗 diffusers repository to add support for Z-Image. Both PRs have been merged into the latest official diffusers release.
+  We have submitted two pull requests ([#12703](https://github.com/huggingface/diffusers/pull/12703) and [#12715](https://github.com/huggingface/diffusers/pull/12715)) to the 🤗 diffusers repository to add support for Z-Image. Both PRs have been merged into the latest official diffusers release.
   Therefore, you need to install diffusers from source for the latest features and Z-Image support.
 
 </details>
@@ -167,9 +207,10 @@ Our core insight behind DMDR is that Reinforcement Learning (RL) and Distributio
 ## 🎉 Community Works
 
 - [Cache-DiT](https://github.com/vipshop/cache-dit) offers inference acceleration support for Z-Image with DBCache, Context Parallelism and Tensor Parallelism. Visit their [example](https://github.com/vipshop/cache-dit/blob/main/examples/parallelism/run_zimage_cp.py) for more details.
-- [stable-diffusion.cpp](https://github.com/leejet/stable-diffusion.cpp) is a pure C++ diffusion model inference engine that supports fast and memory-efficient Z-Image inference across multiple platforms (CUDA, Vulkan, etc.). You can use stable-diffusion.cpp to generate images with Z-Image on machines with as little as 4GB of VRAM. For more information, please refer to [How to Use Z‐Image on a GPU with Only 4GB VRAM](https://github.com/leejet/stable-diffusion.cpp/wiki/How-to-Use-Z%E2%80%90Image-on-a-GPU-with-Only-4GB-VRAM)
+- [stable-diffusion.cpp](https://github.com/leejet/stable-diffusion.cpp) is a pure C++ diffusion model inference engine that supports fast and memory-efficient Z-Image inference across multiple platforms (CUDA, Vulkan, etc.). You can use stable-diffusion.cpp to generate images with Z-Image on machines with as little as 4GB of VRAM. For more information, please refer to [How to Use Z‐Image on a GPU with Only 4GB VRAM](https://github.com/leejet/stable-diffusion.cpp/wiki/How-to-Use-Z%E2%80%90Image-on-a-GPU-with-Only-4GB-VRAM).
 - [LeMiCa](https://github.com/UnicomAI/LeMiCa) provides a training-free, timestep-level acceleration method that conveniently speeds up Z-Image inference. For more details, see [LeMiCa4Z-Image](https://github.com/UnicomAI/LeMiCa/tree/main/LeMiCa4Z-Image).
-- [ComfyUI ZImageLatent](https://github.com/HellerCommaA/ComfyUI-ZImageLatent) provdes an easy to use latent of the official Z-Image resolutions
+- [ComfyUI ZImageLatent](https://github.com/HellerCommaA/ComfyUI-ZImageLatent) provdes an easy to use latent of the official Z-Image resolutions.
+- [DiffSynth-Studio](https://github.com/modelscope/DiffSynth-Studio) has provided more support for Z-Image, including LoRA training, full training, distillation training, and low-VRAM inference. Please refer to the [document](https://github.com/modelscope/DiffSynth-Studio/blob/main/docs/en/Model_Details/Z-Image.md) of DiffSynth-Studio.
 
 
 ## 🚀 Star History
@@ -186,6 +227,20 @@ If you find our work useful in your research, please consider citing:
   title={Z-Image: An Efficient Image Generation Foundation Model with Single-Stream Diffusion Transformer},
   author={Z-Image Team},
   journal={arXiv preprint arXiv:2511.22699},
+  year={2025}
+}
+
+@article{liu2025decoupled,
+  title={Decoupled DMD: CFG Augmentation as the Spear, Distribution Matching as the Shield},
+  author={Dongyang Liu and Peng Gao and David Liu and Ruoyi Du and Zhen Li and Qilong Wu and Xin Jin and Sihan Cao and Shifeng Zhang and Hongsheng Li and Steven Hoi},
+  journal={arXiv preprint arXiv:2511.22677},
+  year={2025}
+}
+
+@article{jiang2025distribution,
+  title={Distribution Matching Distillation Meets Reinforcement Learning},
+  author={Jiang, Dengyang and Liu, Dongyang and Wang, Zanyi and Wu, Qilong and Jin, Xin and Liu, David and Li, Zhen and Wang, Mengmeng and Gao, Peng and Yang, Harry},
+  journal={arXiv preprint arXiv:2511.13649},
   year={2025}
 }
 

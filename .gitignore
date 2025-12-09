@@ -211,6 +211,7 @@ __marimo__/
 ckpts/
 .isort.cfg
 .pre-commit-config.yaml
+*.DS_Store
 
 # Ignore generated images
 /*.png
