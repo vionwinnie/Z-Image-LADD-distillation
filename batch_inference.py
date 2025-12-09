@@ -1,13 +1,13 @@
 """Batch prompt inference for Z-Image."""
 
 import os
-import time
 from pathlib import Path
+import time
 
 import torch
 
 from inference import ensure_weights
-from utils import load_from_local_dir, set_attention_backend
+from utils import AttentionBackend, load_from_local_dir, set_attention_backend
 from zimage import generate
 
 
@@ -25,6 +25,7 @@ def read_prompts(path: str) -> list[str]:
 
 
 PROMPTS = read_prompts(os.environ.get("PROMPTS_FILE", "prompts/prompt1.txt"))
+
 
 def slugify(text: str, max_len: int = 60) -> str:
     """Create a filesystem-safe slug from the prompt."""
@@ -62,19 +63,16 @@ def main():
     width = 1024
     num_inference_steps = 8
     guidance_scale = 0.0
-    attn_backend = os.environ.get("ZIMAGE_ATTENTION", "native")
+    attn_backend = os.environ.get("ZIMAGE_ATTENTION", "_native_flash")
     output_dir = Path("outputs")
     output_dir.mkdir(exist_ok=True)
 
     device = select_device()
 
-    components = load_from_local_dir(
-        model_path, device=device, dtype=dtype, compile=compile
-    )
+    components = load_from_local_dir(model_path, device=device, dtype=dtype, compile=compile)
+    AttentionBackend.print_available_backends()
     set_attention_backend(attn_backend)
-    print(
-        f"Attention backend: {attn_backend} (set ZIMAGE_ATTENTION to override, e.g., '_flash_3', 'flash', '_native_flash', 'native')"
-    )
+    print(f"Chosen attention backend: {attn_backend}")
 
     for idx, prompt in enumerate(PROMPTS, start=1):
         output_path = output_dir / f"prompt-{idx:02d}-{slugify(prompt)}.png"

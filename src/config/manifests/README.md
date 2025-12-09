@@ -63,6 +63,4 @@ python -m src.tools.generate_manifest ckpts/Z-Image-Turbo --output custom.txt
 
 ## Available Manifests
 
-- **z-image-turbo.txt** - Z-Image Turbo model (24GB, fast inference)
-
-
+- **z-image-turbo.txt** - Z-Image Turbo model
