@@ -1,18 +1,18 @@
 """Z-Image PyTorch Native Inference."""
 
+import os
 import time
 import warnings
 
 import torch
 
 warnings.filterwarnings("ignore")
-from utils import load_from_local_dir, set_attention_backend
+from utils import AttentionBackend, ensure_model_weights, load_from_local_dir, set_attention_backend
 from zimage import generate
 
 
-# Before starting, put `ckpts/Z-Image-Turbo` in `ckpts` folder after download from `Tongyi-MAI/Z-Image-Turbo`
 def main():
-    model_path = "ckpts/Z-Image-Turbo"
+    model_path = ensure_model_weights("ckpts/Z-Image-Turbo", verify=False)  # True to verify with md5
     dtype = torch.bfloat16
     compile = False  # default False for compatibility
     output_path = "example.png"
@@ -21,6 +21,7 @@ def main():
     num_inference_steps = 8
     guidance_scale = 0.0
     seed = 42
+    attn_backend = os.environ.get("ZIMAGE_ATTENTION", "_native_flash")
     prompt = (
         "Young Chinese woman in red Hanfu, intricate embroidery. Impeccable makeup, red floral forehead pattern. "
         "Elaborate high bun, golden phoenix headdress, red flowers, beads. Holds round folding fan with lady, trees, bird. "
@@ -48,8 +49,9 @@ def main():
                 print("Chosen device: cpu")
     # Load models
     components = load_from_local_dir(model_path, device=device, dtype=dtype, compile=compile)
-    set_attention_backend("_native_flash")  # default is "native", this one is a torch native impl ops for your convient
-    # may also try `_flash_3`(FA3) or `flash`(FA2), but you may install that env from its official repository
+    AttentionBackend.print_available_backends()
+    set_attention_backend(attn_backend)
+    print(f"Chosen attention backend: {attn_backend}")
 
     # Gen an image
     start_time = time.time()

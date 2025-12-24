@@ -49,9 +49,14 @@ class AttentionBackend(str, Enum):
     FLASH_3 = "_flash_3"
     FLASH_VARLEN_3 = "_flash_varlen_3"
     # PyTorch Native Backends
-    NATIVE = "native"  # default
+    NATIVE = "native"
     NATIVE_FLASH = "_native_flash"
     NATIVE_MATH = "_native_math"
+
+    @classmethod
+    def print_available_backends(cls):
+        available_backends = [backend.value for backend in cls.__members__.values()]
+        print(f"Available attention backends list: {available_backends}")
 
 
 # Registry for attention implementations
