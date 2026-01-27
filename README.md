@@ -3,9 +3,12 @@
 <div align="center">
 
 [![Official Site](https://img.shields.io/badge/Official%20Site-333399.svg?logo=homepage)](https://tongyi-mai.github.io/Z-Image-blog/)&#160;
+[![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20Checkpoint-Z--Image-yellow)](https://huggingface.co/Tongyi-MAI/Z-Image)&#160;
 [![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20Checkpoint-Z--Image--Turbo-yellow)](https://huggingface.co/Tongyi-MAI/Z-Image-Turbo)&#160;
 [![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20Online_Demo-Z--Image--Turbo-blue)](https://huggingface.co/spaces/Tongyi-MAI/Z-Image-Turbo)&#160;
+[![ModelScope Model](https://img.shields.io/badge/🤖%20Checkpoint-Z--Image-624aff)](https://www.modelscope.cn/models/Tongyi-MAI/Z-Image)&#160;
 [![ModelScope Model](https://img.shields.io/badge/🤖%20Checkpoint-Z--Image--Turbo-624aff)](https://www.modelscope.cn/models/Tongyi-MAI/Z-Image-Turbo)&#160;
+[![ModelScope Space](https://img.shields.io/badge/🤖%20Online_Demo-Z--Image-17c7a7)](https://www.modelscope.cn/aigc/imageGeneration?tab=advanced&versionId=569345&modelType=Checkpoint&sdVersion=Z_IMAGE&modelUrl=modelscope%3A%2F%2FTongyi-MAI%2FZ-Image%3Frevision%3Dmaster)&#160;
 [![ModelScope Space](https://img.shields.io/badge/🤖%20Online_Demo-Z--Image--Turbo-17c7a7)](https://www.modelscope.cn/aigc/imageGeneration?tab=advanced&versionId=469191&modelType=Checkpoint&sdVersion=Z_IMAGE_TURBO&modelUrl=modelscope%3A%2F%2FTongyi-MAI%2FZ-Image-Turbo%3Frevision%3Dmaster)&#160;
 [![Art Gallery PDF](https://img.shields.io/badge/%F0%9F%96%BC%20Art_Gallery-PDF-ff69b4)](assets/Z-Image-Gallery.pdf)&#160;
 [![Web Art Gallery](https://img.shields.io/badge/%F0%9F%8C%90%20Web_Art_Gallery-online-00bfff)](https://modelscope.cn/studios/Tongyi-MAI/Z-Image-Gallery/summary)&#160;
@@ -20,11 +23,13 @@ Welcome to the official repository for the Z-Image（造相）project!
 
 ## ✨ Z-Image
 
-Z-Image is a powerful and highly efficient image generation model with **6B** parameters. Currently there are three variants:
+Z-Image is a powerful and highly efficient image generation model family with **6B** parameters. Currently there are four variants:
 
 - 🚀 **Z-Image-Turbo** – A distilled version of Z-Image that matches or exceeds leading competitors with only **8 NFEs** (Number of Function Evaluations). It offers **⚡️sub-second inference latency⚡️** on enterprise-grade H800 GPUs and fits comfortably within **16G VRAM consumer devices**. It excels in photorealistic image generation, bilingual text rendering (English & Chinese), and robust instruction adherence.
 
-- 🧱 **Z-Image-Base** – The non-distilled foundation model. By releasing this checkpoint, we aim to unlock the full potential for community-driven fine-tuning and custom development.
+- 🎨 **Z-Image** - The foundation model behind Z-Image-Turbo. Z-Image focuses on high-quality generation, rich aesthetics, strong diversity, and controllability, well-suited for creative generation, fine-tuning, and downstream development. It supports a wide range of artistic styles, effective negative prompting, and high diversity across identities, poses, compositions, and layouts.
+
+- 🧱 **Z-Image-Omni-Base** – The versatile foundation model capable of both **generation and editing tasks**. By releasing this checkpoint, we aim to unlock the full potential for community-driven fine-tuning and custom development, providing the most "raw" and diverse starting point for the open-source community.
 
 - ✍️ **Z-Image-Edit** – A variant fine-tuned on Z-Image specifically for image editing tasks. It supports creative image-to-image generation with impressive instruction-following capabilities, allowing for precise edits based on natural language prompts.
 
@@ -128,6 +133,9 @@ Install the latest version of diffusers, use the following command:
 pip install git+https://github.com/huggingface/diffusers
 ```
 
+<details>
+<summary><b>Z-Image-Turbo</b> - Click to expand</summary>
+
 Then, try the following code to generate an image:
 ```python
 import torch
@@ -169,6 +177,51 @@ image = pipe(
 
 image.save("example.png")
 ```
+
+</details>
+
+<details>
+<summary><b>Z-Image</b> - Click to expand</summary>
+
+Recommended Parameters:
+- **Resolution:** 512×512 to 2048×2048 (total pixel area, any aspect ratio)
+- **Guidance scale:** 3.0 – 5.0
+- **Inference steps:** 28 – 50
+- **Negative prompts:** Strongly recommended for better control
+- **CFG normalization:** `False` for general stylism, `True` for realism
+
+Then, try the following code to generate an image:
+```python
+import torch
+from diffusers import ZImagePipeline
+
+# Load the pipeline
+pipe = ZImagePipeline.from_pretrained(
+    "Tongyi-MAI/Z-Image",
+    torch_dtype=torch.bfloat16,
+    low_cpu_mem_usage=False,
+)
+pipe.to("cuda")
+
+# Generate image
+prompt = "两名年轻亚裔女性紧密站在一起，背景为朴素的灰色纹理墙面，可能是室内地毯地面。左侧女性留着长卷发，身穿藏青色毛衣，左袖有奶油色褶皱装饰，内搭白色立领衬衫，下身白色裤子；佩戴小巧金色耳钉，双臂交叉于背后。右侧女性留直肩长发，身穿奶油色卫衣，胸前印有"Tun the tables"字样，下方为"New ideas"，搭配白色裤子；佩戴银色小环耳环，双臂交叉于胸前。两人均面带微笑直视镜头。照片，自然光照明，柔和阴影，以藏青、奶油白为主的中性色调，休闲时尚摄影，中等景深，面部和上半身对焦清晰，姿态放松，表情友好，室内环境，地毯地面，纯色背景。"
+negative_prompt = "" # Optional, but would be powerful when you want to remove some unwanted content
+
+image = pipe(
+    prompt=prompt,
+    negative_prompt=negative_prompt,
+    height=1280,
+    width=720,
+    cfg_normalization=False,
+    num_inference_steps=50,
+    guidance_scale=4,
+    generator=torch.Generator("cuda").manual_seed(42),
+).images[0]
+
+image.save("example.png")
+```
+
+</details>
 
 ## 🔬 Decoupled-DMD: The Acceleration Magic Behind Z-Image
 
