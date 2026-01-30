@@ -13,6 +13,14 @@ from .import_utils import is_flash_attn_3_available, is_flash_attn_available, is
 
 _CAN_USE_FLASH_ATTN_2 = is_flash_attn_available()
 _CAN_USE_FLASH_ATTN_3 = is_flash_attn_3_available()
+
+# MPS Flash Attention (Apple Silicon)
+try:
+    import mps_flash_attn
+    _CAN_USE_MPS_FLASH = mps_flash_attn.is_available()
+except ImportError:
+    _CAN_USE_MPS_FLASH = False
+    mps_flash_attn = None
 _TORCH_VERSION_CHECK = is_torch_version(">=", "2.5.0")  # have enable_gqa func call in SPDA
 
 if not _TORCH_VERSION_CHECK:
@@ -48,6 +56,8 @@ class AttentionBackend(str, Enum):
     FLASH_VARLEN = "flash_varlen"
     FLASH_3 = "_flash_3"
     FLASH_VARLEN_3 = "_flash_varlen_3"
+    # MPS Flash Attention (Apple Silicon)
+    MPS_FLASH = "mps_flash"
     # PyTorch Native Backends
     NATIVE = "native"
     NATIVE_FLASH = "_native_flash"
@@ -82,6 +92,11 @@ def _check_device_cuda(query: torch.Tensor, **kwargs) -> None:
 def _check_qkv_dtype_bf16_or_fp16(query: torch.Tensor, **kwargs) -> None:
     if query.dtype not in (torch.bfloat16, torch.float16):
         raise ValueError("Query must be either bfloat16 or float16.")
+
+
+def _check_device_mps(query: torch.Tensor, **kwargs) -> None:
+    if query.device.type != "mps":
+        raise ValueError("Query must be on MPS device.")
 
 
 def _process_mask(attn_mask: Optional[torch.Tensor], dtype: torch.dtype):
@@ -354,6 +369,44 @@ def _flash_varlen_attention_3(
     return out
 
 
+@register_backend(AttentionBackend.MPS_FLASH, constraints=[_check_device_mps, _check_qkv_dtype_bf16_or_fp16])
+def _mps_flash_attention(
+    query: torch.Tensor,
+    key: torch.Tensor,
+    value: torch.Tensor,
+    attn_mask: Optional[torch.Tensor] = None,
+    dropout_p: float = 0.0,
+    is_causal: bool = False,
+    scale: Optional[float] = None,
+) -> torch.Tensor:
+    """MPS Flash Attention for Apple Silicon (M1/M2/M3/M4)."""
+    if not _CAN_USE_MPS_FLASH:
+        raise RuntimeError(
+            f"MPS Flash Attention backend '{AttentionBackend.MPS_FLASH}' requires mps-flash-attn package. "
+            "Install with: pip install mps-flash-attn"
+        )
+
+    # Convert from (B, S, H, D) to (B, H, S, D) for mps-flash-attn
+    query = query.transpose(1, 2)
+    key = key.transpose(1, 2)
+    value = value.transpose(1, 2)
+
+    # Convert mask to MFA format (bool, True = masked)
+    mfa_mask = None
+    if attn_mask is not None:
+        mfa_mask = mps_flash_attn.convert_mask(_process_mask(attn_mask, query.dtype))
+
+    out = mps_flash_attn.flash_attention(
+        query, key, value,
+        is_causal=is_causal,
+        scale=scale,
+        attn_mask=mfa_mask,
+    )
+
+    # Convert back to (B, S, H, D)
+    return out.transpose(1, 2).contiguous()
+
+
 def _native_attention_wrapper(
     query: torch.Tensor,
     key: torch.Tensor,
@@ -442,6 +495,8 @@ def dispatch_attention(
         return _flash_attention_3(query, key, value, attn_mask, dropout_p, is_causal, scale)
     elif backend == AttentionBackend.FLASH_VARLEN_3:
         return _flash_varlen_attention_3(query, key, value, attn_mask, dropout_p, is_causal, scale)
+    elif backend == AttentionBackend.MPS_FLASH:
+        return _mps_flash_attention(query, key, value, attn_mask, dropout_p, is_causal, scale)
     elif backend == AttentionBackend.NATIVE_FLASH:
         return _native_flash_attention(query, key, value, attn_mask, dropout_p, is_causal, scale)
     elif backend == AttentionBackend.NATIVE_MATH:
