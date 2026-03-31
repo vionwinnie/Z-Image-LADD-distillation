@@ -403,6 +403,146 @@ def download_geneval() -> list[dict]:
     return []
 
 
+def download_dpg_bench() -> list[dict]:
+    """Download DPG-Bench dense prompts from HuggingFace."""
+    load_dataset = _try_import_datasets()
+    attempts = [
+        ("Jialuo21/DPG-Bench", None, "train"),
+        ("Jialuo21/DPG-Bench", None, "test"),
+        ("Jialuo21/DPG-Bench", "default", "train"),
+    ]
+    for dataset_id, config, split in attempts:
+        try:
+            logger.info(f"  Trying DPG-Bench: {dataset_id} config={config} split={split}")
+            if config:
+                ds = load_dataset(dataset_id, config, split=split)
+            else:
+                ds = load_dataset(dataset_id, split=split)
+            results = []
+            for row in ds:
+                prompt = row.get("prompt") or row.get("text", "")
+                if prompt:
+                    results.append({
+                        "text": prompt.strip(),
+                        "original_category": "",
+                        "source": "dpg_bench",
+                    })
+            logger.info(f"  DPG-Bench: {len(results)} prompts loaded")
+            return results
+        except Exception as e:
+            logger.info(f"    Failed: {e}")
+            continue
+    logger.warning("  DPG-Bench: all attempts failed, skipping")
+    return []
+
+
+def download_oneig_zh() -> list[dict]:
+    """Download OneIG-Bench Chinese prompts from HuggingFace."""
+    load_dataset = _try_import_datasets()
+    attempts = [
+        ("OneIG-Bench/OneIG-Bench", "zh", "test"),
+        ("OneIG-Bench/OneIG-Bench", "zh", "train"),
+        ("OneIG-Bench/OneIG-Bench", None, "test"),
+        ("OneIG-Bench/OneIG-Bench", None, "train"),
+    ]
+    for dataset_id, config, split in attempts:
+        try:
+            logger.info(f"  Trying OneIG-ZH: {dataset_id} config={config} split={split}")
+            if config:
+                ds = load_dataset(dataset_id, config, split=split)
+            else:
+                ds = load_dataset(dataset_id, split=split)
+            results = []
+            for row in ds:
+                # OneIG-ZH uses prompt_cn for Chinese prompts
+                prompt = (
+                    row.get("prompt_cn")
+                    or row.get("prompt")
+                    or row.get("text", "")
+                )
+                category = row.get("category") or row.get("class", "")
+                if prompt:
+                    results.append({
+                        "text": prompt.strip(),
+                        "original_category": str(category).strip().lower(),
+                        "source": "oneig_zh",
+                        "language": "zh",
+                    })
+            logger.info(f"  OneIG-ZH: {len(results)} prompts loaded")
+            return results
+        except Exception as e:
+            logger.info(f"    Failed: {e}")
+            continue
+    logger.warning("  OneIG-ZH: all attempts failed, skipping")
+    return []
+
+
+def download_cvtg_2k() -> list[dict]:
+    """Download CVTG-2K text rendering prompts from HuggingFace."""
+    load_dataset = _try_import_datasets()
+    attempts = [
+        ("dnkdnk/CVTG-2K", None, "train"),
+        ("dnkdnk/CVTG-2K", None, "test"),
+        ("dnkdnk/CVTG-2K", "default", "train"),
+    ]
+    for dataset_id, config, split in attempts:
+        try:
+            logger.info(f"  Trying CVTG-2K: {dataset_id} config={config} split={split}")
+            if config:
+                ds = load_dataset(dataset_id, config, split=split)
+            else:
+                ds = load_dataset(dataset_id, split=split)
+            results = []
+            for row in ds:
+                prompt = row.get("prompt") or row.get("text", "")
+                if prompt:
+                    results.append({
+                        "text": prompt.strip(),
+                        "original_category": "text rendering",
+                        "source": "cvtg_2k",
+                    })
+            logger.info(f"  CVTG-2K: {len(results)} prompts loaded")
+            return results
+        except Exception as e:
+            logger.info(f"    Failed: {e}")
+            continue
+    logger.warning("  CVTG-2K: all attempts failed, skipping")
+    return []
+
+
+def download_longtext_bench() -> list[dict]:
+    """Download LongText-Bench prompts from HuggingFace."""
+    load_dataset = _try_import_datasets()
+    attempts = [
+        ("X-Omni/LongText-Bench", None, "train"),
+        ("X-Omni/LongText-Bench", None, "test"),
+        ("X-Omni/LongText-Bench", "default", "train"),
+    ]
+    for dataset_id, config, split in attempts:
+        try:
+            logger.info(f"  Trying LongText-Bench: {dataset_id} config={config} split={split}")
+            if config:
+                ds = load_dataset(dataset_id, config, split=split)
+            else:
+                ds = load_dataset(dataset_id, split=split)
+            results = []
+            for row in ds:
+                prompt = row.get("prompt") or row.get("text", "")
+                if prompt:
+                    results.append({
+                        "text": prompt.strip(),
+                        "original_category": "text rendering",
+                        "source": "longtext_bench",
+                    })
+            logger.info(f"  LongText-Bench: {len(results)} prompts loaded")
+            return results
+        except Exception as e:
+            logger.info(f"    Failed: {e}")
+            continue
+    logger.warning("  LongText-Bench: all attempts failed, skipping")
+    return []
+
+
 # ---------------------------------------------------------------------------
 # Classification
 # ---------------------------------------------------------------------------
@@ -456,13 +596,14 @@ def classify_camera(prompt: str) -> str:
 def classify_prompt(record: dict) -> dict:
     """Classify a single prompt record into (subject, style, camera)."""
     text = record["text"]
+    language = record.get("language", "en")
     return {
         "text": text,
         "subject": classify_subject(text, record.get("original_category", ""), record["source"]),
         "style": classify_style(text),
         "camera": classify_camera(text),
         "source": record["source"],
-        "language": "en",
+        "language": language,
     }
 
 
@@ -481,9 +622,18 @@ def deduplicate(records: list[dict]) -> list[dict]:
     return unique
 
 
-def filter_short(records: list[dict], min_words: int = 5) -> list[dict]:
-    """Remove prompts with fewer than min_words words."""
-    return [r for r in records if len(r["text"].split()) >= min_words]
+def filter_short(records: list[dict], min_words: int = 5, min_chars_zh: int = 4) -> list[dict]:
+    """Remove prompts with fewer than min_words words (or min_chars_zh chars for Chinese)."""
+    result = []
+    for r in records:
+        if r.get("language") == "zh":
+            # Chinese text uses characters, not whitespace-separated words
+            if len(r["text"].strip()) >= min_chars_zh:
+                result.append(r)
+        else:
+            if len(r["text"].split()) >= min_words:
+                result.append(r)
+    return result
 
 
 # ---------------------------------------------------------------------------
@@ -559,6 +709,10 @@ def main():
         download_genai_bench,
         download_drawbench,
         download_geneval,
+        download_dpg_bench,
+        download_oneig_zh,
+        download_cvtg_2k,
+        download_longtext_bench,
     ]:
         records = downloader()
         all_records.extend(records)
@@ -599,6 +753,12 @@ def main():
     print("\nPrompts by source:")
     for src, count in source_counts.most_common():
         print(f"  {src}: {count}")
+
+    # Summary by language
+    lang_counts = Counter(r["language"] for r in classified)
+    print("\nPrompts by language:")
+    for lang, count in lang_counts.most_common():
+        print(f"  {lang}: {count}")
 
 
 if __name__ == "__main__":
