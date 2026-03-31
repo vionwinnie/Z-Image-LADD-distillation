@@ -183,6 +183,8 @@ def parse_args():
                         help="Device override (auto-detected if not set).")
     parser.add_argument("--dummy", action="store_true",
                         help="Use tiny randomly-initialized models (no weights needed).")
+    parser.add_argument("--dtype", type=str, default=None, choices=["fp32", "bf16", "fp16"],
+                        help="Override dtype (default: bf16 on CUDA, fp32 on CPU).")
     args = parser.parse_args()
     if not args.dummy and args.pretrained_model_name_or_path is None:
         parser.error("--pretrained_model_name_or_path is required unless --dummy is set")
@@ -218,7 +220,10 @@ def print_fail(msg):
 def main():
     args = parse_args()
     device = select_device(args.device)
-    dtype = torch.bfloat16 if device.type == "cuda" else torch.float32
+    if args.dtype:
+        dtype = {"fp32": torch.float32, "bf16": torch.bfloat16, "fp16": torch.float16}[args.dtype]
+    else:
+        dtype = torch.bfloat16 if device.type == "cuda" else torch.float32
     dummy = args.dummy
 
     print(f"Device: {device}, dtype: {dtype}, dummy: {dummy}")
