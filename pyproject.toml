@@ -15,14 +15,23 @@ dependencies = [
     "loguru",
     "pillow",
     "accelerate",
-    "huggingface_hub>=0.25.0"
+    "huggingface_hub>=0.25.0",
 ]
 
 [project.optional-dependencies]
+training = [
+    "diffusers>=0.28.0",
+    "datasets",
+    "einops",
+    "tensorboard",
+    "tqdm",
+    "anthropic",
+    "rapidfuzz",
+]
 dev = [
     "black",
     "isort",
-    "ruff"
+    "ruff",
 ]
 
 [tool.setuptools.packages.find]

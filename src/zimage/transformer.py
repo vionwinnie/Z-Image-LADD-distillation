@@ -478,6 +478,7 @@ class ZImageTransformer2DModel(nn.Module):
         cap_feats: List[torch.Tensor],
         patch_size=2,
         f_patch_size=1,
+        return_hidden_states=False,
     ):
         assert patch_size in self.all_patch_size
         assert f_patch_size in self.all_f_patch_size
@@ -561,11 +562,22 @@ class ZImageTransformer2DModel(nn.Module):
         for i, seq_len in enumerate(unified_item_seqlens):
             unified_attn_mask[i, :seq_len] = 1
 
+        if return_hidden_states:
+            hidden_states_collection = []
+
         for layer in self.layers:
             unified = layer(unified, unified_attn_mask, unified_freqs_cis, adaln_input)
+            if return_hidden_states:
+                hidden_states_collection.append(unified)
 
         unified = self.all_final_layer[f"{patch_size}-{f_patch_size}"](unified, adaln_input)
         unified = list(unified.unbind(dim=0))
         x = self.unpatchify(unified, x_size, patch_size, f_patch_size)
 
+        if return_hidden_states:
+            return x, {
+                "hidden_states": hidden_states_collection,
+                "x_item_seqlens": x_item_seqlens,
+                "cap_item_seqlens": cap_item_seqlens,
+            }
         return x, {}

@@ -1,0 +1,586 @@
+[
+  {
+    "text": "a photo of san francisco's golden gate bridge",
+    "subject": "S12",
+    "style": "T1",
+    "camera": "C1",
+    "source": "parti_prompts",
+    "language": "en"
+  },
+  {
+    "text": "A picture of some food in the plate",
+    "subject": "S3",
+    "style": "T1",
+    "camera": "C1",
+    "source": "parti_prompts",
+    "language": "en"
+  },
+  {
+    "text": "an illustration of a teapot",
+    "subject": "S10",
+    "style": "T1",
+    "camera": "C1",
+    "source": "parti_prompts",
+    "language": "en"
+  },
+  {
+    "text": "a painting of black and white",
+    "subject": "S14",
+    "style": "T1",
+    "camera": "C1",
+    "source": "parti_prompts",
+    "language": "en"
+  },
+  {
+    "text": "a boy and a tiger",
+    "subject": "S1",
+    "style": "T1",
+    "camera": "C1",
+    "source": "parti_prompts",
+    "language": "en"
+  },
+  {
+    "text": "A dignified beaver wearing glasses, a vest, and colorful neck tie. He stands next to a tall stack of books in a library.",
+    "subject": "S2",
+    "style": "T1",
+    "camera": "C1",
+    "source": "parti_prompts",
+    "language": "en"
+  },
+  {
+    "text": "A solitary figure shrouded in mists peers up from the cobble stone street at the imposing and dark gothic buildings surrounding it. an old-fashioned lamp shines nearby. oil painting.",
+    "subject": "S10",
+    "style": "T2",
+    "camera": "C1",
+    "source": "parti_prompts",
+    "language": "en"
+  },
+  {
+    "text": "A robot painted as graffiti on a brick wall. The words \"Fly an airplane\" are written on the wall. A sidewalk is in front of the wall, and grass is growing out of cracks in the concrete.",
+    "subject": "S5",
+    "style": "T1",
+    "camera": "C1",
+    "source": "parti_prompts",
+    "language": "en"
+  },
+  {
+    "text": "A set of 2x2 emoji icons with happy, angry, surprised and sobbing faces. The emoji icons look like dogs. All of the dogs are wearing blue turtlenecks.",
+    "subject": "S14",
+    "style": "T6",
+    "camera": "C1",
+    "source": "parti_prompts",
+    "language": "en"
+  },
+  {
+    "text": "A photograph of the inside of a subway train. There are frogs sitting on the seats. One of them is reading a newspaper. The window shows the river in the background.",
+    "subject": "S7",
+    "style": "T1",
+    "camera": "C1",
+    "source": "parti_prompts",
+    "language": "en"
+  },
+  {
+    "text": "an oil surrealist painting of a dreamworld on a seashore where clocks and watches appear to be inexplicably limp and melting in the desolate landscape. a table on the left, with a golden watch swarmed by ants. a strange fleshy creature in the center of the painting",
+    "subject": "S10",
+    "style": "T7",
+    "camera": "C1",
+    "source": "parti_prompts",
+    "language": "en"
+  },
+  {
+    "text": "A wall in a royal castle. There are two paintings on the wall. The one on the left a detailed oil painting of the royal raccoon king. The one on the right a detailed oil painting of the royal raccoon queen. A cute dog looking at the two paintings, holding a sign saying 'plz conserve'",
+    "subject": "S4",
+    "style": "T2",
+    "camera": "C1",
+    "source": "parti_prompts",
+    "language": "en"
+  },
+  {
+    "text": "A single beam of light enter the room from the ceiling. The beam of light is illuminating an easel. On the easel there is a Rembrandt painting of a raccoon",
+    "subject": "S4",
+    "style": "T1",
+    "camera": "C1",
+    "source": "parti_prompts",
+    "language": "en"
+  },
+  {
+    "text": "a blue cow is standing next to a tree with red leaves and yellow fruit. the cow is standing in a field with white flowers. impressionistic painting",
+    "subject": "S2",
+    "style": "T2",
+    "camera": "C1",
+    "source": "parti_prompts",
+    "language": "en"
+  },
+  {
+    "text": "Anime illustration of the Great Pyramid sitting next to the Parthenon under a blue night sky of roiling energy, exploding yellow stars, and chromatic blue swirls",
+    "subject": "S12",
+    "style": "T3",
+    "camera": "C1",
+    "source": "parti_prompts",
+    "language": "en"
+  },
+  {
+    "text": "Photograph of a wall along a city street with a watercolor mural of foxes in a jazz band.",
+    "subject": "S5",
+    "style": "T2",
+    "camera": "C1",
+    "source": "parti_prompts",
+    "language": "en"
+  },
+  {
+    "text": "a mixed media image with a photograph of a woman with long orange hair over a background that is a sketch of a city skyline",
+    "subject": "S1",
+    "style": "T2",
+    "camera": "C1",
+    "source": "parti_prompts",
+    "language": "en"
+  },
+  {
+    "text": "a propaganda poster depicting a cat dressed as french emperor napoleon holding a piece of cheese",
+    "subject": "S10",
+    "style": "T6",
+    "camera": "C1",
+    "source": "parti_prompts",
+    "language": "en"
+  },
+  {
+    "text": "a small garden with an apple tree behind it",
+    "subject": "S8",
+    "style": "T1",
+    "camera": "C1",
+    "source": "parti_prompts",
+    "language": "en"
+  },
+  {
+    "text": "a blue pickup truck with a rhinoceros in its flatbed",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C1",
+    "source": "parti_prompts",
+    "language": "en"
+  },
+  {
+    "text": "an inflatable rabbit held up in the air by the geyser Old Faithful",
+    "subject": "S12",
+    "style": "T6",
+    "camera": "C1",
+    "source": "parti_prompts",
+    "language": "en"
+  },
+  {
+    "text": "A shiny robot wearing a race car suit and black visor stands proudly in front of an F1 race car. The sun is setting on a cityscape in the background. comic book illustration.",
+    "subject": "S14",
+    "style": "T3",
+    "camera": "C1",
+    "source": "parti_prompts",
+    "language": "en"
+  },
+  {
+    "text": "a impressionistic painting of a scholarly badger reading the Rosetta Stone",
+    "subject": "S12",
+    "style": "T2",
+    "camera": "C1",
+    "source": "parti_prompts",
+    "language": "en"
+  },
+  {
+    "text": "a comic about an owl family in the forest",
+    "subject": "S10",
+    "style": "T3",
+    "camera": "C1",
+    "source": "parti_prompts",
+    "language": "en"
+  },
+  {
+    "text": "a cat reading a comic book",
+    "subject": "S2",
+    "style": "T3",
+    "camera": "C1",
+    "source": "parti_prompts",
+    "language": "en"
+  },
+  {
+    "text": "Oil painting generated by artificial intelligence",
+    "subject": "S14",
+    "style": "T2",
+    "camera": "C1",
+    "source": "parti_prompts",
+    "language": "en"
+  },
+  {
+    "text": "A rusty spaceship blasts off in the foreground. A city with tall skyscrapers is in the distance, with a mountain and ocean in the background. A dark moon is in the sky. realistic high-contrast anime illustration.",
+    "subject": "S7",
+    "style": "T3",
+    "camera": "C1",
+    "source": "parti_prompts",
+    "language": "en"
+  },
+  {
+    "text": "a capybara made of voxels sitting in a field",
+    "subject": "S2",
+    "style": "T4",
+    "camera": "C1",
+    "source": "parti_prompts",
+    "language": "en"
+  },
+  {
+    "text": "an abstract painting of the Empire State Building",
+    "subject": "S12",
+    "style": "T7",
+    "camera": "C1",
+    "source": "parti_prompts",
+    "language": "en"
+  },
+  {
+    "text": "a cartoon of a man standing under a tree",
+    "subject": "S1",
+    "style": "T3",
+    "camera": "C1",
+    "source": "parti_prompts",
+    "language": "en"
+  },
+  {
+    "text": "cinematic film still, photo portrait of a red Dragonborn, from dungeons and dragons, full plate, analog film grain",
+    "subject": "S1",
+    "style": "T5",
+    "camera": "C1",
+    "source": "genai_bench",
+    "language": "en"
+  },
+  {
+    "text": "Buildings on fire, old film still,long exposure,film grain,dull colours",
+    "subject": "S6",
+    "style": "T5",
+    "camera": "C7",
+    "source": "genai_bench",
+    "language": "en"
+  },
+  {
+    "text": "genderless fairy, faelight, shot through a kaleidoscope, painting by viktor vasnetsov, 35mm photography, lomochrome azure",
+    "subject": "S10",
+    "style": "T5",
+    "camera": "C1",
+    "source": "genai_bench",
+    "language": "en"
+  },
+  {
+    "text": "vintage movie poster, stylishly dressed woman and man whispering into the woman's ear, another figure in wintry setting, text on  poster is stylized and reversed, dramatic, romantic theme, early-to-mid 20th century cinema",
+    "subject": "S1",
+    "style": "T6",
+    "camera": "C1",
+    "source": "genai_bench",
+    "language": "en"
+  },
+  {
+    "text": "hyperrealism render of a surreal alien humanoid",
+    "subject": "S1",
+    "style": "T7",
+    "camera": "C1",
+    "source": "genai_bench",
+    "language": "en"
+  },
+  {
+    "text": "art sketch of a alien ship, cyberpunk,",
+    "subject": "S7",
+    "style": "T2",
+    "camera": "C1",
+    "source": "genai_bench",
+    "language": "en"
+  },
+  {
+    "text": "big budget scifi movie set in postapocalyptic world with alien brainsuckers female cyborg in yellow rubber and gas mask in ruins of church",
+    "subject": "S6",
+    "style": "T1",
+    "camera": "C1",
+    "source": "genai_bench",
+    "language": "en"
+  },
+  {
+    "text": "painting of private empty onsen next to japanese inn with levitating red lanterns and petals by greg rutkowski craig mullins ross tran bonsai trees cushions towels buckets zen garden flowers ornate japanese motifs concept art fantasy cinematic lighting unreal engine lumen reflections trending on artstation",
+    "subject": "S8",
+    "style": "T3",
+    "camera": "C1",
+    "source": "genai_bench",
+    "language": "en"
+  },
+  {
+    "text": "Create a photorealistic, cinematic, high-quality 4k background for a mini juicer. Set it in a modern, well-lit kitchen with fresh fruits and vegetables nearby. Use soft, natural lighting and a clean, minimalistic countertop. Highlight the juicer's sleek design with subtle bokeh in the background. Ensure the image is in ultra-high-definition 4k to capture every detail.",
+    "subject": "S3",
+    "style": "T5",
+    "camera": "C6",
+    "source": "genai_bench",
+    "language": "en"
+  },
+  {
+    "text": "A panda making latte art.",
+    "subject": "S13",
+    "style": "T1",
+    "camera": "C1",
+    "source": "genai_bench",
+    "language": "en"
+  },
+  {
+    "text": "hyperrealism backstreet, in front of a massive building, cinematic, neon signs, high resolution, realistic lighting, octane render, hyper realistic, 8k",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C1",
+    "source": "genai_bench",
+    "language": "en"
+  },
+  {
+    "text": "movie scene screencap, cinematic footage. thanos smelling a little yellow rose. extreme wide angle,",
+    "subject": "S8",
+    "style": "T5",
+    "camera": "C3",
+    "source": "genai_bench",
+    "language": "en"
+  },
+  {
+    "text": "cinestill 5 0 d depht of gfield of a dreamy beautiful pre - raphaelite cople hypnos and thanatos in style of annie liebovitz - john watherhouse, elegant, highly detailed, pale pink matt, soft blur, artstation, sharp focus, head in focus",
+    "subject": "S5",
+    "style": "T3",
+    "camera": "C1",
+    "source": "genai_bench",
+    "language": "en"
+  },
+  {
+    "text": "beautiful portrait of a porcelain ivory fair face woman biomechanical cyborg, close - up, sharp focus, studio light, iris van herpen haute couture headdress made of rhizomorphs, daisies, arches, brackets, herbs, colorful corals, fractal mushrooms, puffballs, octane render, ultra sharp, 8 k",
+    "subject": "S1",
+    "style": "T4",
+    "camera": "C1",
+    "source": "genai_bench",
+    "language": "en"
+  },
+  {
+    "text": "A cube made of brick. A cube with the texture of brick.",
+    "subject": "S11",
+    "style": "T1",
+    "camera": "C1",
+    "source": "genai_bench",
+    "language": "en"
+  },
+  {
+    "text": "photorealistic futuristic black and white mech sitting in a factory at night, heavy rain, giant metal cables, cinematic",
+    "subject": "S14",
+    "style": "T5",
+    "camera": "C1",
+    "source": "genai_bench",
+    "language": "en"
+  },
+  {
+    "text": "A sign that says 'Deep Learning'.",
+    "subject": "S9",
+    "style": "T1",
+    "camera": "C1",
+    "source": "genai_bench",
+    "language": "en"
+  },
+  {
+    "text": "Hatsune Miku drinks from the bottle in the tavern, masterpiece anime art, kawaii style, pretty anime, high detailed art",
+    "subject": "S3",
+    "style": "T3",
+    "camera": "C1",
+    "source": "genai_bench",
+    "language": "en"
+  },
+  {
+    "text": "Pregnant Hatsune Miku, fetal movements, anime art",
+    "subject": "S9",
+    "style": "T3",
+    "camera": "C1",
+    "source": "genai_bench",
+    "language": "en"
+  },
+  {
+    "text": "A minimalist, material, modern logo for a website called Stellar, designed to resemble stars and intelligence with dark colors and shades of blue.",
+    "subject": "S11",
+    "style": "T6",
+    "camera": "C1",
+    "source": "genai_bench",
+    "language": "en"
+  },
+  {
+    "text": "Envision a logo for \"EdenBots\" where the company name is seamlessly integrated into a vibrant digital tapestry, symbolizing the transformative power of AI in shaping the digital landscape. Imagine a dynamic font in neon shades of electric blue, neon green, and neon pink, exuding energy and vitality.",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C1",
+    "source": "genai_bench",
+    "language": "en"
+  },
+  {
+    "text": "Imagine a logo for \"EdenBots\" where the text melds with an abstract cosmic lattice, symbolizing the interconnectedness of data and information in AI-driven systems. Picture a sleek font in cosmic hues of ultraviolet, cosmic teal, and electric fuchsia, reflecting the infinite complexity and beauty of the cosmos.",
+    "subject": "S3",
+    "style": "T6",
+    "camera": "C1",
+    "source": "genai_bench",
+    "language": "en"
+  },
+  {
+    "text": "Design a Logo for \"EdenBots\" with a surreal color palette inspired by psychedelic art, paired with an organic handwritten font. Integrate a symbol resembling an abstract dream catcher with the text, symbolizing the transformative and visionary nature of AI innovation.",
+    "subject": "S2",
+    "style": "T6",
+    "camera": "C1",
+    "source": "genai_bench",
+    "language": "en"
+  },
+  {
+    "text": "Use vibrant neon colors reminiscent of psychedelic art, such as electric blue, neon pink, and lime green. Pair these colors with an organic handwritten font with swirling, fluid strokes. Integrate a dream catcher symbol with intricate geometric patterns, interwoven with the text \"EdenBots,\" conveying the transformative and visionary essence of AI innovation.",
+    "subject": "S2",
+    "style": "T7",
+    "camera": "C1",
+    "source": "genai_bench",
+    "language": "en"
+  },
+  {
+    "text": "photography logo that says \"Rika E Studios\"",
+    "subject": "S4",
+    "style": "T6",
+    "camera": "C1",
+    "source": "genai_bench",
+    "language": "en"
+  },
+  {
+    "text": "Godzilla and Obama sign a peace deal in vibrant anime style. Godzilla, towering and reptilian, shakes hands with President Obama, who is dressed in a dark suit. The setting is a grand, sunlit hall with ornate pillars and red carpet. A large parchment with kanji characters is spread on a polished wooden table between them. Bright colors, dramatic shadows, and exaggerated expressions enhance the scene's hopeful mood.",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C1",
+    "source": "genai_bench",
+    "language": "en"
+  },
+  {
+    "text": "A modern open-plan office with diverse employees collaborating at a large conference table, natural daylight streaming through floor-to-ceiling windows, using laptops and discussing documents. Shot with a Canon EOS 5D Mark IV, 35mm lens, f/2.8, natural light, shallow depth of field",
+    "subject": "S4",
+    "style": "T5",
+    "camera": "C6",
+    "source": "genai_bench",
+    "language": "en"
+  },
+  {
+    "text": "pastel painting of a ghost dragon in a desolate ruined city with a cloudy blue sky, morning",
+    "subject": "S6",
+    "style": "T2",
+    "camera": "C1",
+    "source": "genai_bench",
+    "language": "en"
+  },
+  {
+    "text": "Create a simple text logo of watch company \"Tempus Time\"",
+    "subject": "S9",
+    "style": "T6",
+    "camera": "C1",
+    "source": "genai_bench",
+    "language": "en"
+  },
+  {
+    "text": "fanciful dreams of the Queen of Fae, beautiful surreal art, eerie beauty, in style of Gekidan INU Curry",
+    "subject": "S14",
+    "style": "T7",
+    "camera": "C1",
+    "source": "genai_bench",
+    "language": "en"
+  },
+  {
+    "text": "cute animals with beautiful elf, cinematic",
+    "subject": "S2",
+    "style": "T5",
+    "camera": "C1",
+    "source": "genai_bench",
+    "language": "en"
+  },
+  {
+    "text": "Tree, but in a kaleidoscope, detailed photo",
+    "subject": "S8",
+    "style": "T7",
+    "camera": "C1",
+    "source": "genai_bench",
+    "language": "en"
+  },
+  {
+    "text": "The crocodile bartender behind the bar elegantly hands you a cocktail, an oil painting in green, orange, and brown tones.",
+    "subject": "S3",
+    "style": "T2",
+    "camera": "C1",
+    "source": "genai_bench",
+    "language": "en"
+  },
+  {
+    "text": "an apple on a white ceramic plate with gold engravings, digital art, anime, by studio ghibli",
+    "subject": "S4",
+    "style": "T3",
+    "camera": "C1",
+    "source": "genai_bench",
+    "language": "en"
+  },
+  {
+    "text": "isometric view of a 3d model of a forest beast's lair in between two large asymmetric rocks",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C1",
+    "source": "genai_bench",
+    "language": "en"
+  },
+  {
+    "text": "An upbeat psychedelic comet falling along a backdrop of a neon beach scape paradise",
+    "subject": "S5",
+    "style": "T7",
+    "camera": "C1",
+    "source": "genai_bench",
+    "language": "en"
+  },
+  {
+    "text": "avantgarde collage image for a \"wine SPILL\" concept",
+    "subject": "S3",
+    "style": "T7",
+    "camera": "C1",
+    "source": "genai_bench",
+    "language": "en"
+  },
+  {
+    "text": "coloful abstract tree light bulb logo",
+    "subject": "S8",
+    "style": "T6",
+    "camera": "C1",
+    "source": "genai_bench",
+    "language": "en"
+  },
+  {
+    "text": "rectangular unique logo with a cyberpunk city setting, wide banner, for forum usage, flat, hd, realistic, unique border, simple, plain background, rectangular art",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C1",
+    "source": "genai_bench",
+    "language": "en"
+  },
+  {
+    "text": "abstract sport fashion banner, vivid, detailed",
+    "subject": "S9",
+    "style": "T7",
+    "camera": "C1",
+    "source": "genai_bench",
+    "language": "en"
+  },
+  {
+    "text": "a silver saluki running in a endless salty lake desert, blue sky, 1990s, cinematic photography, film still",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C1",
+    "source": "genai_bench",
+    "language": "en"
+  },
+  {
+    "text": "World on fire,old film still",
+    "subject": "S12",
+    "style": "T5",
+    "camera": "C1",
+    "source": "genai_bench",
+    "language": "en"
+  },
+  {
+    "text": "A realistic 3D printing of low poly unicorn sets on The table before being painted",
+    "subject": "S10",
+    "style": "T4",
+    "camera": "C1",
+    "source": "genai_bench",
+    "language": "en"
+  }
+]
