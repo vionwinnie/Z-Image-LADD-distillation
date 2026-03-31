@@ -34,7 +34,7 @@ accelerate launch \
     --output_dir="${OUTPUT_DIR}" \
     --train_batch_size=1 \
     --gradient_accumulation_steps=4 \
-    --max_train_steps=50000 \
+    --max_train_steps=20000 \
     --learning_rate=1e-5 \
     --learning_rate_disc=1e-4 \
     --lr_scheduler=constant_with_warmup \
@@ -58,8 +58,9 @@ accelerate launch \
     --renoise_m=1.0 \
     --renoise_s=1.0 \
     --max_grad_norm=1.0 \
-    --report_to=tensorboard \
-    --tracker_project_name=ladd-zimage \
+    --report_to=wandb \
+    --tracker_project_name=ladd \
+    --wandb_entity=yeun-yeungs \
     --validation_prompts \
         "A beautiful sunset over the ocean with golden clouds" \
         "A cat sitting on a windowsill looking outside" \
