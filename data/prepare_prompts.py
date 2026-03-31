@@ -373,25 +373,32 @@ def download_drawbench() -> list[dict]:
 
 
 def download_geneval() -> list[dict]:
-    """Download GenEval prompts."""
-    load_dataset = _try_import_datasets()
-    attempts = [
-        ("djghosh13/geneval", "test"),
-        ("djghosh13/geneval", "train"),
-        ("djghosh/geneval", "test"),
-        ("djghosh/geneval", "train"),
+    """Download GenEval prompts from the GitHub repo (JSONL, not an HF dataset).
+
+    The benchmark lives at https://github.com/djghosh13/geneval and stores its
+    evaluation metadata as ``prompts/evaluation_metadata.jsonl``.  Each line is
+    a JSON object with at least ``prompt`` and ``tag`` keys.
+    """
+    import urllib.request
+
+    urls = [
+        "https://raw.githubusercontent.com/djghosh13/geneval/main/prompts/evaluation_metadata.jsonl",
+        "https://raw.githubusercontent.com/djghosh13/geneval/master/prompts/evaluation_metadata.jsonl",
     ]
-    for dataset_id, split in attempts:
+    for url in urls:
         try:
-            logger.info(f"  Trying GenEval: {dataset_id} split={split}")
-            ds = load_dataset(dataset_id, split=split)
+            logger.info(f"  Trying GenEval: {url}")
+            with urllib.request.urlopen(url, timeout=30) as resp:
+                raw = resp.read().decode("utf-8")
             results = []
-            for row in ds:
-                prompt = row.get("prompt") or row.get("text", "")
+            for line in raw.strip().splitlines():
+                row = json.loads(line)
+                prompt = row.get("prompt", "")
+                tag = row.get("tag", "")
                 if prompt:
                     results.append({
                         "text": prompt.strip(),
-                        "original_category": "",
+                        "original_category": tag.strip().lower(),
                         "source": "geneval",
                     })
             logger.info(f"  GenEval: {len(results)} prompts loaded")
@@ -437,24 +444,24 @@ def download_dpg_bench() -> list[dict]:
 
 
 def download_oneig_zh() -> list[dict]:
-    """Download OneIG-Bench Chinese prompts from HuggingFace."""
+    """Download OneIG-Bench Chinese prompts from HuggingFace.
+
+    The dataset ``OneIG-Bench/OneIG-Bench`` has two configs:
+      - ``OneIG-Bench``    (English, column ``prompt_en``)
+      - ``OneIG-Bench-ZH`` (Chinese, column ``prompt_cn``)
+    Both only have a ``train`` split.
+    """
     load_dataset = _try_import_datasets()
     attempts = [
-        ("OneIG-Bench/OneIG-Bench", "zh", "test"),
-        ("OneIG-Bench/OneIG-Bench", "zh", "train"),
-        ("OneIG-Bench/OneIG-Bench", None, "test"),
-        ("OneIG-Bench/OneIG-Bench", None, "train"),
+        ("OneIG-Bench/OneIG-Bench", "OneIG-Bench-ZH", "train"),
     ]
     for dataset_id, config, split in attempts:
         try:
             logger.info(f"  Trying OneIG-ZH: {dataset_id} config={config} split={split}")
-            if config:
-                ds = load_dataset(dataset_id, config, split=split)
-            else:
-                ds = load_dataset(dataset_id, split=split)
+            ds = load_dataset(dataset_id, config, split=split)
             results = []
             for row in ds:
-                # OneIG-ZH uses prompt_cn for Chinese prompts
+                # ZH config uses prompt_cn for Chinese prompts
                 prompt = (
                     row.get("prompt_cn")
                     or row.get("prompt")
@@ -478,40 +485,79 @@ def download_oneig_zh() -> list[dict]:
 
 
 def download_cvtg_2k() -> list[dict]:
-    """Download CVTG-2K text rendering prompts from HuggingFace."""
-    load_dataset = _try_import_datasets()
-    attempts = [
-        ("dnkdnk/CVTG-2K", None, "train"),
-        ("dnkdnk/CVTG-2K", None, "test"),
-        ("dnkdnk/CVTG-2K", "default", "train"),
-    ]
-    for dataset_id, config, split in attempts:
-        try:
-            logger.info(f"  Trying CVTG-2K: {dataset_id} config={config} split={split}")
-            if config:
-                ds = load_dataset(dataset_id, config, split=split)
-            else:
-                ds = load_dataset(dataset_id, split=split)
-            results = []
-            for row in ds:
-                prompt = row.get("prompt") or row.get("text", "")
-                if prompt:
-                    results.append({
-                        "text": prompt.strip(),
-                        "original_category": "text rendering",
-                        "source": "cvtg_2k",
-                    })
-            logger.info(f"  CVTG-2K: {len(results)} prompts loaded")
-            return results
-        except Exception as e:
-            logger.info(f"    Failed: {e}")
-            continue
-    logger.warning("  CVTG-2K: all attempts failed, skipping")
-    return []
+    """Download CVTG-2K text rendering prompts from HuggingFace.
+
+    The dataset ``dnkdnk/CVTG-2K`` is a zip archive (not a standard HF
+    dataset).  Inside is ``CVTG-2K/CVTG/`` and ``CVTG-2K/CVTG-style/``
+    containing JSON files like ``2.json`` ... ``5.json`` (fine-grained) and
+    ``2_combined.json`` ... ``5_combined.json`` (simplified).  Each JSON has a
+    ``data_list`` array of objects with a ``prompt`` field.
+
+    We use the ``_combined.json`` files from the ``CVTG/`` folder (no style
+    attributes) for the standalone prompt text.
+    """
+    import io
+    import urllib.request
+    import zipfile
+
+    zip_url = (
+        "https://huggingface.co/datasets/dnkdnk/CVTG-2K/resolve/main/CVTG-2K.zip"
+    )
+    try:
+        logger.info(f"  Downloading CVTG-2K zip from {zip_url}")
+        with urllib.request.urlopen(zip_url, timeout=60) as resp:
+            zip_bytes = resp.read()
+
+        results = []
+        seen = set()
+        with zipfile.ZipFile(io.BytesIO(zip_bytes)) as zf:
+            # Prefer _combined.json from both CVTG and CVTG-style folders
+            json_names = sorted(
+                n for n in zf.namelist()
+                if n.endswith(".json")
+            )
+            for name in json_names:
+                try:
+                    data = json.loads(zf.read(name).decode("utf-8"))
+                    items = data if isinstance(data, list) else data.get("data_list", [])
+                    for entry in items:
+                        prompt = ""
+                        if isinstance(entry, dict):
+                            prompt = entry.get("prompt", "") or entry.get("combined_prompt", "")
+                        elif isinstance(entry, str):
+                            prompt = entry
+                        if prompt and prompt not in seen:
+                            seen.add(prompt)
+                            results.append({
+                                "text": prompt.strip(),
+                                "original_category": "text rendering",
+                                "source": "cvtg_2k",
+                            })
+                except Exception:
+                    continue
+        logger.info(f"  CVTG-2K: {len(results)} unique prompts loaded")
+        return results
+    except Exception as e:
+        logger.warning(f"  CVTG-2K: download failed: {e}")
+        return []
+
+
+def _contains_chinese(text: str) -> bool:
+    """Return True if *text* contains CJK Unified Ideograph characters."""
+    for ch in text:
+        if "\u4e00" <= ch <= "\u9fff":
+            return True
+    return False
 
 
 def download_longtext_bench() -> list[dict]:
-    """Download LongText-Bench prompts from HuggingFace."""
+    """Download LongText-Bench prompts from HuggingFace.
+
+    The dataset has 320 rows (160 EN + 160 ZH) in a single ``train`` split
+    with columns: ``category``, ``length``, ``prompt``, ``text`` (list),
+    ``text_length``, ``prompt_id``.  There is no explicit language column, so
+    we detect Chinese prompts by checking for CJK characters.
+    """
     load_dataset = _try_import_datasets()
     attempts = [
         ("X-Omni/LongText-Bench", None, "train"),
@@ -527,12 +573,14 @@ def download_longtext_bench() -> list[dict]:
                 ds = load_dataset(dataset_id, split=split)
             results = []
             for row in ds:
-                prompt = row.get("prompt") or row.get("text", "")
+                prompt = row.get("prompt", "")
                 if prompt:
+                    lang = "zh" if _contains_chinese(prompt) else "en"
                     results.append({
                         "text": prompt.strip(),
                         "original_category": "text rendering",
                         "source": "longtext_bench",
+                        "language": lang,
                     })
             logger.info(f"  LongText-Bench: {len(results)} prompts loaded")
             return results

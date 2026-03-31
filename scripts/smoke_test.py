@@ -24,6 +24,7 @@ import time
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
 # Add project root to path
 _project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -433,12 +434,14 @@ def main():
     student.zero_grad()
 
     # For generator gradient check: fresh forward with student grad path
+    # Teacher runs WITHOUT torch.no_grad() so gradients flow through
+    # the teacher's operations back to the student (per LADD paper).
     student_out2, _ = student(input_list, student_t, prompt_embeds, return_hidden_states=False)
     student_pred2 = torch.stack(student_out2, dim=0).squeeze(2)
     student_renoised2 = add_noise(student_pred2.float(), renoise.float(), t_hat.float()).to(dtype)
     fake_input2 = list(student_renoised2.unsqueeze(2).unbind(dim=0))
-    with torch.no_grad():
-        _, fake_extras2 = teacher(fake_input2, t_hat, prompt_embeds, return_hidden_states=True)
+    # No torch.no_grad() here — gradients must flow through teacher to student
+    _, fake_extras2 = teacher(fake_input2, t_hat, prompt_embeds, return_hidden_states=True)
     fake_result2 = discriminator(
         fake_extras2["hidden_states"], fake_extras2["x_item_seqlens"],
         fake_extras2["cap_item_seqlens"], spatial_sizes, t_hat,
@@ -446,12 +449,32 @@ def main():
     g_loss2 = -torch.mean(fake_result2["total_logit"])
     g_loss2.backward()
 
+    # Verify student receives gradients through teacher
+    student_has_grad = any(p.grad is not None and p.grad.abs().sum() > 0
+                          for p in student.parameters() if p.requires_grad)
+    assert student_has_grad, "Student has no gradients after g_loss backward — gradient flow through teacher is broken"
+    print_pass("Student receives gradients through teacher (graph flows through frozen teacher)")
+
+    # Teacher weights should still have no .grad (requires_grad=False)
+    teacher_has_param_grad = any(p.grad is not None for p in teacher.parameters())
+    assert not teacher_has_param_grad, "Teacher params should not accumulate .grad"
+    print_pass("Teacher parameters have no .grad (frozen, but graph passes through)")
+
     disc_grad_norms = []
     for name, p in discriminator.named_parameters():
         if p.grad is not None:
             disc_grad_norms.append(p.grad.norm().item())
     if disc_grad_norms:
         print_pass(f"Discriminator grad norm (mean): {sum(disc_grad_norms)/len(disc_grad_norms):.6f}")
+
+    student_grad_norms = []
+    for name, p in student.named_parameters():
+        if p.grad is not None:
+            student_grad_norms.append(p.grad.norm().item())
+    if student_grad_norms:
+        print_pass(f"Student grad norm (mean): {sum(student_grad_norms)/len(student_grad_norms):.6f}")
+    else:
+        print_fail("Student has no gradient norms to report")
 
     results.append(("Gradient flow", True))
 
@@ -520,9 +543,47 @@ def main():
         shutil.rmtree(tmpdir, ignore_errors=True)
 
     # -----------------------------------------------------------------------
-    # 9. Memory usage report
+    # 9. Baseline (non-LADD) forward/backward check
     # -----------------------------------------------------------------------
-    print_header("Step 9: Memory and summary")
+    print_header("Step 9: Baseline MSE training mode check")
+
+    try:
+        student.zero_grad()
+        # Simulate baseline training: noise prediction with MSE loss
+        baseline_noise = torch.randn(bsz, in_channels, height_latent, width_latent, device=device, dtype=dtype)
+        baseline_latent = torch.randn_like(baseline_noise)
+        sigma = torch.tensor([0.5], device=device, dtype=dtype)
+        # Flow matching noisy input: x_t = (1-sigma)*x0 + sigma*noise
+        noisy_latent = (1.0 - sigma.view(-1, 1, 1, 1)) * baseline_latent + sigma.view(-1, 1, 1, 1) * baseline_noise
+        target = baseline_noise - baseline_latent  # velocity target
+
+        t_baseline = torch.tensor([0.5], device=device, dtype=dtype)
+        baseline_input = list(noisy_latent.unsqueeze(2).unbind(dim=0))
+        baseline_out, _ = student(baseline_input, t_baseline, prompt_embeds, return_hidden_states=False)
+        baseline_pred = torch.stack(baseline_out, dim=0).squeeze(2)
+
+        # MSE loss (same as original train.py)
+        mse_loss = F.mse_loss(baseline_pred.float(), target.float())
+        assert torch.isfinite(mse_loss), f"MSE loss is not finite: {mse_loss}"
+        mse_loss.backward()
+
+        student_has_grad = any(p.grad is not None and p.grad.abs().sum() > 0
+                              for p in student.parameters() if p.requires_grad)
+        assert student_has_grad, "Student has no gradients in baseline mode"
+        print_pass(f"Baseline MSE loss = {mse_loss.item():.4f} (finite)")
+        print_pass("Student has gradients in baseline mode")
+        print_pass("Baseline training mode is functional")
+        results.append(("Baseline MSE training", True))
+    except Exception as e:
+        print_fail(f"Baseline training check failed: {e}")
+        results.append(("Baseline MSE training", False))
+    finally:
+        student.zero_grad()
+
+    # -----------------------------------------------------------------------
+    # 10. Memory usage report
+    # -----------------------------------------------------------------------
+    print_header("Step 10: Memory and summary")
 
     if torch.cuda.is_available():
         allocated = torch.cuda.memory_allocated() / 1e9

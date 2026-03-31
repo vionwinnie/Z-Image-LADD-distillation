@@ -82,6 +82,11 @@ from training.ladd_utils import (
     logit_normal_sample,
 )
 
+try:
+    import wandb
+except ImportError:
+    wandb = None
+
 logger = get_logger(__name__, log_level="INFO")
 
 
@@ -116,7 +121,7 @@ def parse_args():
     parser.add_argument("--train_batch_size", type=int, default=1,
                         help="Batch size per device.")
     parser.add_argument("--gradient_accumulation_steps", type=int, default=1)
-    parser.add_argument("--max_train_steps", type=int, default=50000)
+    parser.add_argument("--max_train_steps", type=int, default=20000)
     parser.add_argument("--num_train_epochs", type=int, default=1000)
 
     # Optimizers
@@ -159,8 +164,14 @@ def parse_args():
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--dataloader_num_workers", type=int, default=4)
     parser.add_argument("--logging_dir", type=str, default="logs")
-    parser.add_argument("--report_to", type=str, default="tensorboard")
-    parser.add_argument("--tracker_project_name", type=str, default="ladd-zimage")
+    parser.add_argument("--report_to", type=str, default="wandb",
+                        choices=["tensorboard", "wandb", "all"],
+                        help="Logging backend. Use 'wandb' for Weights & Biases.")
+    parser.add_argument("--tracker_project_name", type=str, default="ladd")
+    parser.add_argument("--wandb_run_name", type=str, default=None,
+                        help="W&B run name. Auto-generated if not set.")
+    parser.add_argument("--wandb_entity", type=str, default="yeun-yeungs",
+                        help="W&B entity (team or username).")
     parser.add_argument("--local_rank", type=int, default=-1)
 
     # Checkpointing
@@ -259,14 +270,13 @@ def log_validation(
     student, vae, text_encoder, tokenizer, scheduler,
     args, accelerator, weight_dtype, global_step,
 ):
-    """Generate sample images for visual monitoring."""
+    """Generate sample images and log to disk + wandb."""
     try:
         with torch.no_grad(), torch.cuda.amp.autocast(dtype=weight_dtype):
             logger.info("Running validation...")
 
             from zimage.pipeline import generate, calculate_shift as pipeline_calc_shift
 
-            # Unwrap student if wrapped by accelerator
             unwrapped = accelerator.unwrap_model(student)
 
             if args.seed is not None:
@@ -276,6 +286,7 @@ def log_validation(
             else:
                 generator = None
 
+            wandb_images = []
             for i, prompt_text in enumerate(args.validation_prompts):
                 images = generate(
                     transformer=unwrapped,
@@ -293,10 +304,21 @@ def log_validation(
                 save_dir = os.path.join(args.output_dir, "samples")
                 os.makedirs(save_dir, exist_ok=True)
                 for j, img in enumerate(images):
-                    img.save(os.path.join(
+                    save_path = os.path.join(
                         save_dir,
                         f"step{global_step:06d}_rank{accelerator.process_index}_prompt{i}_img{j}.jpg",
-                    ))
+                    )
+                    img.save(save_path)
+                    if wandb is not None:
+                        wandb_images.append(
+                            wandb.Image(img, caption=f"[step {global_step}] {prompt_text[:80]}")
+                        )
+
+            # Log images to wandb
+            if wandb_images and accelerator.is_main_process:
+                for tracker in accelerator.trackers:
+                    if tracker.name == "wandb":
+                        tracker.log({"validation/samples": wandb_images}, step=global_step)
 
             del unwrapped
             gc.collect()
@@ -537,7 +559,13 @@ def main():
 
     if accelerator.is_main_process:
         tracker_config = {k: v for k, v in vars(args).items() if not isinstance(v, list)}
-        accelerator.init_trackers(args.tracker_project_name, tracker_config)
+        init_kwargs = {}
+        if args.report_to in ("wandb", "all") and wandb is not None:
+            init_kwargs["wandb"] = {
+                "name": args.wandb_run_name,
+                "entity": args.wandb_entity,
+            }
+        accelerator.init_trackers(args.tracker_project_name, tracker_config, init_kwargs=init_kwargs)
 
     total_batch_size = args.train_batch_size * accelerator.num_processes * args.gradient_accumulation_steps
     logger.info("***** Running LADD training *****")
@@ -747,23 +775,24 @@ def main():
 
                 # ---- Student (generator) update (every gen_update_interval steps) ----
                 if is_gen_step:
-                    # Recompute fake logits with student grad path
-                    # We need to re-run through the discriminator with gradients flowing to student
-                    # The student_pred was computed with grads above
+                    # Recompute fake logits with student grad path.
+                    # The teacher forward runs WITHOUT torch.no_grad() so that
+                    # gradients flow through the teacher's operations back to
+                    # the student (the teacher's weights are frozen via
+                    # requires_grad_(False), but the computation graph is kept).
                     student_renoised_grad = add_noise(
                         student_pred.float(), renoise.float(), t_hat.float()
                     ).to(weight_dtype)
                     fake_input_grad = list(student_renoised_grad.unsqueeze(2).unbind(dim=0))
 
-                    with torch.no_grad():
-                        _, fake_extras_grad = teacher(
-                            fake_input_grad,
-                            t_hat,
-                            prompt_embeds,
-                            return_hidden_states=True,
-                        )
+                    # Teacher forward WITH gradient graph (frozen weights, live graph)
+                    _, fake_extras_grad = teacher(
+                        fake_input_grad,
+                        t_hat,
+                        prompt_embeds,
+                        return_hidden_states=True,
+                    )
 
-                    # Discriminator in eval mode for generator update
                     fake_result_grad = discriminator(
                         fake_extras_grad["hidden_states"],
                         fake_extras_grad["x_item_seqlens"],
@@ -792,8 +821,30 @@ def main():
                 }
                 if is_gen_step:
                     logs["g_loss_update"] = g_loss_update.detach().item()
+
+                # Gradient norms
+                disc_grad_norm = torch.nn.utils.clip_grad_norm_(
+                    discriminator.parameters(), float("inf")
+                ).item() if any(p.grad is not None for p in discriminator.parameters()) else 0.0
+                logs["grad_norm/discriminator"] = disc_grad_norm
+
+                if is_gen_step:
+                    student_grad_norm = torch.nn.utils.clip_grad_norm_(
+                        student.parameters(), float("inf")
+                    ).item() if any(p.grad is not None for p in accelerator.unwrap_model(student).parameters()) else 0.0
+                    logs["grad_norm/student"] = student_grad_norm
+
+                # GPU memory
+                if torch.cuda.is_available():
+                    logs["gpu/memory_allocated_gb"] = torch.cuda.memory_allocated() / 1e9
+                    logs["gpu/memory_reserved_gb"] = torch.cuda.memory_reserved() / 1e9
+
                 accelerator.log(logs, step=global_step)
-                progress_bar.set_postfix(**{k: f"{v:.4f}" if isinstance(v, float) else v for k, v in logs.items()})
+                progress_bar.set_postfix(
+                    d_loss=f"{logs['d_loss']:.4f}",
+                    g_loss=f"{logs['g_loss']:.4f}",
+                    lr_s=f"{logs['lr_student']:.2e}",
+                )
 
             progress_bar.update(1)
             global_step += 1

@@ -1,0 +1,6162 @@
+[
+  {
+    "text": "A wooden fishing boat navigating rough seas, rendered as alla prima oil study",
+    "subject": "S7",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "cross-hatched ink drawing of a floating market with bustling crowds, dynamic energy",
+    "subject": "S6",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "redwood forest with dappled sunlight, cel-shaded digital art style, cool blue palette",
+    "subject": "S5",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed retro propaganda poster showing coral reef shallows during a thunderstorm, golden light",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning minimalist poster design depicting a tropical rainforest during a thunderstorm, extreme close-up detail, soft diffused light",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C2",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed liminal space aesthetic showing rustic pickup truck idling at a traffic light, haunting atmosphere",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A suspension bridge at night with city lights, rendered as generative art, golden light",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A space shuttle flying through clouds, rendered as typographic poster art, muted earth tones",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning minimalist poster design depicting a mosque with minarets with bustling crowds, captured with fisheye distortion, muted earth tones",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C3",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A colonial mansion reflected in a puddle, rendered as 3D concept visualization, shot as fisheye distortion, intricate details",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C3",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "glass atrium under construction scaffolding, cinematic film still style, serene mood",
+    "subject": "S6",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed widescreen cinematic composition showing horse-drawn carriage navigating rough seas, dynamic energy",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed anime style illustration showing redwood forest in autumn colors, muted earth tones",
+    "subject": "S5",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A industrial warehouse with bustling crowds, rendered as double exposure effect, dynamic energy",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning photorealistic CGI depicting a lavender fields at blue hour, captured with extreme close-up detail, cool blue palette",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C2",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "abstract mixed media of a medieval castle reflected in a puddle, intricate details",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "coastal cliffs with a rainbow arching, Bauhaus inspired design style, soft diffused light",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning anime style illustration depicting a glacier lake in early morning mist, soft diffused light",
+    "subject": "S5",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A modern skyscraper with vintage cars parked outside, rendered as risograph print style, high contrast",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "space shuttle emerging from a tunnel, realistic Blender render style, bird's eye view, rich color palette",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C4",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "coral reef shallows in spring bloom, dreamlike surreal scene style, rich color palette",
+    "subject": "S5",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed anamorphic lens flare showing tram in a European city speeding through rain, captured with bird's eye view, warm amber tones",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C4",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "autumn woodland under dramatic clouds, minimalist poster design style, soft diffused light",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "ancient Roman ruins seen through an archway, 3D concept visualization style, serene mood",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "octane render of a hot air balloon with motion blur, golden light",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed retro anime aesthetic showing floating market in harsh midday sun, shot as shallow depth of field with creamy bokeh, monochromatic scheme",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C6",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A canoe on a still lake under streetlights at night, rendered as generative art, cool blue palette",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "cinema 4D render of a narrow European alley during blue hour, serene mood",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A coastal cliffs in autumn colors, rendered as impressionist brushwork",
+    "subject": "S5",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A motorcycle on a highway reflected in wet asphalt, rendered as photorealistic CGI, rich color palette",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A moorland heath at sunset, rendered as tempera painting, cool blue palette",
+    "subject": "S5",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning subsurface scattering render depicting a autumn woodland at dawn, shot as low-angle shot looking up, serene mood",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C5",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "futuristic glass dome framed by cherry blossoms, neo-noir cinematography style, intricate details",
+    "subject": "S6",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning manga-inspired drawing depicting a wooden fishing boat on a winding mountain road, monochromatic scheme",
+    "subject": "S7",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "double exposure effect of a wildflower meadow in spring bloom, serene mood",
+    "subject": "S5",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A motorcycle on a highway parked in a garage, rendered as comic book style rendering",
+    "subject": "S7",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A canoe on a still lake at a pit stop, rendered as oil painting",
+    "subject": "S7",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A redwood forest under a starry night, rendered as IMAX quality shot, atmospheric depth",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed data moshing visual showing baroque palace facade in morning fog, long exposure light trails, warm amber tones",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C7",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A rooftop garden terrace at dusk with warm window light, rendered as infographic style illustration, shot as long exposure light trails, muted earth tones",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C7",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning Technicolor film look depicting a rocky shoreline at sunset, captured with smooth long exposure",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C7",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "isometric digital illustration of a baroque palace facade at dusk with warm window light, soft diffused light",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed procedural 3D generation showing sailing yacht reflected in wet asphalt, muted earth tones",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed cel-shaded digital art showing submarine surfacing reflected in wet asphalt, dreamy bokeh effect, serene mood",
+    "subject": "S7",
+    "style": "T3",
+    "camera": "C6",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed 3D render in Blender showing classic VW van abandoned in a field, shot as macro close-up, high contrast",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C2",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning alla prima oil study depicting a rickshaw in a market cruising along a coastal highway",
+    "subject": "S7",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "rooftop garden terrace abandoned and overgrown, brand identity concept style, warm amber tones",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A sunflower field in spring bloom, rendered as cinematic film still, atmospheric depth",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed vintage travel poster showing volcanic hot springs blanketed in fresh snow, captured with worm's eye view, dynamic energy",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C5",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "volcanic hot springs under dramatic clouds, Technicolor film look style, cool blue palette",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning glitch art aesthetic depicting a pine forest trail during a wildfire glow, cool blue palette",
+    "subject": "S5",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A dense forest with dappled sunlight, rendered as neo-noir cinematography, captured with fisheye distortion, rich color palette",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C3",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning typographic poster art depicting a floating market with snow on rooftops, vibrant saturated colors",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A mountain range in summer heat haze, rendered as pop art poster, intricate details",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning voxel art render depicting a ancient Roman ruins in heavy rain, haunting atmosphere",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Manhattan skyline in morning fog, low-poly digital art style, high contrast",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed photorealistic CGI showing adobe pueblo village in harsh midday sun, serene mood",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning experimental photo manipulation depicting a Moroccan riad courtyard from across a canal, vibrant saturated colors",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A Victorian townhouse under construction scaffolding, rendered as cinema 4D render, captured with soft bokeh background, atmospheric depth",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C6",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "jet fighter abandoned in a field, risograph print style style, golden light",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A art deco building with vintage cars parked outside, rendered as generative art, shot as dreamy bokeh effect, rich color palette",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C6",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning blockbuster VFX shot depicting a coral reef shallows blanketed in fresh snow, dramatic low perspective",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C5",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed subsurface scattering render showing pine forest trail in winter frost, cool blue palette",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning stylized 3D artwork depicting a dirt bike mid-jump flying through clouds, bold composition",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A medieval castle from across a canal, rendered as vintage film photograph, dynamic energy",
+    "subject": "S6",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed liminal space aesthetic showing electric hypercar idling at a traffic light, silky long exposure water",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C7",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A futuristic glass dome under construction scaffolding, rendered as typographic poster art, captured with harsh directional light, muted earth tones",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C8",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "brutalist concrete tower freshly renovated, charcoal sketch style, muted earth tones",
+    "subject": "S6",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "anime style illustration of a biplane in a snowy landscape, rich color palette",
+    "subject": "S7",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A bamboo grove in autumn colors, rendered as movie scene screenshot, long exposure light trails, warm amber tones",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C7",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A lighthouse on a cliff with snow on rooftops, rendered as gradient mesh vector art, soft diffused light",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "off-road jeep covered in dust, logo concept design style, smooth long exposure, soft diffused light",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C7",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "widescreen cinematic composition of a motorcycle on a highway racing at sunset, dramatic low perspective, high contrast",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C5",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "vintage film photograph of a tugboat in a harbor freshly polished, dynamic energy",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "logo concept design of a suspension bridge framed by cherry blossoms, shallow depth of field with creamy bokeh, atmospheric depth",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C6",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "double-decker bus emerging from a tunnel, pixel art style style, warm amber tones",
+    "subject": "S7",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "noir film scene of a motorcycle on a highway covered in dust, serene mood",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed vector art showing rickshaw in a market navigating rough seas, shot as silky long exposure water, high contrast",
+    "subject": "S7",
+    "style": "T3",
+    "camera": "C7",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning cinema 4D render depicting a rooftop garden terrace in morning fog, monochromatic scheme",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "glitch art aesthetic of a rickshaw in a market abandoned in a field, golden light",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A karst mountains with dappled sunlight, rendered as infographic style illustration",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "pine forest trail in summer heat haze, infographic style illustration style, serene mood",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "cinema 4D render of a subway station with vintage cars parked outside",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A train station hall during golden hour, rendered as abstract mixed media, captured with harsh directional light, intricate details",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C8",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning 3D concept visualization depicting a mosque with minarets freshly renovated, intricate details",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "IMAX quality shot of a tropical rainforest in autumn colors, warm amber tones",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed 3D concept visualization showing ancient Roman ruins from across a canal, shot as wide-angle perspective",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C3",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A art deco building in morning fog, rendered as screen-printed poster aesthetic, shot as ultra wide-angle view, golden light",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C3",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "cinema 4D render of a motorcycle on a highway idling at a traffic light, vibrant saturated colors",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "cargo ship racing at sunset, data moshing visual style, golden light",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning analog glitch texture depicting a sleek sports car in a junkyard, fisheye distortion, golden light",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C3",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed editorial layout design showing lavender fields at dawn, intricate details",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed charcoal sketch showing dirt bike mid-jump at a pit stop, shot as dramatic chiaroscuro lighting, serene mood",
+    "subject": "S7",
+    "style": "T2",
+    "camera": "C8",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "abstract mixed media of a helicopter over cityscape cruising along a coastal highway, worm's eye view, golden light",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C5",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "data moshing visual of a submarine surfacing cruising along a coastal highway",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed minimalist poster design showing sand dunes at twilight at dawn, muted earth tones",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "space shuttle reflected in wet asphalt, kaleidoscopic pattern overlay style, soft diffused light",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A autumn woodland under stormy skies, rendered as gouache painting, shot as fisheye distortion, dynamic energy",
+    "subject": "S5",
+    "style": "T2",
+    "camera": "C3",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A sand dunes at twilight at blue hour, rendered as charcoal sketch, shot as aerial drone shot, golden light",
+    "subject": "S5",
+    "style": "T2",
+    "camera": "C4",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A desert dunes under moonlight, rendered as movie scene screenshot",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning noir film scene depicting a hot air balloon on a winding mountain road, serene mood",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A cargo ship with motion blur, rendered as liminal space aesthetic, bold composition",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning charcoal sketch depicting a dirt bike mid-jump reflected in wet asphalt, high contrast",
+    "subject": "S7",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "lighthouse on a cliff in harsh midday sun, vintage film photograph style, muted earth tones",
+    "subject": "S6",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning analog glitch texture depicting a rocky shoreline in winter frost, captured with soft bokeh background, cool blue palette",
+    "subject": "S5",
+    "style": "T7",
+    "camera": "C6",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed voxel art render showing opera house exterior framed by cherry blossoms, golden light",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A cherry blossom park with a rainbow arching, rendered as alla prima oil study, soft diffused light",
+    "subject": "S5",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "noir film scene of a glass atrium with vintage cars parked outside, cool blue palette",
+    "subject": "S6",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "modern skyscraper illuminated by neon signs, gradient mesh vector art style, monochromatic scheme",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "ink wash drawing of a desert dunes under a starry night, intricate details",
+    "subject": "S5",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed typographic poster art showing rustic pickup truck parked in a garage, shot as bird's eye view, intricate details",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C4",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "prairie landscape in early morning mist, distorted reality artwork style, rim lighting with deep shadows, intricate details",
+    "subject": "S5",
+    "style": "T7",
+    "camera": "C8",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "motorcycle on a highway idling at a traffic light, neo-noir cinematography style, golden light",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "film grain aesthetic of a motorcycle on a highway speeding through rain, warm amber tones",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A subway station with bustling crowds, rendered as risograph print style, vibrant saturated colors",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning pop art poster depicting a rooftop garden terrace in morning fog, intricate details",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "isometric digital illustration of a train station hall in harsh midday sun, shallow depth of field with creamy bokeh, golden light",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C6",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning expressionist oil painting depicting a frozen tundra in winter frost, dynamic energy",
+    "subject": "S5",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "movie scene screenshot of a moorland heath in dense fog, atmospheric depth",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Bauhaus inspired design of a Victorian townhouse with vintage cars parked outside, shot as aerial drone shot, golden light",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C4",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "IMAX quality shot of a foggy coastline during a wildfire glow, haunting atmosphere",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "retro anime aesthetic of a cherry blossom park during a wildfire glow, captured with macro lens shot, intricate details",
+    "subject": "S5",
+    "style": "T3",
+    "camera": "C2",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning geometric poster composition depicting a neon-lit street market at dusk with warm window light",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning oil painting depicting a off-road jeep idling at a traffic light, captured with macro close-up, rich color palette",
+    "subject": "S7",
+    "style": "T2",
+    "camera": "C2",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "data moshing visual of a canoe on a still lake parked in a garage, dynamic energy",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A biplane emerging from a tunnel, rendered as procedural 3D generation, serene mood",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A snow-capped peaks at blue hour, rendered as dreamlike surreal scene, bold composition",
+    "subject": "S5",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "colonial mansion at dusk with warm window light, volumetric 3D rendering style, shot as ultra wide-angle view, intricate details",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C3",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "colonial mansion illuminated by neon signs, surrealist composition style, dynamic energy",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed art nouveau poster showing wildflower meadow under moonlight, high contrast",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed dreamlike surreal scene showing pine forest trail in early morning mist, dynamic energy",
+    "subject": "S5",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed manga-inspired drawing showing mosque with minarets with bustling crowds, captured with low-angle shot looking up, monochromatic scheme",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C5",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "dense forest blanketed in fresh snow, chibi style artwork style, dynamic energy",
+    "subject": "S5",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning screen-printed poster aesthetic depicting a helicopter over cityscape freshly polished, shot as macro lens shot, atmospheric depth",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C2",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed vaporwave aesthetic showing frozen tundra in summer heat haze, extreme close-up detail, dynamic energy",
+    "subject": "S5",
+    "style": "T7",
+    "camera": "C2",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A hot air balloon on display at a show, rendered as glitch art aesthetic, haunting atmosphere",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning realistic Blender render depicting a suspension bridge in harsh midday sun, dynamic energy",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A Moroccan riad courtyard reflected in a puddle, rendered as comic book style rendering, atmospheric depth",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "hot air balloon under streetlights at night, analog glitch texture style, shot as silky long exposure water, haunting atmosphere",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C7",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "fragmented digital collage of a classic steam locomotive navigating rough seas, rich color palette",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed widescreen cinematic composition showing spiral staircase interior with bustling crowds, haunting atmosphere",
+    "subject": "S6",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed CGI environment art showing pine forest trail during a thunderstorm, rich color palette",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A snow-capped peaks blanketed in fresh snow, rendered as logo concept design, bold composition",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "vintage travel poster of a autumn woodland in winter frost, haunting atmosphere",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "cinema 4D render of a vintage muscle car abandoned in a field, vibrant saturated colors",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed film grain aesthetic showing volcanic hot springs at blue hour, captured with macro close-up",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C2",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "classic VW van on display at a show, screen-printed poster aesthetic style, warm amber tones",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "misty valley after rainfall, film grain aesthetic style, shot as smooth long exposure, serene mood",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C7",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "rickshaw in a market crossing a bridge, cel-shaded digital art style, golden light",
+    "subject": "S7",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed procedural 3D generation showing rocky shoreline with dappled sunlight, dynamic energy",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A cherry blossom park blanketed in fresh snow, rendered as comic book style rendering, dynamic energy",
+    "subject": "S5",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning 70mm film quality depicting a river canyon in autumn colors, golden light",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed 3D concept visualization showing sailing yacht under streetlights at night, bold composition",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "pagoda tower with snow on rooftops, physically based rendering style",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed CGI environment art showing prairie landscape at dawn",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A tram in a European city abandoned in a field, rendered as infographic style illustration, rich color palette",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Moroccan riad courtyard at night with city lights, digital painting with clean lines style, dramatic chiaroscuro lighting, soft diffused light",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C8",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "sailing yacht at a pit stop, octane render style, shot as long exposure light trails, muted earth tones",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C7",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning stylized 3D artwork depicting a sleek sports car navigating rough seas, warm amber tones",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "infographic style illustration of a horse-drawn carriage emerging from a tunnel, shot as low-angle shot looking up, vibrant saturated colors",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C5",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "tempera painting of a savanna grassland during a wildfire glow, vibrant saturated colors",
+    "subject": "S5",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A Manhattan skyline in harsh midday sun, rendered as noir film scene, rich color palette",
+    "subject": "S6",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning handheld camera realism depicting a mosque with minarets during blue hour, cool blue palette",
+    "subject": "S6",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed fragmented digital collage showing pagoda tower with dramatic shadows, muted earth tones",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning pen and ink illustration depicting a moorland heath at sunset, low-angle shot looking up, golden light",
+    "subject": "S5",
+    "style": "T2",
+    "camera": "C5",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning vaporwave aesthetic depicting a foggy coastline at sunset, soft diffused light",
+    "subject": "S5",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning cross-hatched ink drawing depicting a wildflower meadow at blue hour, soft diffused light",
+    "subject": "S5",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed vaporwave aesthetic showing industrial warehouse under construction scaffolding, serene mood",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "modern skyscraper with bustling crowds, vector art style, captured with fisheye distortion, serene mood",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C3",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "cargo ship covered in dust, 3D concept visualization style, extreme close-up detail, rich color palette",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C2",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning logo concept design depicting a Victorian townhouse in heavy rain, monochromatic scheme",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "volcanic hot springs in winter frost, tempera painting style, dramatic low perspective, warm amber tones",
+    "subject": "S5",
+    "style": "T2",
+    "camera": "C5",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A biplane on display at a show, rendered as ray-traced 3D scene, vibrant saturated colors",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed indie film frame showing train station hall under construction scaffolding, vibrant saturated colors",
+    "subject": "S6",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed pop art poster showing dirt bike mid-jump racing at sunset, muted earth tones",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed manga-inspired drawing showing rickshaw in a market abandoned in a field, captured with dramatic chiaroscuro lighting, soft diffused light",
+    "subject": "S7",
+    "style": "T3",
+    "camera": "C8",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning dreamlike surreal scene depicting a adobe pueblo village illuminated by neon signs, soft diffused light",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A mountain range at sunset, rendered as vector art, muted earth tones",
+    "subject": "S5",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A Manhattan skyline at dusk with warm window light, rendered as ray-traced 3D scene, serene mood",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "classic steam locomotive speeding through rain, anamorphic lens flare style, fisheye distortion",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C3",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning retro anime aesthetic depicting a snowmobile on frozen lake on display at a show, cool blue palette",
+    "subject": "S7",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "rolling hills at blue hour, noir film scene style, golden light",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning screen-printed poster aesthetic depicting a gothic cathedral seen through an archway, captured with dreamy bokeh effect, high contrast",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C6",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "blockbuster VFX shot of a zeppelin airship flying through clouds, cool blue palette",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning collage art style depicting a rooftop garden terrace in morning fog, captured with aerial drone shot, serene mood",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C4",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "desert dunes at blue hour, abstract mixed media style, vibrant saturated colors",
+    "subject": "S5",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed neo-noir cinematography showing classic VW van speeding through rain, shot as silky long exposure water, dynamic energy",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C7",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A sleek sports car racing at sunset, rendered as tempera painting, captured with soft bokeh background",
+    "subject": "S7",
+    "style": "T2",
+    "camera": "C6",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning digital painting with clean lines depicting a electric hypercar reflected in wet asphalt, macro lens shot, bold composition",
+    "subject": "S7",
+    "style": "T3",
+    "camera": "C2",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed low-poly digital art showing sleek sports car cruising along a coastal highway, warm amber tones",
+    "subject": "S7",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning collage art style depicting a foggy coastline in autumn colors, monochromatic scheme",
+    "subject": "S5",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning neo-noir cinematography depicting a glacier lake at sunset, rich color palette",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "narrow European alley in heavy rain, realistic Blender render style, high contrast",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed 3D render in Blender showing autumn woodland with a rainbow arching, muted earth tones",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "infographic style illustration of a tram in a European city abandoned in a field, monochromatic scheme",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "retro propaganda poster of a electric hypercar freshly polished, rim lighting with deep shadows, monochromatic scheme",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C8",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed data moshing visual showing waterfall cascade in winter frost, shot as wide-angle perspective, monochromatic scheme",
+    "subject": "S5",
+    "style": "T7",
+    "camera": "C3",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning loose watercolor wash depicting a narrow European alley with vintage cars parked outside, atmospheric depth",
+    "subject": "S6",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Unreal Engine 5 screenshot of a floating market with vintage cars parked outside, captured with wide-angle perspective, haunting atmosphere",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C3",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning typographic poster art depicting a cargo ship speeding through rain, soft diffused light",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed octane render showing classic VW van with motion blur, soft diffused light",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A mountain range in autumn colors, rendered as experimental photo manipulation, high contrast",
+    "subject": "S5",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning synthwave digital illustration depicting a mangrove swamp under moonlight, high contrast",
+    "subject": "S5",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "70mm film quality of a Moroccan riad courtyard with snow on rooftops, captured with ultra wide-angle view, atmospheric depth",
+    "subject": "S6",
+    "style": "T5",
+    "camera": "C3",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "experimental photo manipulation of a sand dunes at twilight in winter frost, serene mood",
+    "subject": "S5",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "horse-drawn carriage covered in dust, photorealistic CGI style, shot as wide-angle perspective, vibrant saturated colors",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C3",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed pastel drawing showing helicopter over cityscape crossing a bridge, shot as rim lighting with deep shadows",
+    "subject": "S7",
+    "style": "T2",
+    "camera": "C8",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "dreamlike surreal scene of a northern lights sky in spring bloom, rich color palette",
+    "subject": "S5",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "lavender fields under stormy skies, manga-inspired drawing style, muted earth tones",
+    "subject": "S5",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "northern lights sky at blue hour, risograph print style style, cool blue palette",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "documentary-style photograph of a off-road jeep flying through clouds, rich color palette",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "gothic cathedral at night with city lights, screen-printed poster aesthetic style, atmospheric depth",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed deconstructed imagery showing rocky shoreline in spring bloom, muted earth tones",
+    "subject": "S5",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A desert dunes under dramatic clouds, rendered as typographic poster art, soft diffused light",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "realistic Blender render of a Victorian townhouse at dusk with warm window light, dramatic low perspective, muted earth tones",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C5",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "3D render in Blender of a medieval castle during blue hour, dynamic energy",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed 3D render in Blender showing ancient Roman ruins under construction scaffolding, soft diffused light",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed indie film frame showing brutalist concrete tower illuminated by neon signs, atmospheric depth",
+    "subject": "S6",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning glitch art aesthetic depicting a foggy coastline blanketed in fresh snow, captured with fisheye distortion, warm amber tones",
+    "subject": "S5",
+    "style": "T7",
+    "camera": "C3",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed risograph print style showing glacier lake with a rainbow arching, muted earth tones",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "low-poly digital art of a art deco building with bustling crowds, haunting atmosphere",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "industrial warehouse during blue hour, infographic style illustration style, captured with smooth long exposure",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C7",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "wildflower meadow in summer heat haze, experimental photo manipulation style, shot as worm's eye view, muted earth tones",
+    "subject": "S5",
+    "style": "T7",
+    "camera": "C5",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed kaleidoscopic pattern overlay showing tram in a European city abandoned in a field, soft diffused light",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning voxel art render depicting a zeppelin airship flying through clouds, intricate details",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A sailing yacht with motion blur, rendered as charcoal sketch, cool blue palette",
+    "subject": "S7",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning minimalist poster design depicting a hot air balloon parked in a garage, golden light",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "anime style illustration of a mosque with minarets framed by cherry blossoms, aerial drone shot, muted earth tones",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C4",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A gothic cathedral in morning fog, rendered as deconstructed imagery, monochromatic scheme",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A marshland wetlands during a wildfire glow, rendered as sumi-e ink painting, shot as aerial drone shot",
+    "subject": "S5",
+    "style": "T2",
+    "camera": "C4",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "double-decker bus in a snowy landscape, editorial layout design style, warm amber tones",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning data moshing visual depicting a horse-drawn carriage abandoned in a field, captured with extreme close-up detail, golden light",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C2",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed surrealist composition showing dirt bike mid-jump flying through clouds, soft diffused light",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed gradient mesh vector art showing traditional Japanese temple with dramatic shadows, rich color palette",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning handheld camera realism depicting a frozen tundra in dense fog, rich color palette",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "stylized 3D artwork of a vintage muscle car in a snowy landscape, intricate details",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning synthwave digital illustration depicting a rustic pickup truck parked in a garage, shot as fisheye distortion, bold composition",
+    "subject": "S7",
+    "style": "T3",
+    "camera": "C3",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning brand identity concept depicting a space shuttle covered in dust, captured with rim lighting with deep shadows, bold composition",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C8",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning expressionist oil painting depicting a jet fighter under streetlights at night, shot as shallow depth of field with creamy bokeh, cool blue palette",
+    "subject": "S7",
+    "style": "T2",
+    "camera": "C6",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "gothic cathedral in heavy rain, neo-noir cinematography style, cool blue palette",
+    "subject": "S6",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "anamorphic lens flare of a snow-capped peaks in early morning mist, haunting atmosphere",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "opera house exterior framed by cherry blossoms, documentary-style photograph style, vibrant saturated colors",
+    "subject": "S6",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning liminal space aesthetic depicting a rustic pickup truck cruising along a coastal highway, shot as aerial drone shot, rich color palette",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C4",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning chibi style artwork depicting a northern lights sky blanketed in fresh snow, dynamic energy",
+    "subject": "S5",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed subsurface scattering render showing ancient Roman ruins at dusk with warm window light, high contrast",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed sumi-e ink painting showing coastal cliffs under dramatic clouds, haunting atmosphere",
+    "subject": "S5",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "ray-traced 3D scene of a glass atrium under construction scaffolding, captured with soft bokeh background, cool blue palette",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C6",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Unreal Engine 5 screenshot of a sailing yacht idling at a traffic light, atmospheric depth",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning handheld camera realism depicting a redwood forest at blue hour, soft diffused light",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "vaporwave aesthetic of a foggy coastline under moonlight, captured with extreme close-up detail, rich color palette",
+    "subject": "S5",
+    "style": "T7",
+    "camera": "C2",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "voxel art render of a waterfall cascade at blue hour, vibrant saturated colors",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning gouache painting depicting a canoe on a still lake abandoned in a field, high contrast",
+    "subject": "S7",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "brutalist concrete tower framed by cherry blossoms, indie film frame style, warm amber tones",
+    "subject": "S6",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A electric hypercar emerging from a tunnel, rendered as generative art, atmospheric depth",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed subsurface scattering render showing brutalist concrete tower framed by cherry blossoms, intricate details",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A submarine surfacing on a winding mountain road, rendered as sumi-e ink painting, captured with wide-angle perspective, golden light",
+    "subject": "S7",
+    "style": "T2",
+    "camera": "C3",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "wildflower meadow at sunset, infographic style illustration style, bold composition",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed 70mm film quality showing medieval castle with vintage cars parked outside, rich color palette",
+    "subject": "S6",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "bamboo grove under moonlight, pastel drawing style, serene mood",
+    "subject": "S5",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A prairie landscape in winter frost, rendered as editorial layout design, long exposure light trails, vibrant saturated colors",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C7",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "infographic style illustration of a alpine meadow at sunset, high contrast",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "opera house exterior with snow on rooftops, oil painting style, atmospheric depth",
+    "subject": "S6",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "voxel art render of a rice terraces with dappled sunlight, muted earth tones",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed retro anime aesthetic showing volcanic hot springs in spring bloom, harsh directional light, atmospheric depth",
+    "subject": "S5",
+    "style": "T3",
+    "camera": "C8",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "indie film frame of a luxury sedan with motion blur, captured with smooth long exposure, intricate details",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C7",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed risograph print style showing helicopter over cityscape parked in a garage, vibrant saturated colors",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A minimalist pavilion with dramatic shadows, rendered as ray-traced 3D scene, warm amber tones",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "rickshaw in a market at a pit stop, tempera painting style, muted earth tones",
+    "subject": "S7",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed vector art showing northern lights sky under stormy skies, dynamic energy",
+    "subject": "S5",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "cel-shaded digital art of a art deco building silhouetted against sunset, aerial drone shot, dynamic energy",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C4",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "blockbuster VFX shot of a classic VW van at a pit stop, atmospheric depth",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A submarine surfacing emerging from a tunnel, rendered as neo-noir cinematography, monochromatic scheme",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning anime style illustration depicting a suspension bridge in harsh midday sun, bold composition",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed stylized 3D artwork showing neon-lit street market at night with city lights, atmospheric depth",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "brand identity concept of a classic steam locomotive on display at a show, serene mood",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning octane render depicting a lavender fields during a thunderstorm, high contrast",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A helicopter over cityscape reflected in wet asphalt, rendered as charcoal sketch, intricate details",
+    "subject": "S7",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning brand identity concept depicting a frozen tundra with a rainbow arching, vibrant saturated colors",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "stylized 3D artwork of a cherry blossom park during a thunderstorm, cool blue palette",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A bamboo grove under a starry night, rendered as Swiss design style poster, rich color palette",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "coastal cliffs under stormy skies, vintage film photograph style, atmospheric depth",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning collage art style depicting a traditional Japanese temple seen through an archway, high contrast",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A classic VW van in a junkyard, rendered as photorealistic CGI, intricate details",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A suspension bridge during golden hour, rendered as digital painting with clean lines, rich color palette",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning neo-noir cinematography depicting a tropical rainforest under moonlight, monochromatic scheme",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A sunflower field at blue hour, rendered as IMAX quality shot, muted earth tones",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed pop art poster showing dirt bike mid-jump parked in a garage, serene mood",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "autumn woodland under a starry night, physically based rendering style, monochromatic scheme",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "isometric digital illustration of a northern lights sky in dense fog, shot as aerial drone shot, dynamic energy",
+    "subject": "S5",
+    "style": "T3",
+    "camera": "C4",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed acrylic on canvas showing off-road jeep under streetlights at night, warm amber tones",
+    "subject": "S7",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Formula 1 race car abandoned in a field, widescreen cinematic composition style, haunting atmosphere",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "rocky shoreline under moonlight, Technicolor film look style, intricate details",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning abstract mixed media depicting a narrow European alley in harsh midday sun, captured with dramatic low perspective, vibrant saturated colors",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C5",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "editorial layout design of a spiral staircase interior during blue hour, warm amber tones",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Manhattan skyline in morning fog, vector art style, captured with top-down aerial perspective, haunting atmosphere",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C4",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "neon-lit street market freshly renovated, analog glitch texture style, warm amber tones",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A hot air balloon reflected in wet asphalt, rendered as impressionist brushwork, shot as dreamy bokeh effect",
+    "subject": "S7",
+    "style": "T2",
+    "camera": "C6",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "space shuttle in a junkyard, widescreen cinematic composition style, vibrant saturated colors",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A spiral staircase interior illuminated by neon signs, rendered as digital painting with clean lines",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A hot air balloon reflected in wet asphalt, rendered as liminal space aesthetic, high contrast",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A marshland wetlands after rainfall, rendered as fresco style, cool blue palette",
+    "subject": "S5",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning ray-traced 3D scene depicting a dense forest under dramatic clouds, shot as silky long exposure water, warm amber tones",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C7",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed vector art showing off-road jeep navigating rough seas, muted earth tones",
+    "subject": "S7",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed logo concept design showing rocky shoreline in dense fog, captured with shallow depth of field with creamy bokeh, haunting atmosphere",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C6",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A suspension bridge during golden hour, rendered as psychedelic art fusion, shot as dreamy bokeh effect, serene mood",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C6",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning movie scene screenshot depicting a glass atrium in heavy rain",
+    "subject": "S6",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A hot air balloon reflected in wet asphalt, rendered as ray-traced 3D scene, warm amber tones",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning fragmented digital collage depicting a Manhattan skyline during blue hour, monochromatic scheme",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A classic VW van parked in a garage, rendered as fresco style, high contrast",
+    "subject": "S7",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "noir film scene of a northern lights sky with a rainbow arching, serene mood",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "70mm film quality of a minimalist pavilion freshly renovated, shot as soft bokeh background, haunting atmosphere",
+    "subject": "S6",
+    "style": "T5",
+    "camera": "C6",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "generative art of a luxury sedan freshly polished, serene mood",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A cherry blossom park in summer heat haze, rendered as manga-inspired drawing, haunting atmosphere",
+    "subject": "S5",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning pixel art style depicting a art deco building with snow on rooftops, haunting atmosphere",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning retro anime aesthetic depicting a covered bazaar with snow on rooftops, golden light",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed comic book style rendering showing electric hypercar cruising along a coastal highway, macro close-up, rich color palette",
+    "subject": "S7",
+    "style": "T3",
+    "camera": "C2",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning retro propaganda poster depicting a cherry blossom park under moonlight, haunting atmosphere",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "experimental photo manipulation of a modern bullet train parked in a garage, captured with fisheye distortion, haunting atmosphere",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C3",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed subsurface scattering render showing tugboat in a harbor on display at a show, rich color palette",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning vaporwave aesthetic depicting a tropical rainforest in winter frost, muted earth tones",
+    "subject": "S5",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed expressionist oil painting showing baroque palace facade in harsh midday sun, soft diffused light",
+    "subject": "S6",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "submarine surfacing racing at sunset, ink wash drawing style, golden light",
+    "subject": "S7",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning vector art depicting a sleek sports car covered in dust, soft diffused light",
+    "subject": "S7",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed CGI environment art showing canoe on a still lake on display at a show, high contrast",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A futuristic glass dome silhouetted against sunset, rendered as geometric poster composition, monochromatic scheme",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "redwood forest with dappled sunlight, experimental photo manipulation style, soft diffused light",
+    "subject": "S5",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "tempera painting of a autumn woodland in autumn colors, shot as dreamy bokeh effect, cool blue palette",
+    "subject": "S5",
+    "style": "T2",
+    "camera": "C6",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning manga-inspired drawing depicting a ancient Roman ruins reflected in a puddle, high contrast",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A covered bazaar in harsh midday sun, rendered as geometric poster composition, cool blue palette",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A mangrove swamp in spring bloom, rendered as low-poly digital art, monochromatic scheme",
+    "subject": "S5",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning film grain aesthetic depicting a pagoda tower abandoned and overgrown",
+    "subject": "S6",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "northern lights sky under dramatic clouds, flat design illustration style, haunting atmosphere",
+    "subject": "S5",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed art nouveau poster showing modern skyscraper seen through an archway, muted earth tones",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "electric hypercar in a snowy landscape, widescreen cinematic composition style, muted earth tones",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "synthwave digital illustration of a spiral staircase interior with snow on rooftops, dynamic energy",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A luxury sedan in a junkyard, rendered as loose watercolor wash, shot as top-down aerial perspective, high contrast",
+    "subject": "S7",
+    "style": "T2",
+    "camera": "C4",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning CGI environment art depicting a electric hypercar covered in dust, bold composition",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A spiral staircase interior silhouetted against sunset, rendered as low-poly digital art, warm amber tones",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed kaleidoscopic pattern overlay showing misty valley in early morning mist, shot as long exposure light trails, cool blue palette",
+    "subject": "S5",
+    "style": "T7",
+    "camera": "C7",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "cherry blossom park at dawn, ray-traced 3D scene style, vibrant saturated colors",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A coastal cliffs under moonlight, rendered as cel-shaded digital art, captured with soft bokeh background, vibrant saturated colors",
+    "subject": "S5",
+    "style": "T3",
+    "camera": "C6",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A vintage Vespa scooter parked in a garage, rendered as flat design illustration, muted earth tones",
+    "subject": "S7",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "train station hall in heavy rain, surrealist composition style, haunting atmosphere",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed screen-printed poster aesthetic showing karst mountains with dappled sunlight, shot as bird's eye view, dynamic energy",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C4",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "voxel art render of a off-road jeep under streetlights at night, serene mood",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "train station hall framed by cherry blossoms, tempera painting style, captured with shallow depth of field with creamy bokeh, cool blue palette",
+    "subject": "S6",
+    "style": "T2",
+    "camera": "C6",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "octane render of a dense forest under a starry night, high contrast",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "fresco style of a mangrove swamp in autumn colors, shot as silky long exposure water, warm amber tones",
+    "subject": "S5",
+    "style": "T2",
+    "camera": "C7",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning photorealistic CGI depicting a snowmobile on frozen lake parked in a garage, captured with soft bokeh background, rich color palette",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C6",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A wooden fishing boat emerging from a tunnel, rendered as risograph print style, intricate details",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A rickshaw in a market parked in a garage, rendered as risograph print style, dramatic chiaroscuro lighting, intricate details",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C8",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "dreamlike surreal scene of a covered bazaar illuminated by neon signs, aerial drone shot, atmospheric depth",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C4",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed logo concept design showing colonial mansion during golden hour, harsh directional light",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C8",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "gouache painting of a pine forest trail under stormy skies, serene mood",
+    "subject": "S5",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed vintage travel poster showing Victorian townhouse during golden hour, muted earth tones",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "classic VW van cruising along a coastal highway, photorealistic CGI style, vibrant saturated colors",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "double exposure effect of a lighthouse on a cliff with snow on rooftops, monochromatic scheme",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "volcanic landscape under a starry night, Bauhaus inspired design style, haunting atmosphere",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed CGI environment art showing neon-lit street market silhouetted against sunset, shot as top-down aerial perspective",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C4",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed distorted reality artwork showing opera house exterior in heavy rain, serene mood",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning generative art depicting a suspension bridge at night with city lights, dynamic energy",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning impressionist brushwork depicting a brutalist concrete tower freshly renovated, cool blue palette",
+    "subject": "S6",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed gouache painting showing Formula 1 race car in a snowy landscape, soft diffused light",
+    "subject": "S7",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed volumetric 3D rendering showing train station hall with bustling crowds, muted earth tones",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed procedural 3D generation showing desert dunes in autumn colors, shot as worm's eye view, rich color palette",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C5",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A subway station at dusk with warm window light, rendered as low-poly digital art, atmospheric depth",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A off-road jeep covered in dust, rendered as indie film frame, golden light",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "suspension bridge in heavy rain, bold lineart digital illustration style, monochromatic scheme",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed fragmented digital collage showing Formula 1 race car cruising along a coastal highway, atmospheric depth",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A zeppelin airship under streetlights at night, rendered as comic book style rendering, high contrast",
+    "subject": "S7",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A sailing yacht cruising along a coastal highway, rendered as 3D render in Blender, shot as macro close-up, monochromatic scheme",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C2",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "typographic poster art of a subway station silhouetted against sunset, warm amber tones",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A wildflower meadow in early morning mist, rendered as fragmented digital collage, captured with dramatic chiaroscuro lighting, serene mood",
+    "subject": "S5",
+    "style": "T7",
+    "camera": "C8",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning manga-inspired drawing depicting a Victorian townhouse at dusk with warm window light, cool blue palette",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "glitch art aesthetic of a misty valley with dappled sunlight, golden light",
+    "subject": "S5",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "mangrove swamp under moonlight, volumetric 3D rendering style, vibrant saturated colors",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "flat design illustration of a foggy coastline in dense fog, vibrant saturated colors",
+    "subject": "S5",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A Formula 1 race car cruising along a coastal highway, rendered as blockbuster VFX shot",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "geometric poster composition of a baroque palace facade during golden hour, shot as worm's eye view, cool blue palette",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C5",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed ink wash drawing showing off-road jeep crossing a bridge, rich color palette",
+    "subject": "S7",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "zeppelin airship at a pit stop, gouache painting style, bold composition",
+    "subject": "S7",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "deconstructed imagery of a dirt bike mid-jump idling at a traffic light, bold composition",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A modern skyscraper with vintage cars parked outside, rendered as cinema 4D render, dynamic energy",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning indie film frame depicting a jet fighter navigating rough seas",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A rooftop garden terrace during golden hour, rendered as retro anime aesthetic, bold composition",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "industrial warehouse from across a canal, infographic style illustration style, soft diffused light",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "widescreen cinematic composition of a wooden fishing boat under streetlights at night, captured with low-angle shot looking up, rich color palette",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C5",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning ink wash drawing depicting a wooden fishing boat speeding through rain, bold composition",
+    "subject": "S7",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "movie scene screenshot of a volcanic landscape during a wildfire glow, monochromatic scheme",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning photorealistic CGI depicting a tropical rainforest at blue hour, intricate details",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "cherry blossom park under a starry night, ink wash drawing style, rich color palette",
+    "subject": "S5",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "anamorphic lens flare of a horse-drawn carriage parked in a garage, captured with extreme close-up detail, cool blue palette",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C2",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "minimalist pavilion silhouetted against sunset, 70mm film quality style, extreme close-up detail, cool blue palette",
+    "subject": "S6",
+    "style": "T5",
+    "camera": "C2",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "ancient Roman ruins silhouetted against sunset, psychedelic art fusion style, high contrast",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "logo concept design of a zeppelin airship crossing a bridge, warm amber tones",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A baroque palace facade during blue hour, rendered as cinema 4D render, atmospheric depth",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "space shuttle navigating rough seas, realistic Blender render style, captured with macro lens shot, warm amber tones",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C2",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "minimalist poster design of a helicopter over cityscape navigating rough seas, cool blue palette",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "hot air balloon in a junkyard, pop art poster style, shot as extreme close-up detail, warm amber tones",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C2",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "narrow European alley reflected in a puddle, low-poly digital art style, golden light",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A rolling hills with a rainbow arching, rendered as cel-shaded digital art, haunting atmosphere",
+    "subject": "S5",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "waterfall cascade at golden hour, gouache painting style, atmospheric depth",
+    "subject": "S5",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "movie scene screenshot of a prairie landscape with dappled sunlight, cool blue palette",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "volumetric 3D rendering of a canoe on a still lake emerging from a tunnel, harsh directional light, intricate details",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C8",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "dreamlike surreal scene of a vintage Vespa scooter under streetlights at night, bold composition",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning 3D concept visualization depicting a Manhattan skyline in heavy rain, rim lighting with deep shadows, bold composition",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C8",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A karst mountains with a rainbow arching, rendered as volumetric 3D rendering, high contrast",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning movie scene screenshot depicting a submarine surfacing at a pit stop",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning physically based rendering depicting a rice terraces during a wildfire glow, serene mood",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed Swiss design style poster showing futuristic glass dome with vintage cars parked outside, intricate details",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "collage art style of a alpine meadow with dappled sunlight, harsh directional light",
+    "subject": "S5",
+    "style": "T7",
+    "camera": "C8",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A floating market at dusk with warm window light, rendered as physically based rendering, shallow depth of field with creamy bokeh, serene mood",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C6",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning risograph print style depicting a gothic cathedral with dramatic shadows, warm amber tones",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A wildflower meadow during a wildfire glow, rendered as gradient mesh vector art, dynamic energy",
+    "subject": "S5",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed flat design illustration showing canoe on a still lake speeding through rain, shot as worm's eye view, golden light",
+    "subject": "S7",
+    "style": "T3",
+    "camera": "C5",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A submarine surfacing in a snowy landscape, rendered as gouache painting, dynamic energy",
+    "subject": "S7",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed retro propaganda poster showing medieval castle illuminated by neon signs",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A autumn woodland after rainfall, rendered as editorial layout design, vibrant saturated colors",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Bauhaus inspired design of a ancient Roman ruins during blue hour, shot as fisheye distortion, muted earth tones",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C3",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "submarine surfacing abandoned in a field, synthwave digital illustration style, captured with rim lighting with deep shadows, haunting atmosphere",
+    "subject": "S7",
+    "style": "T3",
+    "camera": "C8",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A mangrove swamp in autumn colors, rendered as bold lineart digital illustration, soft diffused light",
+    "subject": "S5",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "indie film frame of a helicopter over cityscape crossing a bridge, fisheye distortion, golden light",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C3",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A horse-drawn carriage on a winding mountain road, rendered as experimental photo manipulation, shot as dreamy bokeh effect, haunting atmosphere",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C6",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "vintage travel poster of a vintage Vespa scooter with motion blur, captured with aerial drone shot, cool blue palette",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C4",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A classic VW van in a junkyard, rendered as cinema 4D render, bird's eye view, monochromatic scheme",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C4",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning 3D render in Blender depicting a river canyon during a thunderstorm, shot as macro close-up, vibrant saturated colors",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C2",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning cinema 4D render depicting a waterfall cascade under a starry night",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed volumetric 3D rendering showing redwood forest in autumn colors, intricate details",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "sailing yacht idling at a traffic light, cinematic film still style, haunting atmosphere",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning fresco style depicting a helicopter over cityscape crossing a bridge, captured with smooth long exposure, vibrant saturated colors",
+    "subject": "S7",
+    "style": "T2",
+    "camera": "C7",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning photorealistic CGI depicting a traditional Japanese temple reflected in a puddle, dynamic energy",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed cross-hatched ink drawing showing colonial mansion in morning fog, harsh directional light, intricate details",
+    "subject": "S6",
+    "style": "T2",
+    "camera": "C8",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "subway station under construction scaffolding, double exposure effect style, serene mood",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning stylized 3D artwork depicting a off-road jeep reflected in wet asphalt",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning typographic poster art depicting a jet fighter emerging from a tunnel, soft diffused light",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning Unreal Engine 5 screenshot depicting a Formula 1 race car navigating rough seas, monochromatic scheme",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A submarine surfacing reflected in wet asphalt, rendered as vector art, monochromatic scheme",
+    "subject": "S7",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "photorealistic CGI of a cargo ship abandoned in a field, monochromatic scheme",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning ink wash drawing depicting a moorland heath at sunset, soft diffused light",
+    "subject": "S5",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "opera house exterior illuminated by neon signs, synthwave digital illustration style, captured with shallow depth of field with creamy bokeh, haunting atmosphere",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C6",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning geometric poster composition depicting a Formula 1 race car cruising along a coastal highway, captured with fisheye distortion, monochromatic scheme",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C3",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "analog glitch texture of a narrow European alley at night with city lights, atmospheric depth",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A sailing yacht on a winding mountain road, rendered as oil painting, atmospheric depth",
+    "subject": "S7",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning geometric poster composition depicting a northern lights sky at golden hour, atmospheric depth",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "typographic poster art of a mosque with minarets under construction scaffolding, muted earth tones",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A suspension bridge under construction scaffolding, rendered as typographic poster art, intricate details",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "mangrove swamp during a wildfire glow, typographic poster art style, rich color palette",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning typographic poster art depicting a dense forest blanketed in fresh snow, shot as macro close-up, soft diffused light",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C2",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "geometric poster composition of a train station hall illuminated by neon signs, atmospheric depth",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "pine forest trail in winter frost, procedural 3D generation style, captured with silky long exposure water, monochromatic scheme",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C7",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning kaleidoscopic pattern overlay depicting a rooftop garden terrace during blue hour, soft diffused light",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "frozen tundra at golden hour, blockbuster VFX shot style",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "dirt bike mid-jump on display at a show, cinematic film still style, atmospheric depth",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "karst mountains at golden hour, pixel art style style, haunting atmosphere",
+    "subject": "S5",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning psychedelic art fusion depicting a narrow European alley seen through an archway, cool blue palette",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "deconstructed imagery of a rooftop garden terrace with snow on rooftops, macro close-up, dynamic energy",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C2",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed surrealist composition showing off-road jeep abandoned in a field, monochromatic scheme",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "prairie landscape in dense fog, geometric poster composition style, warm amber tones",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "savanna grassland in early morning mist, infographic style illustration style, shot as rim lighting with deep shadows, dynamic energy",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C8",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "ancient Roman ruins in morning fog, 3D render in Blender style, serene mood",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "infographic style illustration of a wildflower meadow at sunset, shot as wide-angle perspective, intricate details",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C3",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning geometric poster composition depicting a rickshaw in a market emerging from a tunnel, high contrast",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed analog glitch texture showing horse-drawn carriage emerging from a tunnel, shallow depth of field with creamy bokeh, high contrast",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C6",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed gradient mesh vector art showing Victorian townhouse with bustling crowds, dynamic energy",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning handheld camera realism depicting a sailing yacht on display at a show, bold composition",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning Technicolor film look depicting a prairie landscape under dramatic clouds, atmospheric depth",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "neo-noir cinematography of a Moroccan riad courtyard freshly renovated, intricate details",
+    "subject": "S6",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "glass atrium freshly renovated, Swiss design style poster style, dynamic energy",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A marshland wetlands at sunset, rendered as documentary-style photograph, captured with fisheye distortion, high contrast",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C3",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning screen-printed poster aesthetic depicting a suspension bridge under construction scaffolding, captured with bird's eye view, bold composition",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C4",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed photorealistic CGI showing adobe pueblo village with vintage cars parked outside, shot as fisheye distortion, intricate details",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C3",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning tempera painting depicting a rustic pickup truck crossing a bridge, dreamy bokeh effect, rich color palette",
+    "subject": "S7",
+    "style": "T2",
+    "camera": "C6",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning realistic Blender render depicting a minimalist pavilion in harsh midday sun, intricate details",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "collage art style of a vintage muscle car navigating rough seas, muted earth tones",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Technicolor film look of a karst mountains during a thunderstorm, high contrast",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "opera house exterior during blue hour, Unreal Engine 5 screenshot style, monochromatic scheme",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A rustic pickup truck flying through clouds, rendered as anamorphic lens flare, golden light",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed tempera painting showing cherry blossom park under stormy skies, vibrant saturated colors",
+    "subject": "S5",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A glass atrium in heavy rain, rendered as minimalist poster design, high contrast",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed analog glitch texture showing redwood forest during a wildfire glow, atmospheric depth",
+    "subject": "S5",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "lighthouse on a cliff in heavy rain, liminal space aesthetic style, dynamic energy",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "retro anime aesthetic of a snowmobile on frozen lake on a winding mountain road, high contrast",
+    "subject": "S7",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "digital painting with clean lines of a off-road jeep speeding through rain, serene mood",
+    "subject": "S7",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "typographic poster art of a frozen tundra under stormy skies, shot as rim lighting with deep shadows, bold composition",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C8",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A brutalist concrete tower during blue hour, rendered as film grain aesthetic, shallow depth of field with creamy bokeh, rich color palette",
+    "subject": "S6",
+    "style": "T5",
+    "camera": "C6",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "brutalist concrete tower with bustling crowds, deconstructed imagery style, golden light",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "acrylic on canvas of a floating market at dusk with warm window light, captured with smooth long exposure, bold composition",
+    "subject": "S6",
+    "style": "T2",
+    "camera": "C7",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed voxel art render showing pine forest trail at dawn, shot as aerial drone shot, soft diffused light",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C4",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "volumetric 3D rendering of a narrow European alley reflected in a puddle, cool blue palette",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "cross-hatched ink drawing of a misty valley under moonlight, intricate details",
+    "subject": "S5",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A snow-capped peaks with a rainbow arching, rendered as realistic Blender render",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning vintage travel poster depicting a tropical rainforest at blue hour, shot as ultra wide-angle view, bold composition",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C3",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed blockbuster VFX shot showing marshland wetlands in spring bloom, shot as shallow depth of field with creamy bokeh, soft diffused light",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C6",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed charcoal sketch showing bamboo grove under moonlight",
+    "subject": "S5",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "octane render of a mountain range in dense fog, monochromatic scheme",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A tram in a European city in a snowy landscape, rendered as typographic poster art, captured with dreamy bokeh effect, soft diffused light",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C6",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed indie film frame showing mosque with minarets in morning fog, bird's eye view, monochromatic scheme",
+    "subject": "S6",
+    "style": "T5",
+    "camera": "C4",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A frozen tundra in winter frost, rendered as ray-traced 3D scene, captured with smooth long exposure, warm amber tones",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C7",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A foggy coastline with dappled sunlight, rendered as pastel drawing, bold composition",
+    "subject": "S5",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed expressionist oil painting showing cargo ship emerging from a tunnel, dynamic energy",
+    "subject": "S7",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed data moshing visual showing minimalist pavilion with snow on rooftops, muted earth tones",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "liminal space aesthetic of a glacier lake during a thunderstorm",
+    "subject": "S5",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "acrylic on canvas of a rustic pickup truck on display at a show, serene mood",
+    "subject": "S7",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed blockbuster VFX shot showing gothic cathedral silhouetted against sunset, soft diffused light",
+    "subject": "S6",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed procedural 3D generation showing electric hypercar at a pit stop, bold composition",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Victorian townhouse framed by cherry blossoms, abstract mixed media style",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "electric hypercar speeding through rain, digital painting with clean lines style, shot as rim lighting with deep shadows, vibrant saturated colors",
+    "subject": "S7",
+    "style": "T3",
+    "camera": "C8",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "stylized 3D artwork of a industrial warehouse silhouetted against sunset, vibrant saturated colors",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning expressionist oil painting depicting a snowmobile on frozen lake racing at sunset, dramatic chiaroscuro lighting, monochromatic scheme",
+    "subject": "S7",
+    "style": "T2",
+    "camera": "C8",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "luxury sedan freshly polished, pop art poster style, cool blue palette",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning Swiss design style poster depicting a rickshaw in a market crossing a bridge, bold composition",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "savanna grassland in autumn colors, editorial layout design style, high contrast",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "psychedelic art fusion of a classic steam locomotive at a pit stop, intricate details",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "classic VW van with motion blur, octane render style, shot as dramatic chiaroscuro lighting, warm amber tones",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C8",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning cel-shaded digital art depicting a double-decker bus at a pit stop, vibrant saturated colors",
+    "subject": "S7",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "coastal cliffs under a starry night, infographic style illustration style, monochromatic scheme",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A mangrove swamp in summer heat haze, rendered as collage art style, captured with ultra wide-angle view, cool blue palette",
+    "subject": "S5",
+    "style": "T7",
+    "camera": "C3",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "coral reef shallows under moonlight, tempera painting style, muted earth tones",
+    "subject": "S5",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed anamorphic lens flare showing snowmobile on frozen lake racing at sunset, rim lighting with deep shadows, high contrast",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C8",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "baroque palace facade freshly renovated, neo-noir cinematography style, shot as bird's eye view, muted earth tones",
+    "subject": "S6",
+    "style": "T5",
+    "camera": "C4",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed indie film frame showing medieval castle framed by cherry blossoms, dynamic energy",
+    "subject": "S6",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed volumetric 3D rendering showing bamboo grove in early morning mist, captured with worm's eye view, dynamic energy",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C5",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed expressionist oil painting showing tugboat in a harbor parked in a garage, golden light",
+    "subject": "S7",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "generative art of a covered bazaar framed by cherry blossoms, captured with worm's eye view",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C5",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "vector art of a tram in a European city in a junkyard, high contrast",
+    "subject": "S7",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning procedural 3D generation depicting a vintage muscle car navigating rough seas, monochromatic scheme",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "double exposure effect of a rice terraces after rainfall, high contrast",
+    "subject": "S5",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning handheld camera realism depicting a glass atrium during golden hour, muted earth tones",
+    "subject": "S6",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A pagoda tower reflected in a puddle, rendered as handheld camera realism, wide-angle perspective, serene mood",
+    "subject": "S6",
+    "style": "T5",
+    "camera": "C3",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "rocky shoreline under stormy skies, anamorphic lens flare style, high contrast",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning distorted reality artwork depicting a rooftop garden terrace with snow on rooftops, high contrast",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed loose watercolor wash showing minimalist pavilion under construction scaffolding, atmospheric depth",
+    "subject": "S6",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "volcanic hot springs at blue hour, charcoal sketch style, captured with low-angle shot looking up, monochromatic scheme",
+    "subject": "S5",
+    "style": "T2",
+    "camera": "C5",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning double exposure effect depicting a autumn woodland in early morning mist, soft diffused light",
+    "subject": "S5",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "submarine surfacing under streetlights at night, handheld camera realism style, dynamic energy",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A classic steam locomotive abandoned in a field, rendered as anamorphic lens flare, dynamic energy",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed sumi-e ink painting showing off-road jeep on a winding mountain road, golden light",
+    "subject": "S7",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "cross-hatched ink drawing of a foggy coastline blanketed in fresh snow, atmospheric depth",
+    "subject": "S5",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed stylized 3D artwork showing pine forest trail at blue hour, captured with long exposure light trails, warm amber tones",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C7",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed realistic Blender render showing autumn woodland in spring bloom, intricate details",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed cross-hatched ink drawing showing train station hall illuminated by neon signs, dynamic energy",
+    "subject": "S6",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A pine forest trail in early morning mist, rendered as infographic style illustration, rich color palette",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "rocky shoreline in early morning mist, blockbuster VFX shot style, shot as extreme close-up detail, golden light",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C2",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "train station hall with vintage cars parked outside, chibi style artwork style, high contrast",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning voxel art render depicting a mountain range at sunset, monochromatic scheme",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A karst mountains with a rainbow arching, rendered as vintage travel poster, serene mood",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning 3D render in Blender depicting a foggy coastline after rainfall",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "double-decker bus flying through clouds, photorealistic CGI style, cool blue palette",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning procedural 3D generation depicting a wooden fishing boat freshly polished, atmospheric depth",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed blockbuster VFX shot showing ancient Roman ruins in morning fog, monochromatic scheme",
+    "subject": "S6",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning typographic poster art depicting a classic steam locomotive under streetlights at night, high contrast",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning deconstructed imagery depicting a Manhattan skyline illuminated by neon signs, bold composition",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A lighthouse on a cliff illuminated by neon signs, rendered as data moshing visual, dynamic energy",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed blockbuster VFX shot showing submarine surfacing cruising along a coastal highway, bold composition",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning cinematic film still depicting a coastal cliffs blanketed in fresh snow, haunting atmosphere",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed indie film frame showing futuristic glass dome reflected in a puddle, monochromatic scheme",
+    "subject": "S6",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "flat design illustration of a adobe pueblo village from across a canal, bold composition",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A modern skyscraper at night with city lights, rendered as brand identity concept, vibrant saturated colors",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed stylized 3D artwork showing tugboat in a harbor on display at a show",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed analog glitch texture showing glacier lake with dappled sunlight, high contrast",
+    "subject": "S5",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A floating market in morning fog, rendered as realistic Blender render, wide-angle perspective, intricate details",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C3",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "fresco style of a mangrove swamp in summer heat haze, haunting atmosphere",
+    "subject": "S5",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning typographic poster art depicting a glacier lake under stormy skies, bird's eye view, monochromatic scheme",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C4",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed screen-printed poster aesthetic showing gothic cathedral at night with city lights, dynamic energy",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A classic steam locomotive flying through clouds, rendered as vintage film photograph, soft diffused light",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed indie film frame showing glass atrium during golden hour, monochromatic scheme",
+    "subject": "S6",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed Technicolor film look showing tropical rainforest during a thunderstorm, shot as smooth long exposure, golden light",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C7",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed gradient mesh vector art showing mosque with minarets during golden hour, atmospheric depth",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed stylized 3D artwork showing Victorian townhouse abandoned and overgrown, haunting atmosphere",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning movie scene screenshot depicting a sleek sports car in a junkyard, high contrast",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed vaporwave aesthetic showing adobe pueblo village in morning fog, bird's eye view, atmospheric depth",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C4",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed glitch art aesthetic showing vintage muscle car in a snowy landscape, dynamic energy",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning cinema 4D render depicting a sleek sports car on a winding mountain road, low-angle shot looking up, monochromatic scheme",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C5",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "pixel art style of a mangrove swamp after rainfall, captured with dreamy bokeh effect, cool blue palette",
+    "subject": "S5",
+    "style": "T3",
+    "camera": "C6",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning gradient mesh vector art depicting a Manhattan skyline silhouetted against sunset",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "physically based rendering of a mangrove swamp under a starry night, muted earth tones",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed data moshing visual showing dense forest after rainfall, haunting atmosphere",
+    "subject": "S5",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "blockbuster VFX shot of a waterfall cascade in early morning mist, high contrast",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning IMAX quality shot depicting a medieval castle during golden hour, golden light",
+    "subject": "S6",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed double exposure effect showing snowmobile on frozen lake in a junkyard, ultra wide-angle view, serene mood",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C3",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A cargo ship in a junkyard, rendered as editorial layout design",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A desert dunes after rainfall, rendered as logo concept design, fisheye distortion, cool blue palette",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C3",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "pine forest trail after rainfall, ray-traced 3D scene style, captured with rim lighting with deep shadows, golden light",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C8",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "dreamlike surreal scene of a moorland heath in early morning mist, serene mood",
+    "subject": "S5",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning digital painting with clean lines depicting a coastal cliffs at dawn, shot as silky long exposure water, intricate details",
+    "subject": "S5",
+    "style": "T3",
+    "camera": "C7",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning chibi style artwork depicting a lighthouse on a cliff during golden hour, vibrant saturated colors",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "zeppelin airship at a pit stop, geometric poster composition style, monochromatic scheme",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "dirt bike mid-jump idling at a traffic light, voxel art render style, ultra wide-angle view, muted earth tones",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C3",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning experimental photo manipulation depicting a suspension bridge in heavy rain, monochromatic scheme",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A biplane parked in a garage, rendered as isometric digital illustration, bird's eye view, muted earth tones",
+    "subject": "S7",
+    "style": "T3",
+    "camera": "C4",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A electric hypercar in a snowy landscape, rendered as handheld camera realism, shallow depth of field with creamy bokeh, cool blue palette",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C6",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A Formula 1 race car on display at a show, rendered as voxel art render, haunting atmosphere",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "lavender fields in early morning mist, geometric poster composition style, intricate details",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "vintage muscle car crossing a bridge, data moshing visual style, bold composition",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning brand identity concept depicting a coral reef shallows under stormy skies, captured with aerial drone shot, monochromatic scheme",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C4",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning experimental photo manipulation depicting a volcanic landscape in summer heat haze, silky long exposure water, vibrant saturated colors",
+    "subject": "S5",
+    "style": "T7",
+    "camera": "C7",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning distorted reality artwork depicting a vintage Vespa scooter covered in dust, monochromatic scheme",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "cargo ship idling at a traffic light, generative art style, soft diffused light",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning 70mm film quality depicting a rolling hills after rainfall, serene mood",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed Technicolor film look showing rolling hills blanketed in fresh snow, haunting atmosphere",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "watercolor painting of a tugboat in a harbor abandoned in a field, soft diffused light",
+    "subject": "S7",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A Victorian townhouse in heavy rain, rendered as typographic poster art, shot as macro close-up, soft diffused light",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C2",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning collage art style depicting a northern lights sky in summer heat haze, vibrant saturated colors",
+    "subject": "S5",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "mosque with minarets with vintage cars parked outside, cinema 4D render style, captured with low-angle shot looking up, soft diffused light",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C5",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning typographic poster art depicting a off-road jeep cruising along a coastal highway, captured with bird's eye view, muted earth tones",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C4",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "brutalist concrete tower framed by cherry blossoms, vector art style, shot as harsh directional light, bold composition",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C8",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning 3D concept visualization depicting a rocky shoreline blanketed in fresh snow, haunting atmosphere",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed manga-inspired drawing showing space shuttle in a junkyard, shot as dramatic chiaroscuro lighting, soft diffused light",
+    "subject": "S7",
+    "style": "T3",
+    "camera": "C8",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "vintage muscle car in a snowy landscape, infographic style illustration style, atmospheric depth",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning Technicolor film look depicting a narrow European alley illuminated by neon signs, serene mood",
+    "subject": "S6",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "rickshaw in a market with motion blur, kaleidoscopic pattern overlay style, intricate details",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A sleek sports car flying through clouds, rendered as deconstructed imagery, soft bokeh background, golden light",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C6",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed anime style illustration showing glacier lake under stormy skies",
+    "subject": "S5",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "mountain range under moonlight, vintage film photograph style, muted earth tones",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed anamorphic lens flare showing dense forest in early morning mist, silky long exposure water, golden light",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C7",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "cargo ship reflected in wet asphalt, retro anime aesthetic style, monochromatic scheme",
+    "subject": "S7",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning synthwave digital illustration depicting a double-decker bus on a winding mountain road, atmospheric depth",
+    "subject": "S7",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning impressionist brushwork depicting a savanna grassland under stormy skies, golden light",
+    "subject": "S5",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning widescreen cinematic composition depicting a brutalist concrete tower at dusk with warm window light, shot as smooth long exposure, intricate details",
+    "subject": "S6",
+    "style": "T5",
+    "camera": "C7",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning retro anime aesthetic depicting a adobe pueblo village reflected in a puddle, captured with fisheye distortion, bold composition",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C3",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "mangrove swamp in winter frost, IMAX quality shot style, soft diffused light",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning vector art depicting a baroque palace facade reflected in a puddle, bold composition",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning bold lineart digital illustration depicting a jet fighter emerging from a tunnel, shot as extreme close-up detail, bold composition",
+    "subject": "S7",
+    "style": "T3",
+    "camera": "C2",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "cinematic film still of a adobe pueblo village during golden hour, shot as worm's eye view, muted earth tones",
+    "subject": "S6",
+    "style": "T5",
+    "camera": "C5",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "redwood forest at blue hour, noir film scene style, shot as long exposure light trails, cool blue palette",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C7",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed glitch art aesthetic showing electric hypercar flying through clouds, soft diffused light",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "horse-drawn carriage under streetlights at night, retro propaganda poster style, soft diffused light",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning blockbuster VFX shot depicting a rice terraces during a wildfire glow, high contrast",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A subway station during golden hour, rendered as abstract mixed media, captured with harsh directional light, atmospheric depth",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C8",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "coastal cliffs in dense fog, tempera painting style",
+    "subject": "S5",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "traditional Japanese temple during blue hour, vintage film photograph style, soft diffused light",
+    "subject": "S6",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "infographic style illustration of a luxury sedan parked in a garage, rich color palette",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "geometric poster composition of a spiral staircase interior with dramatic shadows, monochromatic scheme",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "modern skyscraper with snow on rooftops, gradient mesh vector art style, warm amber tones",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "northern lights sky under a starry night, procedural 3D generation style",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "stylized 3D artwork of a horse-drawn carriage abandoned in a field, golden light",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A luxury sedan reflected in wet asphalt, rendered as vaporwave aesthetic, warm amber tones",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed digital painting with clean lines showing mosque with minarets in harsh midday sun, golden light",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A river canyon in early morning mist, rendered as CGI environment art, soft diffused light",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "luxury sedan under streetlights at night, acrylic on canvas style, captured with top-down aerial perspective, golden light",
+    "subject": "S7",
+    "style": "T2",
+    "camera": "C4",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "rickshaw in a market with motion blur, psychedelic art fusion style, serene mood",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed dreamlike surreal scene showing classic steam locomotive navigating rough seas, serene mood",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "northern lights sky in autumn colors, bold lineart digital illustration style, monochromatic scheme",
+    "subject": "S5",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "sleek sports car cruising along a coastal highway, realistic Blender render style, monochromatic scheme",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "flat design illustration of a cherry blossom park at dawn, serene mood",
+    "subject": "S5",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed distorted reality artwork showing sailing yacht with motion blur, rim lighting with deep shadows, high contrast",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C8",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "river canyon in early morning mist, watercolor painting style, long exposure light trails, monochromatic scheme",
+    "subject": "S5",
+    "style": "T2",
+    "camera": "C7",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed bold lineart digital illustration showing vintage Vespa scooter reflected in wet asphalt, dynamic energy",
+    "subject": "S7",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "pine forest trail at dawn, movie scene screenshot style, monochromatic scheme",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed cinematic film still showing rooftop garden terrace with vintage cars parked outside, haunting atmosphere",
+    "subject": "S6",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "oil painting of a prairie landscape at dawn, shot as silky long exposure water, golden light",
+    "subject": "S5",
+    "style": "T2",
+    "camera": "C7",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed Unreal Engine 5 screenshot showing neon-lit street market during blue hour, warm amber tones",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed Bauhaus inspired design showing narrow European alley illuminated by neon signs, monochromatic scheme",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning pop art poster depicting a narrow European alley illuminated by neon signs, captured with soft bokeh background, high contrast",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C6",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A classic steam locomotive idling at a traffic light, rendered as vintage film photograph, cool blue palette",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed vaporwave aesthetic showing gothic cathedral during golden hour, shot as shallow depth of field with creamy bokeh, intricate details",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C6",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A lighthouse on a cliff reflected in a puddle, rendered as Technicolor film look, dynamic energy",
+    "subject": "S6",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed art nouveau poster showing pagoda tower from across a canal, high contrast",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A spiral staircase interior at dusk with warm window light, rendered as charcoal sketch, soft bokeh background, warm amber tones",
+    "subject": "S6",
+    "style": "T2",
+    "camera": "C6",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed distorted reality artwork showing rolling hills under a starry night, muted earth tones",
+    "subject": "S5",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "cinema 4D render of a wooden fishing boat emerging from a tunnel, dramatic chiaroscuro lighting, cool blue palette",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C8",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed chibi style artwork showing northern lights sky under stormy skies, shot as low-angle shot looking up, cool blue palette",
+    "subject": "S5",
+    "style": "T3",
+    "camera": "C5",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A vintage muscle car flying through clouds, rendered as anime style illustration, bold composition",
+    "subject": "S7",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "redwood forest at dawn, collage art style style, vibrant saturated colors",
+    "subject": "S5",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A waterfall cascade in spring bloom, rendered as pop art poster, bold composition",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "coral reef shallows under stormy skies, anime style illustration style, high contrast",
+    "subject": "S5",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "procedural 3D generation of a sand dunes at twilight under moonlight, atmospheric depth",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "stylized 3D artwork of a cherry blossom park at dawn, atmospheric depth",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "gouache painting of a coastal cliffs at blue hour, rich color palette",
+    "subject": "S5",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "rickshaw in a market covered in dust, analog glitch texture style, serene mood",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "floating market at dusk with warm window light, collage art style style, intricate details",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed ink wash drawing showing autumn woodland with a rainbow arching, high contrast",
+    "subject": "S5",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed psychedelic art fusion showing classic steam locomotive with motion blur, serene mood",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A redwood forest under moonlight, rendered as photorealistic CGI, dynamic energy",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning handheld camera realism depicting a snowmobile on frozen lake freshly polished",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning art nouveau poster depicting a traditional Japanese temple illuminated by neon signs",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "helicopter over cityscape crossing a bridge, brand identity concept style, warm amber tones",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning Bauhaus inspired design depicting a dense forest under stormy skies, dynamic energy",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed Unreal Engine 5 screenshot showing misty valley in spring bloom, rich color palette",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "risograph print style of a floating market during golden hour, rich color palette",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "hot air balloon covered in dust, dreamlike surreal scene style, muted earth tones",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "film grain aesthetic of a motorcycle on a highway on a winding mountain road, high contrast",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed risograph print style showing frozen tundra at sunset, shot as silky long exposure water, cool blue palette",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C7",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "dense forest in autumn colors, pixel art style style, golden light",
+    "subject": "S5",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed anamorphic lens flare showing electric hypercar emerging from a tunnel, muted earth tones",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "frozen tundra under dramatic clouds, fresco style style, dramatic low perspective, bold composition",
+    "subject": "S5",
+    "style": "T2",
+    "camera": "C5",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "anime style illustration of a jet fighter freshly polished, serene mood",
+    "subject": "S7",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "tugboat in a harbor crossing a bridge, gradient mesh vector art style, serene mood",
+    "subject": "S7",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "geometric poster composition of a misty valley in spring bloom, muted earth tones",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "CGI environment art of a sand dunes at twilight during a wildfire glow, shot as long exposure light trails, dynamic energy",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C7",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "stylized 3D artwork of a alpine meadow in dense fog, monochromatic scheme",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A zeppelin airship on display at a show, rendered as minimalist poster design, top-down aerial perspective, rich color palette",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C4",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning art nouveau poster depicting a sleek sports car at a pit stop, serene mood",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning risograph print style depicting a snow-capped peaks at sunset, dynamic energy",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning widescreen cinematic composition depicting a jet fighter on display at a show, shot as dramatic low perspective, soft diffused light",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C5",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A opera house exterior abandoned and overgrown, rendered as anime style illustration, haunting atmosphere",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A alpine meadow in early morning mist, rendered as retro anime aesthetic, captured with macro lens shot, soft diffused light",
+    "subject": "S5",
+    "style": "T3",
+    "camera": "C2",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A glass atrium at dusk with warm window light, rendered as double exposure effect, intricate details",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "infographic style illustration of a vintage muscle car speeding through rain, soft diffused light",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning loose watercolor wash depicting a canoe on a still lake on display at a show, intricate details",
+    "subject": "S7",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "rickshaw in a market freshly polished, charcoal sketch style, warm amber tones",
+    "subject": "S7",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A traditional Japanese temple illuminated by neon signs, rendered as indie film frame, captured with macro close-up, intricate details",
+    "subject": "S6",
+    "style": "T5",
+    "camera": "C2",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning tempera painting depicting a off-road jeep reflected in wet asphalt, vibrant saturated colors",
+    "subject": "S7",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "lavender fields with a rainbow arching, acrylic on canvas style, dynamic energy",
+    "subject": "S5",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A floating market framed by cherry blossoms, rendered as chibi style artwork, dramatic low perspective, vibrant saturated colors",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C5",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "retro anime aesthetic of a snowmobile on frozen lake with motion blur, atmospheric depth",
+    "subject": "S7",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "charcoal sketch of a futuristic glass dome with bustling crowds, atmospheric depth",
+    "subject": "S6",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed vintage film photograph showing adobe pueblo village during blue hour, captured with wide-angle perspective, soft diffused light",
+    "subject": "S6",
+    "style": "T5",
+    "camera": "C3",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "moorland heath at golden hour, stylized 3D artwork style, warm amber tones",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed vintage film photograph showing ancient Roman ruins in harsh midday sun, captured with dramatic low perspective, dynamic energy",
+    "subject": "S6",
+    "style": "T5",
+    "camera": "C5",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning stylized 3D artwork depicting a baroque palace facade silhouetted against sunset, captured with fisheye distortion, haunting atmosphere",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C3",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning retro propaganda poster depicting a tugboat in a harbor on a winding mountain road, captured with soft bokeh background, dynamic energy",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C6",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "experimental photo manipulation of a biplane in a snowy landscape, captured with silky long exposure water, serene mood",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C7",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning double exposure effect depicting a mangrove swamp in dense fog, bird's eye view, muted earth tones",
+    "subject": "S5",
+    "style": "T7",
+    "camera": "C4",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed noir film scene showing helicopter over cityscape racing at sunset, serene mood",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning subsurface scattering render depicting a hot air balloon in a junkyard, warm amber tones",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning cinematic film still depicting a canoe on a still lake covered in dust, golden light",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed liminal space aesthetic showing pine forest trail during a wildfire glow, intricate details",
+    "subject": "S5",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "subway station abandoned and overgrown, distorted reality artwork style, macro lens shot, vibrant saturated colors",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C2",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A Moroccan riad courtyard with vintage cars parked outside, rendered as CGI environment art, muted earth tones",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed infographic style illustration showing zeppelin airship covered in dust",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "waterfall cascade in autumn colors, ray-traced 3D scene style, captured with rim lighting with deep shadows, golden light",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C8",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning acrylic on canvas depicting a volcanic hot springs under a starry night, serene mood",
+    "subject": "S5",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed noir film scene showing vintage Vespa scooter in a junkyard, captured with top-down aerial perspective, high contrast",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C4",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A rickshaw in a market cruising along a coastal highway, rendered as anime style illustration, golden light",
+    "subject": "S7",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed generative art showing Manhattan skyline framed by cherry blossoms",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "vintage Vespa scooter speeding through rain, digital painting with clean lines style, high contrast",
+    "subject": "S7",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed movie scene screenshot showing rickshaw in a market on a winding mountain road, captured with harsh directional light, cool blue palette",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C8",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "deconstructed imagery of a dense forest with dappled sunlight, warm amber tones",
+    "subject": "S5",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "neon-lit street market from across a canal, flat design illustration style, captured with smooth long exposure, muted earth tones",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C7",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "cinematic film still of a baroque palace facade under construction scaffolding, dynamic energy",
+    "subject": "S6",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A modern bullet train under streetlights at night, rendered as glitch art aesthetic, shot as macro lens shot",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C2",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning 3D render in Blender depicting a adobe pueblo village with snow on rooftops, shot as extreme close-up detail",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C2",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A off-road jeep reflected in wet asphalt, rendered as logo concept design, monochromatic scheme",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed glitch art aesthetic showing wildflower meadow during a thunderstorm, intricate details",
+    "subject": "S5",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A dense forest in early morning mist, rendered as kaleidoscopic pattern overlay, serene mood",
+    "subject": "S5",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Victorian townhouse at night with city lights, stylized 3D artwork style, dynamic energy",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning 3D render in Blender depicting a karst mountains with a rainbow arching, captured with bird's eye view, monochromatic scheme",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C4",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning screen-printed poster aesthetic depicting a baroque palace facade from across a canal, muted earth tones",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "manga-inspired drawing of a jet fighter on a winding mountain road, cool blue palette",
+    "subject": "S7",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "sailing yacht on display at a show, flat design illustration style, soft diffused light",
+    "subject": "S7",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed Swiss design style poster showing medieval castle seen through an archway",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A cherry blossom park during a wildfire glow, rendered as film grain aesthetic, dynamic energy",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A biplane crossing a bridge, rendered as impressionist brushwork, serene mood",
+    "subject": "S7",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "dense forest at sunset, synthwave digital illustration style, warm amber tones",
+    "subject": "S5",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning tempera painting depicting a helicopter over cityscape on a winding mountain road, vibrant saturated colors",
+    "subject": "S7",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "northern lights sky with a rainbow arching, pop art poster style, intricate details",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "distorted reality artwork of a alpine meadow during a thunderstorm, high contrast",
+    "subject": "S5",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A classic VW van flying through clouds, rendered as loose watercolor wash, vibrant saturated colors",
+    "subject": "S7",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "3D render in Blender of a floating market with vintage cars parked outside, vibrant saturated colors",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A horse-drawn carriage navigating rough seas, rendered as analog glitch texture, rim lighting with deep shadows, high contrast",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C8",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed CGI environment art showing karst mountains blanketed in fresh snow, atmospheric depth",
+    "subject": "S5",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "covered bazaar in harsh midday sun, anamorphic lens flare style, shot as fisheye distortion, golden light",
+    "subject": "S6",
+    "style": "T5",
+    "camera": "C3",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Formula 1 race car flying through clouds, cel-shaded digital art style, monochromatic scheme",
+    "subject": "S7",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Unreal Engine 5 screenshot of a classic steam locomotive idling at a traffic light, dramatic chiaroscuro lighting, muted earth tones",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C8",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "horse-drawn carriage idling at a traffic light, watercolor painting style, rich color palette",
+    "subject": "S7",
+    "style": "T2",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A art deco building at night with city lights, rendered as chibi style artwork",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Bauhaus inspired design of a motorcycle on a highway at a pit stop, intricate details",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "canoe on a still lake under streetlights at night, 70mm film quality style, shot as silky long exposure water, atmospheric depth",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C7",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "electric hypercar at a pit stop, noir film scene style, dynamic energy",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed manga-inspired drawing showing frozen tundra during a thunderstorm, macro close-up, golden light",
+    "subject": "S5",
+    "style": "T3",
+    "camera": "C2",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning 3D concept visualization depicting a rustic pickup truck on display at a show, soft diffused light",
+    "subject": "S7",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "industrial warehouse framed by cherry blossoms, octane render style, high contrast",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed Technicolor film look showing snow-capped peaks with a rainbow arching, wide-angle perspective, serene mood",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C3",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "Stunning chibi style artwork depicting a redwood forest in winter frost, silky long exposure water, cool blue palette",
+    "subject": "S5",
+    "style": "T3",
+    "camera": "C7",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "documentary-style photograph of a river canyon with dappled sunlight, captured with long exposure light trails, dynamic energy",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C7",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed analog glitch texture showing classic VW van emerging from a tunnel, haunting atmosphere",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A detailed distorted reality artwork showing mosque with minarets from across a canal, captured with extreme close-up detail, serene mood",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C2",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "A suspension bridge with dramatic shadows, rendered as stylized 3D artwork, cool blue palette",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C1",
+    "source": "generated",
+    "language": "en"
+  },
+  {
+    "text": "volcanic hot springs at sunset, sumi-e ink painting style, shot as macro lens shot, bold composition",
+    "subject": "S5",
+    "style": "T2",
+    "camera": "C2",
+    "source": "generated",
+    "language": "en"
+  }
+]

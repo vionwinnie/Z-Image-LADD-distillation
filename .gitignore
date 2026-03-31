@@ -215,4 +215,4 @@ models/
 *.DS_Store
 
 # Ignore generated images
-/*.png
+/*.pngwandb/
