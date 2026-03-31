@@ -489,7 +489,7 @@ def main():
     # -----------------------------------------------------------------------
     print_header("Step 8: Checkpoint save/load round-trip")
 
-    tmpdir = tempfile.mkdtemp(prefix="ladd_smoke_")
+    tmpdir = tempfile.mkdtemp(prefix="ladd_smoke_", dir=_project_root)
     try:
         # Save discriminator
         disc_save_path = os.path.join(tmpdir, "discriminator.pt")
