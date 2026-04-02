@@ -332,16 +332,157 @@ The cosine similarity threshold controls the dedup aggressiveness:
 1M diverse, quality-filtered, category-balanced prompts
 ```
 
-## 11. Lessons Learned
+## 11. Scaling Execution (April 2026)
+
+Executed the scaling plan from PLAN.md on a 503GB RAM / 16-core CPU instance (no GPU). AnyText-3M was unavailable (removed from HuggingFace). Several dataset IDs in the plan were wrong or had moved.
+
+### Phase 1: Harvest — 970K raw prompts from 9 sources
+
+| Source | HF ID Used | Prompts | Notes |
+|--------|-----------|---------|-------|
+| DiffusionDB | `poloclub/diffusiondb` (metadata-large.parquet) | 300,000 | Dataset script no longer supported; loaded parquet directly. NSFW filtered. |
+| Recap-DataComp-1B | `UCSC-VLAA/Recap-DataComp-1B` | 250,000 | Schema mismatch across parquet shards; loaded shards individually to bypass CastError. |
+| DenseFusion-1M | **`BAAI/DenseFusion-1M`** (not `DenseFusion/DenseFusion-1M`) | 200,000 | Plan had wrong org. Required config name `"DenseFusion-1M"`. Streamed. |
+| ShareGPT4V-PT | `Lin-Chen/ShareGPT4V` | 100,000 | Config `"ShareGPT4V-PT"` didn't exist; default loaded the 1.2M PT set. Extracted assistant's first reply from conversations. |
+| JourneyDB | `JourneyDB/JourneyDB` | 50,000 | Gated, required HF token + terms acceptance. Tar archives can't stream — downloaded `train_anno.jsonl.tgz` directly via `hf_hub_download` and extracted. Stripped MJ params (`--ar`, `--v`, etc). NC license flagged. |
+| SAM-LLaVA-10M | `PixArt-alpha/SAM-LLaVA-Captions10M` | 30,000 | Streamed. Field is `txt`, not `caption`. |
+| Wukong | **`wanng/wukong100m`** (not `noah-wukong/wukong`) | 15,000 | Plan had wrong org (404). `jaxmetaverse/wukong` had images only, no captions. `wanng/wukong100m` has `url` + `caption` fields. Relaxed alpha-ratio filter for Chinese text. |
+| DOCCI | `google/docci` | 13,936 | Dataset script no longer supported by modern `datasets` lib; `trust_remote_code` also rejected. Downloaded JSONL directly from `https://storage.googleapis.com/docci/data/docci_descriptions.jsonlines`. |
+| Existing pool | `data/train/metadata.json` | 11,158 | Already classified from prior pipeline. |
+| ~~AnyText-3M~~ | `modelscope/AnyText-3M` | **0** | **404 on HuggingFace.** Dataset removed or made private. No mirror found. |
+
+**Quality filters applied per-prompt:** min 8 EN words / 15 ZH chars, max 200 words, <2 URLs, no boilerplate strings ("stock photo", "getty images"), ≥70% alpha characters.
+
+Cross-source exact dedup removed only 64 prompts — almost no verbatim overlap between sources.
+
+### Phase 2: Deduplication — 970K → 630K (35% removed)
+
+| Stage | Method | Input | Output | Removed | Time |
+|-------|--------|-------|--------|---------|------|
+| 2.1 Surface-level | MinHash LSH (Jaccard≥0.7, 128 perms) | 970,030 | 767,995 | 202,035 (20.8%) | ~37 min |
+| 2.2 Embedding | `all-MiniLM-L6-v2` via PyTorch CPU | 767,995 | — | — | ~2.8 hours |
+| 2.3 Semantic | FAISS k-means (876 clusters) + pairwise cosine>0.90 | 767,995 | 630,099 | 137,896 (18.0%) | ~3 min |
+| **Total** | | **970,030** | **630,099** | **339,931 (35.0%)** | ~3.5 hours |
+
+**Key observations:**
+- **DiffusionDB had massive internal duplication** — MinHash took it from 300K→151K (50% removed). Expected per plan.
+- **Semantic dedup caught paraphrases MinHash missed** — different wording, same scene. 18% removal at cosine 0.90 threshold.
+- **ONNX Runtime was not viable** — `optimum[onnxruntime]` pulls 400MB+ CUDA libs that didn't fit the 5GB root filesystem. PyTorch CPU-only (`torch==2.11.0+cpu`, 190MB) worked fine at ~73 prompts/sec with batch size 512.
+- **`sentence-transformers` was 5× slower than raw PyTorch** for the same model (~12/sec vs ~73/sec). The overhead comes from its internal preprocessing and multi-GPU detection code. Direct `AutoModel` + manual mean-pooling was the fix.
+- **Plan estimated 33 min for embedding; actual was ~2.8 hours.** Plan assumed ONNX at 500/sec; actual PyTorch CPU was ~73/sec. Still feasible on the 32GB budget.
+- `multilingual-e5-small` was replaced by `all-MiniLM-L6-v2` for speed. 98% of prompts are English so multilingual support was unnecessary.
+- Quality scoring when choosing between duplicates used the plan's formula: word count sweet spot (15-60), source quality prior, visual keyword count, and specificity (capitalized words + numbers).
+
+### Phase 3: Classification & Sampling
+
+All 630K prompts classified into the (S1-S14, T1-T7, C1-C8) taxonomy using the existing keyword classifier from `prepare_prompts.py`. All **98 Subject×Style cells populated**.
+
+Since 630K < 1M target, all prompts were kept (no MMR downsampling needed). MMR was tested but killed — O(n×k) on cells with 300K+ candidates was going to take hours. The fix was short-circuiting: if pool ≤ target, take everything.
+
+### Phase 4: Final Assembly
+
+```
+data/train/metadata.json  — 629,443 prompts (399 MB)
+data/debug/metadata.json  — 98 prompts (1 per Subject×Style cell)
+```
+
+**Validation results:**
+- Total: 629,443 (63% of 1M target)
+- All 98 cells populated, min cell size: 23
+- Language: EN 97.7%, ZH 2.3%
+- Mean EN word count: 93.0 (higher than 30-45 target — many verbose captions from DenseFusion/ShareGPT4V)
+- Zero exact duplicates
+- No single source > 35% (max: DenseFusion at 31.4%)
+
+### Gap to 1M
+
+~370K prompts short. Options to close the gap:
+1. **LLM generation** via `data/generate_prompts.py` — fill sparse cells first, then bulk generate
+2. **Additional datasets** — COYO-700M, CC3M/CC12M, Gustavosta SD Prompts, TextCaps
+3. **Accept 630K** — at batch size 256 and 10K iterations, each prompt seen ~4× on average (vs ~2.5× at 1M). Still viable for training.
+
+### Pipeline Scripts Created
+
+| Script | Purpose |
+|--------|---------|
+| `data/harvest.py` | Phase 1: Download, filter, normalize all 10 sources to `data/raw/*.jsonl` |
+| `data/dedup_minhash.py` | Phase 2.1: MinHash LSH surface dedup |
+| `data/dedup_semantic.py` | Phase 2.2-2.3: Embedding + FAISS clustering + pairwise semantic dedup |
+| `data/classify_and_sample.py` | Phase 3: Classify into taxonomy + MMR diversity sampling |
+| `data/build_dataset.py` | Phase 4: Length filter, validation checks, debug split |
+
+All scripts are idempotent (skip sources that already have output files) and can be re-run independently.
+
+### Phase 3 Revisited: Hybrid Zero-Shot Classification
+
+The initial classification used pure keyword matching from `prepare_prompts.py`. This produced a heavily skewed distribution because unmatched prompts fall to defaults:
+
+| Axis | Default | Keyword-only share |
+|------|---------|-------------------|
+| Subject | S10 (Objects/Artifacts) | 10.1% |
+| Style | T1 (Photorealistic) | 67.2% |
+| Camera | C1 (Standard/Eye-level) | ~80% |
+
+Most of these defaults were wrong — prompts about Chinese culture, fantasy scenes, or digital illustrations all landed in S10/T1 because no keyword matched.
+
+**Solution: Hybrid keyword + zero-shot embedding classifier** (`zeroshot_classify.py`)
+
+The approach:
+1. Run keyword classifier first
+2. If keyword returns a **non-default** label → trust it (keywords are high-precision when they match)
+3. If keyword returns the **default** → use zero-shot embedding similarity with `all-MiniLM-L6-v2` to reclassify
+
+Each category axis has 3-6 natural language descriptions per label (e.g. S2/Animals: "an animal, dog, cat, bird, wildlife, pet"). These are embedded and averaged into label centroids. Prompts are assigned to the nearest centroid by cosine similarity.
+
+**Three problems emerged during validation on 500-sample subsets:**
+
+**Problem 1: Zero-shot too aggressive on close calls.** Prompts with similar scores across categories got reclassified when the zero-shot was barely confident. Fix: **margin threshold of 0.05** — zero-shot must beat the default by 0.05 cosine similarity to override.
+
+**Problem 2: T6 (GraphicDesign) over-triggered.** Descriptive captions from DenseFusion/ShareGPT4V ("The image displays a...") have a formal register that MiniLM associates with design content. A photo of palm fruits described formally gets pulled toward T6. Two fixes:
+- **Weak keyword demotion**: keyword T6 triggers like "minimal", "flat", "icon", "logo" match too broadly ("minimal wear", "flat surface", "Volkswagen logo"). If T6 was triggered *only* by these weak keywords, demote to default and let zero-shot decide.
+- **Strong design signal gate**: zero-shot T6 requires explicit design keywords in the text ("graphic design", "poster", "infographic", "slide", "presentation", etc). Without them, the prompt stays T1 regardless of embedding similarity.
+
+**Problem 3: "logo" appears in scene descriptions.** Descriptive captions mention brand logos on jerseys, car badges, watermarks — "logo" in text doesn't mean graphic design. Solved by treating "logo" as a weak keyword (only counts when combined with other design signals).
+
+**Full-scale results (630K prompts):**
+
+| Style | Keyword-only | Hybrid |
+|-------|-------------|--------|
+| T1 Photorealistic | 67.2% | 76.3% |
+| T2 TraditionalArt | 2.5% | 2.8% |
+| T3 DigitalIllustration | 7.4% | 11.2% |
+| T4 3D/CGI | 1.4% | 1.4% |
+| T5 Cinematic/Film | 1.6% | 2.1% |
+| T6 GraphicDesign | 18.5% | 4.7% |
+| T7 Mixed/Experimental | 1.4% | 1.5% |
+
+| Subject | Keyword-only | Hybrid |
+|---------|-------------|--------|
+| S10 Objects (default) | 10.1% | 2.9% |
+| S13 ChineseCultural | 0.2% | 2.2% |
+| S14 Abstract/Imagination | 0.7% | 1.3% |
+| S12 WorldKnowledge | 0.3% | 0.8% |
+| S9 Fashion/Clothing | 3.3% | 4.4% |
+
+T6 dropped from 18.5% to 4.7% — most of the 14% reduction was false positives (product photos, descriptive captions, scenes that happened to mention "logo"). S10 dropped from 10.1% to 2.9% — Chinese text, abstract art, and world landmarks correctly redistributed.
+
+**Iteration needed:** the first full-scale run revealed T7 (Mixed/Experimental) exploding to 24.6% — invisible in 500-sample validation because T7's label descriptions are vague enough to be a catch-all. Fix: same keyword-gating approach as T6, requiring explicit experimental keywords ("glitch", "collage", "psychedelic", etc.) for zero-shot T7. After fix: T7 stable at 1.5%.
+
+**Key insight**: pure zero-shot classification doesn't work for this task — MiniLM confuses caption register (formal descriptive writing) with visual style (graphic design). The hybrid approach uses keywords as a high-precision first pass and zero-shot as a recall booster for defaults only, with domain-specific heuristics to guard against known failure modes. Vague catch-all categories (T6 GraphicDesign, T7 Mixed/Experimental) need keyword gating to prevent the embedding model from using them as dumping grounds.
+
+## 12. Lessons Learned
 
 1. **Keyword classification is unreliable** for ambiguous prompts. Semantic classification (via LLM) is worth the cost for datasets under 50K.
 2. **Generated prompts need length specifications.** Without explicit targets, LLMs default to concise outputs (10-15 words).
 3. **Length balancing must be coverage-aware.** Random rejection sampling destroys sparse cells. Stratified approaches preserve the taxonomy while reshaping the distribution.
 4. **Source diversity matters more than volume.** 10K well-balanced prompts from 9 sources outperforms 30K dominated by one source.
 5. **Chinese prompts need separate handling.** Word-count filters don't apply (Chinese uses characters), and CJK detection is needed for language tagging.
-
-1. **Keyword classification is unreliable** for ambiguous prompts. Semantic classification (via LLM) is worth the cost for datasets under 50K.
-2. **Generated prompts need length specifications.** Without explicit targets, LLMs default to concise outputs (10-15 words).
-3. **Length balancing must be coverage-aware.** Random rejection sampling destroys sparse cells. Stratified approaches preserve the taxonomy while reshaping the distribution.
-4. **Source diversity matters more than volume.** 10K well-balanced prompts from 9 sources outperforms 30K dominated by one source.
-5. **Chinese prompts need separate handling.** Word-count filters don't apply (Chinese uses characters), and CJK detection is needed for language tagging.
+6. **HuggingFace dataset IDs are unstable.** Three of 10 datasets had wrong or outdated org names. Always verify IDs before building automation.
+7. **The `datasets` library broke backward compatibility.** Dataset scripts (`trust_remote_code`) are no longer supported in v4.8+. Fallback to direct parquet loading or raw URL download is essential.
+8. **`sentence-transformers` adds significant overhead on CPU.** Raw `transformers` + manual pooling was 5× faster for the same model. Use the library for convenience, not for batch throughput.
+9. **MinHash LSH is the workhorse for dedup.** It caught 21% of duplicates in 37 minutes. Semantic dedup adds value (18% more) but takes 10× longer. If time-constrained, MinHash alone gets you 80% of the way.
+10. **Schema mismatches across parquet shards are real.** Recap-DataComp-1B had different columns in different shards. Loading individual shards instead of the whole dataset was the workaround.
+11. **Zero-shot embedding classification confuses caption register with visual style.** Formal descriptive captions ("The image displays...") are semantically closer to design briefs than to casual photo descriptions in MiniLM's embedding space. Pure zero-shot T6 precision was ~50%. Domain heuristics (keyword gating) brought it above 90%.
+12. **Hybrid keyword+zero-shot outperforms either alone.** Keywords are high-precision but low-recall (67% default rate). Zero-shot has good recall but poor precision for ambiguous categories. Keyword-first with zero-shot fallback on defaults combines both strengths.
+13. **Margin thresholds prevent low-confidence reclassification.** Without a margin, zero-shot reclassifies on differences of 0.01 cosine similarity — essentially random. A 0.05 margin ensures only confident predictions override the default.
+14. **Validate classification on small subsets before scaling.** Testing on 200-500 samples with side-by-side comparison (keyword vs zero-shot vs hybrid) caught all three major failure modes before running on 630K prompts.

@@ -1,786 +1,786 @@
 [
   {
-    "text": "a photo of san francisco's golden gate bridge",
-    "subject": "S12",
-    "style": "T1",
-    "camera": "C1",
-    "source": "parti_prompts",
-    "language": "en"
-  },
-  {
-    "text": "A picture of some food in the plate",
-    "subject": "S3",
-    "style": "T1",
-    "camera": "C1",
-    "source": "parti_prompts",
-    "language": "en"
-  },
-  {
-    "text": "an illustration of a teapot",
-    "subject": "S10",
-    "style": "T3",
-    "camera": "C1",
-    "source": "parti_prompts",
-    "language": "en"
-  },
-  {
-    "text": "a painting of black and white",
-    "subject": "S10",
-    "style": "T2",
-    "camera": "C1",
-    "source": "parti_prompts",
-    "language": "en"
-  },
-  {
-    "text": "a boy and a tiger",
+    "text": "The image displays a digital document with a blue background and a white text box in the center. The text box contains black text with the following content:\n\n\"Alisa Westermann\nNon-rhoticity and broad a in the Eastern New England dialect - a gender thing?\nAn analysis based on the US-series Family Guy\nSeminar paper\"\n\nAt the bottom of the document, there is a footer with the text \"Seminar paper\" in a smaller font size. The layout is simple, with the text centrally aligned within the white text box. The document appears to be a title page or cover of a seminar paper or eBook, possibly related to linguistics or dialect studies, as indicated by the reference to the \"Eastern New England dialect\" and \"Family Guy,\" which is an American animated television series. The text is clear and legible, with no additional images or graphics present.",
+    "source": "densefusion",
+    "lang": "en",
     "subject": "S1",
     "style": "T1",
-    "camera": "C1",
-    "source": "parti_prompts",
-    "language": "en"
+    "camera": "C4"
   },
   {
-    "text": "A solitary figure shrouded in mists peers up from the cobble stone street at the imposing and dark gothic buildings surrounding it. an old-fashioned lamp shines nearby. oil painting.",
-    "subject": "S6",
+    "text": "The image displays an interior space with a focus on a hammock hanging in the foreground. The hammock is dark blue with orange trim and is suspended from a white beam, which is attached to the ceiling. The floor is tiled in white, and there is a white radiator beneath the window. The window itself is large, with a white frame and a view of the outside, where a building with multiple windows can be seen. Above the window, there is a skylight allowing natural light into the room. The walls are painted white, and there is a visible hose or pipe running along the wall near the ceiling. The text \"ANBIETERFOTO\" is overlaid on the image in the upper right corner, suggesting that the photo may be from a listing or advertisement.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S4",
+    "style": "T1",
+    "camera": "C4"
+  },
+  {
+    "text": "The image features a stylized, anthropomorphic red vase with a cheerful expression. The vase has two eyes with eyelashes, a small smiling mouth, and rosy cheeks. It is adorned with a yellow decorative bow with a gold-colored knot on top. The vase is standing upright with two arms and two legs, giving it a personified appearance.\n\nThe vase is filled with numerous yellow spheres, resembling either confetti or fruit, which are spilling out from the top. The background is plain white, which contrasts with the vibrant red of the vase and the yellow of the spheres and bow.\n\nAt the top of the image, the text \"Zhang Ji\" is written in black, and at the bottom, the text \"618 Surprising Lucky Package\" is also in black, matching the color of the vase. The text is likely related to a promotional event or sale. The overall image has a cartoonish and whimsical feel, with a clear focus on the central character, the red vase.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S1",
+    "style": "T3",
+    "camera": "C5"
+  },
+  {
+    "text": "The image displays a rubber patch with embossed details. The patch is rectangular with rounded corners and features a prominent embossed number \"5.11\" in the center. Above this number, there is a smaller square with a plus sign inside it. Below the number, the text \"FIELD TESTED BY VTAC\" is embossed. The patch has a textured border with a pattern that resembles a series of small, raised dots. The background upon which the patch rests appears to be a textured fabric, possibly canvas, in a neutral color that contrasts with the patch. The overall color of the patch is a muted shade of gray.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S5",
+    "style": "T1",
+    "camera": "C4"
+  },
+  {
+    "text": "The image displays a promotional advertisement with a dark background. At the top, in white text, it reads \"Promo Code Nocturnalsd.\" Below this, centered in the image, is a brightly lit neon sign with the letters \"WCKD\" in a stylized font, with a triangle above the letter \"C\" and a smaller triangle inside the larger one. The sign emits a purple and blue glow.\n\nBeneath the neon sign, additional text in white states \"SAT, OCT 27TH\" followed by \"TICKETS ON SALE\" in larger font. At the bottom of the image, there is a slogan that says \"BE WCKD. THE VILLAGE IS CALLING.\" in white text. The hashtag \"#nocturnalsd\" is also present at the bottom.\n\nThe website \"wckdvillage.com\" is mentioned at the bottom of the image, suggesting that more information can be found on their website. The overall design of the advertisement is modern and eye-catching, with the use of neon lighting to stand out against the dark background. The text content is clear and legible, providing essential information about the event and how to obtain tickets.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S2",
+    "style": "T6",
+    "camera": "C8"
+  },
+  {
+    "text": "The image displays a black steam locomotive on a set of train tracks. The train is emitting a plume of steam from its stack, which rises into the sky. The sky is partly cloudy with blue patches visible. The train is positioned on the left side of the image, with the tracks extending towards the right. The locomotive has visible wheels, a headlight, and a ladder on its side. The grass on either side of the tracks is green, and the sky above is a mix of blue and white clouds.\n\nOverlaying the image is text that reads \"New Moon in Aries April 5, 2019 Is a new beginning on steroids? Full steam ahead. New Moon Magic Coventry Creations.\" The text is in white and yellow, with the words \"New Moon in Aries,\" \"April 5, 2019,\" and \"Full steam ahead\" in larger font sizes compared to the rest of the text. The phrase \"New Moon Magic\" is in a cursive font, and \"Coventry Creations\" is at the bottom right corner in a smaller font. The text suggests an astrological event and a metaphorical message about beginnings and progress.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S3",
+    "style": "T1",
+    "camera": "C4"
+  },
+  {
+    "text": "The image is a collage of three photographs featuring asparagus, with text overlay at the bottom center. The top left photo shows a close-up of asparagus tips with a blurred dark background, highlighting the green, closed scales and the pointed tips of the asparagus. The top right photo displays a bundle of asparagus with a mix of closed and slightly open scales, resting on a wooden surface with a blurred background that suggests a kitchen setting. The bottom photo shows asparagus spears with a mix of green and purplish-tinged tips, lying on a wooden cutting board with a blue cloth underneath, indicating a preparation or serving context. The text overlay in white font reads \"ASPARAGUS ON THE HCG DIET,\" which suggests a connection between the asparagus and the specific diet program mentioned. The colors in the image are natural, with the green of the asparagus standing out against the neutral tones of the wooden surfaces and the blue cloth.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S1",
+    "style": "T7",
+    "camera": "C2"
+  },
+  {
+    "text": "The image displays a tan tactical vest with a designation of AA1. The vest features a high collar and is designed with multiple pockets and panels. There are two large, rounded shoulder straps with rivets, and the front of the vest has a central zipper that runs vertically. The vest is presented against a neutral background with a grid pattern, which is likely for illustrative purposes. The vest appears to be a digital rendering or a graphic illustration rather than a photograph of a physical object. The color of the vest is a consistent tan throughout, and the texture is smooth with no visible patterns or camouflage. The vest is shown in a front-facing view, allowing a clear sight of its design and features.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S9",
+    "style": "T1",
+    "camera": "C4"
+  },
+  {
+    "text": "The image displays a graphic with a central focus on a stylized depiction of a unicorn with a white body and a mane and tail in shades of pink and green. The unicorn is set against a light blue background. Above the unicorn, text in a playful, bold font reads \"Pastelita Time!\" with a graphic of a lollipop with a spiral design to the right. Below the unicorn, additional text states \"Fast Response! (kecuali tidur),\" accompanied by two emoji-like icons: one of a cloud with a face, and the other of a yellow star with a simple facial expression. The overall color scheme of the image is soft and pastel, with a predominance of light blue and pink hues. The text and graphics suggest a theme related to customer service or promptness, possibly in a context related to the game \"Adopt Me\" on the platform Roblox, as indicated by the external caption.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S1",
     "style": "T2",
-    "camera": "C1",
-    "source": "parti_prompts",
-    "language": "en"
+    "camera": "C8"
   },
   {
-    "text": "A punk rock squirrel in a studded leather jacket shouting into a microphone while standing on a stump and holding a beer on dark stage.",
+    "text": "The image displays a white building with a flat roof and a small balcony on the upper level. The building has a main entrance with a black metal gate that is partially open, revealing a pathway leading to the entrance. Above the gate, there are two brass plaques affixed to the wall. The building is surrounded by greenery, including a variety of shrubs and a palm tree to the left. The sky is visible in the background and appears to be clear. The overall color palette of the image consists of white from the building, green from the vegetation, and the blue of the sky. The texture of the building's walls is smooth, and the gate has a metallic sheen. The image also contains text at the top, which reads \"PGS ALICANTE AIRPORT TO VILLA BRUSTIND,\" and a bullet point below stating \"The main entrance seen from the parking area.\"",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S6",
+    "style": "T1",
+    "camera": "C4"
+  },
+  {
+    "text": "The image features a bold, high-contrast graphic with a dark blue background. Dominating the center is a large, orange warning sign with a black exclamation mark, indicating caution or an alert. The sign has a reflective quality with horizontal stripes and a border that suggests it is a sticker or a label. Above and below the sign, in large, capitalized yellow letters, is the text \"EARLY ALERT.\" Below the warning sign, additional text in smaller yellow capital letters reads \"ISSUED FOR TIPPER & FRIENDS THE NOCTURNAL EDITION.\" The text and the warning sign are the only elements in the image, and there are no other discernible objects or textures. The layout is simple and direct, designed to convey a message quickly and effectively.",
+    "source": "densefusion",
+    "lang": "en",
     "subject": "S2",
     "style": "T1",
-    "camera": "C1",
-    "source": "parti_prompts",
-    "language": "en"
+    "camera": "C8"
   },
   {
-    "text": "A robot painted as graffiti on a brick wall. The words \"Fly an airplane\" are written on the wall. A sidewalk is in front of the wall, and grass is growing out of cracks in the concrete.",
+    "text": "The image features a vibrant yellow crown centered on a solid blue background. The crown is stylized with simple, curved lines to represent the jewels and the shape of the crown. Below the crown, the text \"HAPPY EPIPHANY\" is written in large, white, capitalized letters. The font is bold and clear, making it easily readable. The overall design is flat with no gradients or shadows, giving it a modern and graphic appearance. The image is likely intended as a poster or greeting card to celebrate the Epiphany holiday.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S7",
+    "style": "T6",
+    "camera": "C8"
+  },
+  {
+    "text": "The image displays a person standing against a green background. The individual is holding a large framed print with both hands. The frame is white, and the print itself has a green background with a central text and graphic design. The text on the print reads \"Welcome to Towel-Poe TAUPO\" in white and red lettering, with \"TAUPO\" being the most prominent word in red. Below the text, there is a smaller text that says \"Toe-Paw\" in white. Above the text, there is a red circular logo with a white letter \"G\" in the center. The person is wearing a black cap with a logo on the front, a black long-sleeved shirt, and distressed light blue jeans with significant fraying at the knees. The person's face is not visible as they are looking down at the print. The overall image has a playful and promotional tone, likely related to a brand or event named \"Towel-Poe\" in \"Taupo,\" which is a town in New Zealand.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S1",
+    "style": "T6",
+    "camera": "C5"
+  },
+  {
+    "text": "The image displays a poster or an informational flyer with a white background and primarily black text. At the top, the text reads \"ART ≒ PROPHECY\" in bold, capital letters, followed by the dates \"TUESDAY 15 - SUNDAY 27 MARCH, 2016\" in a smaller font. Below the dates, there is a logo or symbol that appears to be a stylized \"846\" with a circular element around it. The bottom half of the image contains Chinese text, which is likely related to the event or exhibition mentioned in English above. The text is arranged in two columns, with the left column containing three lines of text and the right column containing four lines of text. The overall layout is simple and clean, with a clear focus on the event's title and dates, as well as the gallery's logo.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S9",
+    "style": "T6",
+    "camera": "C4"
+  },
+  {
+    "text": "The image displays an indoor event with a panel discussion taking place. In the foreground, there are several attendees, most of whom are men, wearing business attire such as suits and ties. The audience members are facing towards the stage where the panelists are seated. The panelists are also men, dressed in business suits, and appear to be engaged in a discussion.\n\nIn the background, a large screen is visible, displaying a presentation slide with the text \"The National Outsourcing Association's 44th Annual OUTSOURCING SUMMIT\" and a subtitle \"From negotiation to multisourcing to innovation: gaining the competitive edge.\" The slide is predominantly blue with white and yellow text. The logo of NOA (National Outsourcing Association) is also visible on the screen.\n\nThe room is lit with ambient lighting, and the overall color palette of the image consists of blues, whites, and the darker tones of the attendees' clothing. The layout of the room suggests a formal setting, typical of a conference or summit. The audience and panelists are arranged in a tiered fashion, with the panelists seated on a higher level than the audience, allowing them to be the focal point of the room.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S4",
+    "style": "T6",
+    "camera": "C4"
+  },
+  {
+    "text": "The image displays a gray hooded sweatshirt with a hood and a front pouch pocket. The sweatshirt is presented against a plain, neutral background. On the front of the sweatshirt, there is a graphic text design in two colors: the upper text is in purple and reads \"Zooming into 2020,\" while the lower text is in a darker shade of purple and says \"CRONE STRONG.\" The font of the text is bold and stylized, with the word \"CRONE\" being notably larger than the other words. The hood appears to be lined with a soft, fleece-like material, and the sweatshirt has a kangaroo pouch pocket. The overall texture of the sweatshirt suggests a soft and comfortable fabric, typical of casual or athletic wear. The sweatshirt is displayed facing forward, allowing a clear view of the design on the front.",
+    "source": "densefusion",
+    "lang": "en",
     "subject": "S11",
     "style": "T1",
-    "camera": "C1",
-    "source": "parti_prompts",
-    "language": "en"
+    "camera": "C4"
   },
   {
-    "text": "A richly textured oil painting of a young badger delicately sniffing a yellow rose next to a tree trunk. A small waterfall can be seen in the background.",
+    "text": "The image displays the interior of a vehicle, focusing on a transparent acrylic partition installed between the front and rear seats. This partition is designed to act as a sneeze guard, intended to protect both the driver and passengers from potential airborne contaminants. The partition is attached to the car's headrests, which are upholstered in a light beige color, and it spans across the width of the front seats.\n\nIn the background, through the transparent partition, the car's dashboard and steering wheel are visible, along with a reflection of the car's exterior environment. The dashboard appears to be a dark color, contrasting with the lighter upholstery of the seats. The steering wheel is partially obscured by the partition.\n\nThe image also includes text overlay in the upper left corner, which reads \"dgs retail,\" and a larger text block at the bottom that states \"RIDESHARE SNEEZE GUARD PARTITION.\" The text is in white capital letters, making it stand out against the darker interior of the car. The overall composition of the image is straightforward, with the focus on the sneeze guard partition and the text providing context for the product's intended use.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S4",
+    "style": "T2",
+    "camera": "C4"
+  },
+  {
+    "text": "The image displays a collection of colorful pillows with various patterns and designs, suggesting they are suitable for a camping trip. The pillows are densely packed and occupy the entire frame, with no discernible background. The patterns on the pillows include abstract designs, cartoon characters, and nature motifs such as leaves and waves. The colors are vibrant, with hues of pink, blue, red, orange, and green.\n\nAt the top of the image, there is text that reads \"Half Term road trip tips & ideas!\" Below this, another line of text states \"Don't forget pillows! The kids are bound to fall asleep at some point.\" At the bottom of the image, there is a logo with the text \"camping-directory.uk\" and a stylized tent symbol. The text and logo indicate that the image is likely promotional material related to camping and travel in the UK, aimed at providing tips and information for families planning a road trip during the half term holiday period.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S2",
+    "style": "T3",
+    "camera": "C3"
+  },
+  {
+    "text": "The image features a stylized illustration centered on a light beige background. At the top, the word \"COURTNEY\" is written in large, orange, uppercase letters with a slight shadow effect, giving a three-dimensional appearance. Below this text, there is a cartoon-style depiction of a ghost. The ghost is white with a friendly expression, featuring two black dots for eyes and a simple curved line for a mouth, suggesting a content or happy demeanor. The ghost's body is rounded, and it has a slight taper towards the bottom, resembling a classic cartoon representation of a ghost.\n\nBeneath the ghost illustration, the phrase \"THE FRIENDLY GHOST\" is written in the same orange, uppercase letters as above, but in a smaller font size. The letters have a similar shadow effect as the text above. The overall layout is simple and balanced, with the text and ghost illustration taking center stage. The image has a playful and lighthearted feel, likely intended for a young audience or as part of a themed design.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S7",
+    "style": "T3",
+    "camera": "C5"
+  },
+  {
+    "text": "The image displays a simplistic drawing on a solid purple background. The drawing features a central object that resembles a toaster, with two slices of toast protruding from the top. The toaster is depicted in a dark gray color, with a lighter gray outline defining its shape. The toast slices are represented by horizontal lines with a small heart shape above the left slice and a vertical line above the right slice.\n\nAbove the toaster, there is text in a handwritten style font that reads \"POOL OF TAR\" and below the toaster, the text continues with \"SEE PLUS.\" The text is in black, contrasting with the purple background. The drawing has a cartoonish and whimsical feel, with the toaster being the main focus. The overall composition is simple with a limited color palette, focusing on the contrast between the dark gray toaster and the purple background.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S5",
+    "style": "T3",
+    "camera": "C5"
+  },
+  {
+    "text": "This image displays a 14K gold wedding band with a two-tone design. The band features a broad, gold-toned central band with a textured pattern that resembles a series of elongated, leaf-like shapes, creating a striped effect. Surrounding this gold band is a narrower, silver-toned band that forms the ring's outer edge. The contrast between the gold and silver tones gives the band a distinctive appearance.\n\nIn the foreground, there is a magenta-colored label with white text that reads \"Kostenloser Gravurservice,\" which translates to \"Free Engraving Service\" in English. The label is angled and partially overlaps the wedding band, suggesting that it is an advertisement or a promotional offer related to the product.\n\nThe background of the image is a plain, neutral color that does not distract from the wedding band. The lighting in the image highlights the reflective qualities of the gold and silver materials, emphasizing the band's polished finish. The overall composition is centered and symmetrical, focusing the viewer's attention on the wedding band and the promotional label.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S8",
+    "style": "T1",
+    "camera": "C8"
+  },
+  {
+    "text": "The image is divided into two sections. The upper section features two black grilles with a dual line design, which are identified as a fit for BMW X3 and X4 Series models from 2018 onwards. The grilles have a glossy finish and are set against a white background.\n\nThe lower section of the image displays a BMW X3 or X4 Series vehicle, with a metallic blue paint finish, parked on a rocky terrain with a body of water in the background. The vehicle is positioned at an angle that showcases its front and side profile. It has a modern design with sleek lines, a prominent front grille, and angular LED headlights. The wheels are alloy with a multi-spoke design, and the car features a blue front license plate area. The sky is clear, suggesting a sunny day.\n\nText is present in the image, which reads \"Carbon Fever\" at the top, followed by \"fit for G01 / G02 (2018-IN X3 / X4 Series)\" in a smaller font. The text is likely referring to the brand or model of the grilles displayed above the vehicle.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S7",
+    "style": "T1",
+    "camera": "C4"
+  },
+  {
+    "text": "The image displays a dynamic scene at sunset with a person performing a skateboarding trick in the air. The skateboarder, wearing a dark sweatshirt and red pants, is captured mid-jump with their body angled and legs extended, one foot on the skateboard and the other trailing behind. The skateboard is tilted, suggesting motion. The person's hair is windswept, indicating movement.\n\nIn the background, a wooden boardwalk stretches horizontally across the image, populated with numerous individuals who appear to be pedestrians. The sunset casts a warm, golden light across the scene, with the sun visible as a bright, round disc near the horizon, partially obscured by silhouetted structures. The sky transitions from a deep orange near the sun to a lighter yellow as it stretches upwards.\n\nThe text \"TAMRON 17-35mm F/2.8-4 di OSD\" is prominently displayed in the upper portion of the image, suggesting a promotional context for the camera lens being advertised. The lower part of the image contains additional text, \"17-35mm F/2.8-4 Di OSD,\" which reiterates the product being showcased. The composition of the image, with the skateboarder in the foreground and the sunset in the background, creates a sense of depth and activity.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S1",
+    "style": "T5",
+    "camera": "C5"
+  },
+  {
+    "text": "The image displays a quote in black text on a yellow background. The quote is attributed to Helene Hanff and reads: \"I have these guilts about never having read Chaucer but I was talked out of learning Early Anglo-Saxon / Middle English by a friend who had to take it for her Ph.D. They told her to write an essay in Early Anglo-Saxon on any-subject-of-her-own-choosing. 'Which is all very well,' she said bitterly, 'but the only essay subject you can find enough Early Anglo-Saxon words for is 'How to Slaughter a Thousand Men in a Mead Hall'.\" The text is arranged in a block format, with the quote occupying the majority of the space. At the top of the image, there is a circular inset containing a black and white photograph of Helene Hanff. She appears to be smiling and is dressed in a coat with a fur collar. The website \"azquotes.com\" is credited at the bottom of the image. The overall layout is simple, with a clear focus on the quote and the photograph of Helene Hanff.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S9",
+    "style": "T2",
+    "camera": "C5"
+  },
+  {
+    "text": "The image displays a stylized graphic of an orange MnDOT snowplow against a blue background. The snowplow is depicted with a front blade and a cabin that includes a windshield, side mirrors, and headlights. The windshield wipers are visible on the windshield. The cabin is detailed with various equipment and controls, suggesting functionality related to snow removal operations.\n\nAbove the snowplow, large white text reads \"Name a MnDOT SNOWPLOW.\" Below the snowplow, there is a call to action with a green button that states \"VOTE NOW!\" in white capital letters. The overall design is clean and modern, with a flat design aesthetic that uses minimal shading and highlights to create a sense of depth. The image is likely used for a public engagement campaign to solicit names for a snowplow operated by the Minnesota Department of Transportation (MnDOT).",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S9",
+    "style": "T3",
+    "camera": "C5"
+  },
+  {
+    "text": "This image displays a long-sleeved t-shirt in a solid bright orange color. The t-shirt features a graphic design on the front with text and a symbol. The text is in two lines, with the upper line reading \"got mud?\" in lowercase letters, and the lower line displaying \"HPF\" in uppercase letters. The symbol between the two lines of text is a white right-angled triangle pointing upwards, resembling a simplified mountain or a stylized letter 'A'. The t-shirt has a ribbed round neckline and appears to be made of a smooth fabric. The sleeves extend from the sides of the t-shirt, and the cuffs are visible at the wrist area. There is a tag visible on the upper left side of the t-shirt, but the details on the tag are not clear. The background of the image is plain and does not contain any additional objects or textures.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S5",
+    "style": "T6",
+    "camera": "C4"
+  },
+  {
+    "text": "The image is a collage of four photographs, each depicting different items, with a central banner featuring text. The top left photo shows a silver BMW sedan parked on a grassy area with trees in the background. The car's body appears to be in good condition, with no visible damage. The top right photo displays a commercial kitchen appliance, specifically a stainless steel double-door refrigerator with a glass door on the upper compartment and a solid door on the lower compartment. The bottom left photo features a black and red foosball table with players in a ready position, indicating it is a two-player game. The bottom right photo shows a black and silver microwave oven with a digital display and control panel, placed on a kitchen countertop.\n\nThe central banner with text overlays the images and reads \"maxsold.com BID NOW!\" in white and red font on a black background, suggesting that these items are part of an online auction. The website mentioned is likely where these items can be bid on. The overall layout of the image is designed to advertise the auction items, with each photo capturing a different aspect of the auction offerings.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S2",
+    "style": "T7",
+    "camera": "C2"
+  },
+  {
+    "text": "The image is a graphic representation of a 5-a-side ultimate frisbee team, with a monochromatic color scheme primarily in shades of gray. At the top, in large, bold, capitalized letters, the text reads \"GILL COULTARD ULTIMATE 5.\" Below this title, there is a smaller text \"FTO\" in the upper right corner. The graphic is divided into two main sections by a curved line that resembles a stylized half-circle or a partial border.\n\nOn the left side of the graphic, there are five names listed vertically, each followed by a black circle. The names are \"KAREN WALKER,\" \"LIZ DEIGHAN,\" \"CAROL THOMAS,\" and \"PAULINE COPE.\" On the right side, mirroring the left, are the names \"GILL COULTARD\" and \"LIZ DEIGHAN,\" with the same style of circles beneath them.\n\nThe layout is clean and symmetrical, with the names and circles evenly spaced. The background is a solid light gray, and the text and circles are in a darker gray, creating a visual contrast that makes the information stand out. The overall design is simple and appears to be a stylized representation of a team roster or a team formation for an ultimate frisbee game.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S3",
+    "style": "T6",
+    "camera": "C5"
+  },
+  {
+    "text": "The image displays a graphic design predominantly in shades of red. In the center, there is a white rectangle with a black border containing text. The text within the rectangle reads \"HUE FEEL ME ?! [THE RED SERIES]\". Above this rectangle, in a smaller font, the words \"ill vibe the ride\" are visible. The background consists of a pattern of vertical lines with varying shades of red, creating a striped effect. Some of the stripes have numerical values and symbols, such as \"00:00:00\" and \"99:59:59\", which could suggest a timeline or a sequence of events. The overall design has a modern and minimalistic aesthetic.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S11",
+    "style": "T6",
+    "camera": "C8"
+  },
+  {
+    "text": "This image features a white cast iron double-slipper clawfoot tub situated in a bathroom with tiled walls. The tub has a smooth, glossy finish and is equipped with a polished chrome faucet and showerhead, which are mounted on the side of the tub. The clawfoot design is characterized by ornate, leaf-like feet in a golden color, adding an elegant touch to the tub's appearance. The interior of the tub is lined with a red and white striped fabric, providing a contrast to the white exterior. The floor is tiled in a light color, complementing the overall clean and simple aesthetic of the bathroom. The text \"Southsea-bath Double Slipper Cast Iron Tub\" is visible at the bottom of the image, indicating the brand and model of the tub.",
+    "source": "densefusion",
+    "lang": "en",
     "subject": "S2",
     "style": "T2",
-    "camera": "C1",
-    "source": "parti_prompts",
-    "language": "en"
+    "camera": "C3"
   },
   {
-    "text": "A raccoon wearing formal clothes, wearing a tophat and holding a cane. The raccoon is holding a garbage bag. Oil painting in the style of Rembrandt.",
-    "subject": "S12",
+    "text": "The image displays a care instruction guide for a Breakfast Shirt made from rayon. At the top, the text \"Breakfast Shirt Care for:\" is followed by the word \"Rayon\" in a larger, stylized font. Below this, there is a paragraph describing rayon as a light and breathable fabric suitable for Australian summers but emphasizing the need for careful handling to prevent fading and shrinking.\n\nA section titled \"We Recommend\" lists three care tips: \"Cold hand wash,\" \"Leave flat to dry, inside and away from the sun,\" and \"Good to iron.\" These recommendations are bullet-pointed for clarity.\n\nConversely, a \"Do Not\" section advises against \"Machine Wash\" and \"Hang to dry,\" suggesting these methods could damage the fabric.\n\nAt the bottom of the image, there is a website address \"www.breakfastshirts.com\" and a social media handle \"@breakfastshirtsss,\" both in a smaller font. The background of the image is white, and the text is primarily in black, with the exception of the word \"Rayon,\" which is in a dark gray or black color. The layout is clean and organized, with a clear hierarchy of information.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S7",
     "style": "T2",
-    "camera": "C1",
-    "source": "parti_prompts",
-    "language": "en"
+    "camera": "C7"
   },
   {
-    "text": "A photo of the Space Shuttle Endeavor painted yellow and flying over the Earth. The continent of South America is visible.",
+    "text": "The image displays a slide with a title and text content on a white background. The title at the top is in quotation marks and reads \"The Scottish Play\": A Chronology of Misfortunes\" in a serif font, with the title text colored in maroon and the subtitle in black. Below the title, there is a block of text in black, detailing a series of unfortunate events associated with different productions of the play referred to as \"The Scottish Play.\" The text mentions an actor's strike, two fires, and seven robberies affecting a 1970 production in New York City, a 1971 version starring David Leary, and a 1981 production at Lincoln Center. It also notes that J. Kenneth Campbell, who played Macduff, was mugged shortly after the play's opening. The layout of the slide is simple, with the title at the top and the main text centered below it. There are no images or other graphics on the slide.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S6",
+    "style": "T5",
+    "camera": "C5"
+  },
+  {
+    "text": "The image displays a product called \"Wash & Cure Plus\" by Anycubic, which is a 3D printer resin curing and washing station. The device is predominantly yellow and black, with a transparent cylindrical section that likely houses the resin. The front panel has a digital display showing the time, which is set to \"88:88,\" indicating either a default setting or a placeholder for the actual time.\n\nThe product is set against a blue background with a subtle wave pattern, which gives a sense of technology and innovation. The image also includes textual information about the product's dimensions: \"290mm(L) x 270mm(W) x 479mm(H)\" and \"192mm(L) x 120mm(W) x 245mm(H)\" for the machine size, and \"190mm(D) x 245mm(H)\" for the curing size. Additionally, there is a mention of \"1-60min\" for the time selection, suggesting the range of time the process can take.\n\nThe Anycubic logo is visible at the top right corner of the image, reinforcing the brand identity. The overall composition of the image is designed to be informative, highlighting the product's features and dimensions, and is likely used for marketing or instructional purposes.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S2",
+    "style": "T5",
+    "camera": "C7"
+  },
+  {
+    "text": "This image displays a single black boot with a high heel, viewed from the front. The boot is designed with a smooth texture and appears to be made of leather. It features a pointed toe and a slender heel that is approximately 5 to 6 centimeters in height. The boot's upper part is fitted, with a slight flare at the top, suggesting a snug and secure fit around the leg.\n\nOn the boot, there are several geometric line drawings in a lighter shade of blue, which include a square, a circle, a parallelogram, and what appears to be a stylized representation of a fractal or a complex geometric shape. These drawings are not real objects but rather decorative elements that add a visual interest to the boot's design.\n\nThe boot is photographed against a plain, light-colored background that provides a clear view of the item without any distractions. The lighting in the image is even, allowing the details of the boot's design and texture to be easily observed.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S9",
+    "style": "T7",
+    "camera": "C5"
+  },
+  {
+    "text": "In the image, a man stands on a stage with his arms outstretched and a wide smile on his face. He is wearing a black leather jacket, a yellow t-shirt with the text \"POWER OF NOW\" in bold black letters, and blue jeans. His attire suggests a casual yet engaging style, possibly related to a performance or public speaking event. The man has a beard and is wearing a black beanie. His shoes are black with white soles.\n\nThe stage is well-lit, and the man is the central figure in the foreground. Behind him, a large audience is visible, with many individuals focused on the man. The audience members are seated in rows, and their attention towards the man suggests he is the main subject of interest at this moment. The theater has a classic design with ornate details on the ceiling and walls, and the lighting casts a warm glow on the scene.\n\nThe watermark \"WALTER MCGIBBIN PHOTOGRAPHY\" is visible across the image, indicating the photographer or the source of the image. The man's joyful expression and open posture, along with the audience's engagement, convey a sense of connection and possibly a moment of celebration or inspiration.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S1",
+    "style": "T4",
+    "camera": "C8"
+  },
+  {
+    "text": "The image is a collage of four separate photographs related to fiber optic cable installation for Full Fibre Broadband. In the top left photo, there is a large purple banner with white text that reads \"FULL FIBRE BROADBAND IS COMING.\" The top right photo shows a street view with construction barriers, including orange and white barricades, and a red traffic cone. A purple hose, possibly for water, is coiled on the ground near the barriers. The bottom left photo depicts two individuals wearing high-visibility vests working on the street. They are surrounded by construction debris, including broken pavement and a hammer on the ground. The bottom right photo shows a similar street view as the top right, with the same construction barriers and a different angle of the purple hose. The background of all photos features a city street with buildings, parked cars, and a clear sky. The textures of the barriers are smooth and reflective, while the hose has a ribbed texture. The colors are vivid, with the purple hose standing out against the more muted urban colors. The layout of the collage is a 2x2 grid, with each photo occupying a quadrant.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S4",
+    "style": "T7",
+    "camera": "C4"
+  },
+  {
+    "text": "The image displays a blue background with yellow text overlaid. The text is organized into a list format with bullet points. At the top, in larger font size, the title reads \"ThePackage.\" Below the title, there are four bullet points, each starting with a yellow dot. The first bullet point states \"Solution to troublesome AFM strike.\" The second bullet point mentions \"Created by agents Mike Gorfaine and Sam Schwartz along with Mike Post.\" The third bullet point reads \"Undercut AFM Strike.\" The fourth and final bullet point declares \"Reconfigured TV and film music economics.\" The text is aligned to the left and the font appears to be a bold sans-serif type. The overall layout is simple and direct, aimed at conveying information about \"ThePackage\" and its impact on the AFM strike in the TV and film music industry.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S11",
+    "style": "T5",
+    "camera": "C5"
+  },
+  {
+    "text": "The image displays a large, vertically oriented cardboard box with a printed design on its side, placed on a wooden floor against a wall with a marble-like texture. The box features a prominent logo at the top, with the text \"MALEVICH\" in bold, black letters against a white background. Below the logo, there is an image of an easel holding a canvas, with the text \"EASEL SKETCH BOX ML-12\" in black font. The background of the easel image is a blend of pastel colors. On the lower right corner of the box, there is a hashtag \"#MALEVICHES\" in black font.\n\nTo the left of the box, partially visible, is a smaller, wrapped item with a similar color scheme and text, suggesting it is also a product related to the box. The wrapping has a pattern of diagonal stripes in shades of blue, white, and orange. The wooden floor has a warm, brown tone with visible wood grain, and the planks run horizontally across the image. The wall behind the box has a light color with a subtle, mottled texture.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S5",
+    "style": "T2",
+    "camera": "C2"
+  },
+  {
+    "text": "The image displays a slide with a black background and white text, providing information about urbanism in different forms, as referenced by Paul Wheatley in his work \"The Pivot of the Four Quarters\" from 1971. The text is in Italian and discusses ancient cities as forms of rural settlement linked to the countryside. It mentions \"Cittadini: proprietari terrieri e guerrieri,\" which translates to \"Citizens: landowners and warriors.\" The slide also touches on the control of symbolism and the sacred, as well as the control of agricultural exceptions. The text is organized in bullet points, and the title \"ALTRE FORME DI URBANESIMO: PAUL WHEATLEY\" is prominently displayed at the top.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S5",
+    "style": "T5",
+    "camera": "C3"
+  },
+  {
+    "text": "The image displays a black and white vector illustration of a weight scale icon. The icon is designed with a simple, clean style, featuring a rectangular base with a right-angled triangle at the top, resembling the shape of a scale pan. Inside the pan, there is a bold, black letter \"K\" followed by a bold, black letter \"G,\" which together represent the abbreviation \"kg,\" the symbol for kilogram, a unit of mass in the metric system. The background of the image is plain white, which contrasts with the black lines of the icon, making it stand out clearly. The icon has a circular hole at the top of the triangle, suggesting a place where a hanging scale might be attached. The overall design is minimalistic and easily recognizable, commonly used in various forms of graphic design to denote weight or mass measurements.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S11",
+    "style": "T3",
+    "camera": "C4"
+  },
+  {
+    "text": "The image features a graphic design with a pastel pink background. In the center, there is a large, stylized teardrop shape in a light blue color. Below the teardrop, there is text in a bold, sans-serif font that reads \"A time for spring.\" Above the teardrop, aligned to the right, is the word \"nauta\" in a smaller font size, followed by the number \"1\" in the same style and size as \"nauta.\" The overall design is minimalist with a focus on the central teardrop and the accompanying text. The color contrast between the light blue teardrop and the pink background is soft and harmonious.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S3",
+    "style": "T2",
+    "camera": "C8"
+  },
+  {
+    "text": "The image displays two mugs with a vibrant pink background. The mug on the left is labeled \"BACK\" and features an illustration of a purple, winged creature with red eyes, resembling a fantasy or cartoon-style dragon. The mug on the right is labeled \"FRONT\" and has a phrase in stylized, bold, yellow font that reads \"MONDAYS ARE MADDNESS.\" The font has a shadow effect, giving it a three-dimensional appearance. The mugs have white handles, and the interior of the mugs is not visible. Above the mugs, in large, bold, white letters against a dark blue background, the text \"MADDENING MUGS!\" is prominently displayed. The overall layout is symmetrical with the mugs centered and the text above them. The website \"www.bigshottototworks.com\" is visible at the bottom of the image, suggesting the source or creator of the mugs. The image is bright and colorful, with a clear contrast between the pink background and the white mugs.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S4",
+    "style": "T3",
+    "camera": "C5"
+  },
+  {
+    "text": "The image displays a slide with a red background and yellow text. The text is divided into three lines, with the first line being the largest and most prominent. It reads \"9.14,\" which is likely a reference to a section or step in a process or sequence, possibly from an educational or instructional context. The second line states \"Ozonolysis of Alkynes,\" which is a chemical reaction involving the use of ozone to break down certain types of molecules, specifically alkenes. The third line of text reads \"gives two carboxylic acids by cleavage of triple bond,\" which describes the outcome of the ozonolysis reaction mentioned in the second line. The text is aligned to the left and is written in a sans-serif font. The overall layout is simple and clear, designed for easy reading and comprehension.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S2",
+    "style": "T4",
+    "camera": "C8"
+  },
+  {
+    "text": "The image features a stylized illustration of a red and black running shoe against a solid blue background. The shoe is depicted with a white sole and black laces. The upper part of the shoe is red with black accents, and the design includes a pattern that resembles a leaf or a series of curved lines. The shoe is oriented with the toe pointing upwards and the heel downwards.\n\nAbove the shoe, there is text in white with a black outline that reads \"COURS, REDWANE, COURS!\" The text is arranged in three lines, with \"COURS\" repeated twice, emphasizing the word. The font is bold and capitalized, giving it a pronounced presence in the image.\n\nIn the bottom right corner, there is a small signature or logo that appears to be a stylized representation of the letter 'N' with a line above it. The overall image has a playful and graphic quality, with the use of bright colors and simple shapes to convey the subject.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S8",
+    "style": "T6",
+    "camera": "C5"
+  },
+  {
+    "text": "The image displays a presentation slide with a dark background and text predominantly in white and green. At the top, the logo of \"PAINTBOX LABORATORIES\" is visible in green. Below the logo, the slide is titled \"Past Tours & Programs\" in white text.\n\nA bulleted list follows, detailing various national and local promotions. The items listed are as follows:\n\n- Budweiser Super Fest\n- The First Look Tour Three Acts tour in 20 schools and malls. Sponsored by VERB\n- Hennessy Privilege Tour\n- Grey Goose Hip Hop Club Tour\n- The Jonas Brothers Anti-Drug Tour 20 Markets, 20 schools, sponsored by ONDCP Scream Tour\n- Making of Music Program Video\n- Young Pop Power Tour\n\nEach bullet point is preceded by a green square bullet. The text is aligned to the left and is presented in a clear, sans-serif font. The slide appears to be part of a larger presentation, possibly related to marketing or event planning, given the nature of the listed tours and programs.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S11",
+    "style": "T2",
+    "camera": "C8"
+  },
+  {
+    "text": "The image displays a graphic design with a central white rectangular area surrounded by a green border on the top and bottom, and a blue border on the left side. Within the white area, there is text at the top that reads \"Crowe Realty (2 x 2)\" in black font. Below this text, there is a logo for \"The Reporter\" featuring a building with a dome and the text \"DESIGN BY AMY HAISTEN\" in black font. The background of the image is a textured green on the top and a textured blue on the left, with a white background filling the rest of the space.\n\nOn the left and right sides of the white area, there are clusters of yellow flowers with a green stem and leaves. The flowers are in full bloom with multiple petals, and they are positioned at the corners of the image, framing the central text and logo. The flowers on the left are slightly overlapping the green border, while the flowers on the right are overlapping the blue border. The overall layout of the image is symmetrical with the text and logo centered.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S6",
+    "style": "T6",
+    "camera": "C4"
+  },
+  {
+    "text": "The image is a digital illustration predominantly in shades of blue, red, and white. On the left side, large white text reads \"MICROSOFT'S FIRST LEAGUE\" against a dark blue background with a stylized city skyline silhouette at the bottom. Below the text, there is a white rectangular button with a red border that says \"JOIN MICROSOFT'S FIRST LEAGUE\" in black text, accompanied by a rightward-pointing arrow.\n\nOn the right side, there is a cartoon-style male figure with dark hair, smiling, and looking directly at the viewer. He is wearing a superhero costume with a blue top that has a red collar and a badge with the number \"1st\" on his chest. The costume also includes a red cape that flows behind him. His hands are placed on his hips, and he has a confident stance.\n\nThe overall layout is clean and modern, with a clear division between the textual information on the left and the character illustration on the right. The image has a playful and inviting tone, likely intended to promote a new initiative or program related to Microsoft.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S6",
+    "style": "T3",
+    "camera": "C2"
+  },
+  {
+    "text": "The image displays a cross-stitch pattern with a grid background, featuring the text \"STATIC VS MOVING BED BIOFILTERS\" in capital letters. The text is arranged in a column, with \"STATIC\" at the top, followed by \"VS\" in the middle, and \"MOVING BED BIOFILTERS\" at the bottom. The letters are in a bold, sans-serif font, and the color of the text contrasts with the grid, making it stand out.\n\nThe grid itself is composed of small squares, creating a uniform texture across the image. The squares are shaded in a gradient from light to dark gray, giving the impression of a three-dimensional grid. The cross-stitching appears to be in white, with the stitches forming the letters of the text.\n\nThe overall layout of the image is centered, with the text occupying the majority of the space. The cross-stitching is precise, with each letter and character clearly defined. The image does not contain any additional objects or elements beyond the text and the grid. The colors used in the image are primarily grayscale, with the exception of the white cross-stitching.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S14",
+    "style": "T1",
+    "camera": "C5"
+  },
+  {
+    "text": "The image displays a blue float with the brand name \"CONNELLY\" prominently featured in yellow capital letters at the top. Below the brand name, the words \"PARTY COVE MINI WEDGIE\" are written in smaller yellow font. The float has a unique wedge-like shape, with the narrower end at the top and the wider end at the bottom. The texture of the float appears smooth and glossy. On the lower right side of the float, there is a warning label with text in white against a black background, which includes safety instructions and warnings in English. The background of the image is plain white, emphasizing the float as the central object. The overall color scheme is blue and yellow, with the blue being the dominant color of the float.",
+    "source": "densefusion",
+    "lang": "en",
     "subject": "S10",
     "style": "T1",
-    "camera": "C1",
-    "source": "parti_prompts",
-    "language": "en"
+    "camera": "C3"
   },
   {
-    "text": "A wall in a royal castle. There are two paintings on the wall. The one on the left a detailed oil painting of the royal raccoon king. The one on the right a detailed oil painting of the royal raccoon queen. A cute dog looking at the two paintings, holding a sign saying 'plz conserve'",
-    "subject": "S1",
-    "style": "T2",
-    "camera": "C1",
-    "source": "parti_prompts",
-    "language": "en"
-  },
-  {
-    "text": "a blue cow is standing next to a tree with red leaves and yellow fruit. the cow is standing in a field with white flowers. impressionistic painting",
-    "subject": "S8",
-    "style": "T2",
-    "camera": "C1",
-    "source": "parti_prompts",
-    "language": "en"
-  },
-  {
-    "text": "Anime illustration of the Great Pyramid sitting next to the Parthenon under a blue night sky of roiling energy, exploding yellow stars, and chromatic blue swirls",
-    "subject": "S12",
-    "style": "T3",
-    "camera": "C1",
-    "source": "parti_prompts",
-    "language": "en"
-  },
-  {
-    "text": "a robot painted as graffiti on a brick wall. a sidewalk is in front of the wall, and grass is growing out of cracks in the concrete.",
-    "subject": "S6",
-    "style": "T1",
-    "camera": "C1",
-    "source": "parti_prompts",
-    "language": "en"
-  },
-  {
-    "text": "a blue semi-truck and its trailer jumping over a row of motorcycles. there are metal ramps on either side of the motorcycles.",
+    "text": "The image displays a two-by-two matrix of different combustion models, each occupying a quadrant of the matrix. The matrix is divided by bold black lines that intersect at the center of the image. The top left quadrant is labeled \"PREMIXED\" and contains three models: \"Infinately Fast Chemistry,\" \"Bray-Moss-Libby,\" and \"Coherent Flame Eddy Break-Up.\" The top right quadrant is labeled \"NON-PREMIXED\" and includes two models: \"Conserved Scalar Equilibrium\" and \"Pdf Transport Models.\" The bottom left quadrant, labeled \"FINITE RATE CHEMISTRY,\" lists two models: \"Flamelet based on G-evolution\" and \"Lineair Eddy Model.\" The bottom right quadrant, also labeled \"FINITE RATE CHEMISTRY,\" contains one model: \"Flamelet based on Mixture Fraction Conditional Moment Closure.\"\n\nEach model is written in a sans-serif font, and the background of the matrix is white. The text is primarily in black, with the exception of the labels \"PREMIXED\" and \"NON-PREMIXED,\" which are in blue. The labels \"FINITE RATE CHEMISTRY\" are in purple, and the text within each quadrant is in shades of blue, black, and purple. The overall layout is clean and organized, with each model clearly separated and easily distinguishable.",
+    "source": "densefusion",
+    "lang": "en",
     "subject": "S7",
-    "style": "T1",
-    "camera": "C1",
-    "source": "parti_prompts",
-    "language": "en"
+    "style": "T4",
+    "camera": "C5"
   },
   {
-    "text": "a hot air balloon with a yin-yang symbol, with the moon visible in the daytime sky",
+    "text": "The image displays a graphical representation of the 'Mountain of Purgatory' with a list of different terraces and areas, each associated with a particular sin or virtue. The background is a blend of blue and white hues, creating a soft, ethereal effect. The text is arranged in a column on the left side, with each line representing a different level or state within the Purgatory. The font is white with a slight shadow, enhancing readability against the lighter background.\n\nThe list includes 'Terracial Paradise,' 'Terrace 7: Lust,' 'Terrace 6: Gluttony,' 'Terrace 5: Avarice and Prodigality,' 'Terrace 4: Sloth,' 'Terrace 3: Wrath,' 'Terrace 2: Envy,' 'Terrace 1: Pride,' 'Valley of Rulers,' and 'Ante-Purgatory.' These are likely references to the different stages or states within the concept of Purgatory as described in Dante Alighieri's 'The Divine Comedy.'\n\nThe overall layout is clean and organized, with a clear separation between the text and the background. The image does not contain any discernible textures or additional objects beyond the text and the abstract background. The color palette is limited, focusing on shades of blue and white, which contribute to the image's serene and otherworldly atmosphere.",
+    "source": "densefusion",
+    "lang": "en",
     "subject": "S5",
-    "style": "T1",
-    "camera": "C1",
-    "source": "parti_prompts",
-    "language": "en"
-  },
-  {
-    "text": "a cream-colored labradoodle wearing glasses and black beret teaching calculus at a blackboard",
-    "subject": "S2",
-    "style": "T3",
-    "camera": "C1",
-    "source": "parti_prompts",
-    "language": "en"
-  },
-  {
-    "text": "a mixed media image with a photograph of a woman with long orange hair over a background that is a sketch of a city skyline",
-    "subject": "S1",
     "style": "T7",
-    "camera": "C1",
-    "source": "parti_prompts",
-    "language": "en"
+    "camera": "C8"
   },
   {
-    "text": "Painting of a panic-stricken creature, simultaneously corpselike and reminiscent of a sperm or fetus, whose contours are echoed in the swirling lines of the blood-red sky",
-    "subject": "S5",
-    "style": "T2",
-    "camera": "C1",
-    "source": "parti_prompts",
-    "language": "en"
-  },
-  {
-    "text": "A photo of a Ming Dynasty vase on a leather topped table.",
-    "subject": "S13",
-    "style": "T1",
-    "camera": "C1",
-    "source": "parti_prompts",
-    "language": "en"
-  },
-  {
-    "text": "purple lego dollhouse with a pool and a swing",
-    "subject": "S10",
-    "style": "T4",
-    "camera": "C1",
-    "source": "parti_prompts",
-    "language": "en"
-  },
-  {
-    "text": "a handpalm with leaves growing from it",
+    "text": "The image is a collage of four photographs related to the Hartley Botanic stand at an event. In the top left photo, a signboard with the text \"HARTLEY BOTANIC SINCE 1938\" is visible, with a glasshouse structure in the background. The top right photo shows a close-up of a transparent award plaque with the text \"THE ROYAL HORTICULTURAL SOCIETY 4 STAR TRADESTAND AWARD RHS Hampton Court Palace Flower Show 2016 Harley Botanic Ltd.\"\n\nThe bottom left photo displays a lush garden with a variety of plants, including tall grasses, flowering plants with purple and yellow blooms, and green foliage. The garden appears well-maintained and vibrant. In the bottom right photo, a neatly trimmed grass pathway is bordered by a variety of plants and flowers, leading to a brick wall on the right side. The plants are green and show different textures and heights, creating a visually appealing pathway. The overall layout and composition of the collage highlight the botanical theme and the accolades received by the stand.",
+    "source": "densefusion",
+    "lang": "en",
     "subject": "S8",
-    "style": "T1",
-    "camera": "C1",
-    "source": "parti_prompts",
-    "language": "en"
-  },
-  {
-    "text": "an illustration of a baby daikon radish in a tutu walking a dog",
-    "subject": "S1",
-    "style": "T3",
-    "camera": "C1",
-    "source": "parti_prompts",
-    "language": "en"
-  },
-  {
-    "text": "a living room with a large Egyptian statue in the corner",
-    "subject": "S4",
-    "style": "T1",
-    "camera": "C1",
-    "source": "parti_prompts",
-    "language": "en"
-  },
-  {
-    "text": "The collision of two black holes in the center of a galaxy.",
-    "subject": "S14",
-    "style": "T1",
-    "camera": "C1",
-    "source": "parti_prompts",
-    "language": "en"
-  },
-  {
-    "text": "an abstract oil painting in deep red and black with a thick patches of white",
-    "subject": "S14",
-    "style": "T2",
-    "camera": "C1",
-    "source": "parti_prompts",
-    "language": "en"
-  },
-  {
-    "text": "Oil painting of a giant robot made of sushi, holding chopsticks.",
-    "subject": "S3",
-    "style": "T2",
-    "camera": "C1",
-    "source": "parti_prompts",
-    "language": "en"
-  },
-  {
-    "text": "Portrait of a gecko wearing a train conductor’s hat and holding a flag that has a yin-yang symbol on it. Chinese ink.",
-    "subject": "S13",
-    "style": "T2",
-    "camera": "C1",
-    "source": "parti_prompts",
-    "language": "en"
-  },
-  {
-    "text": "A rusty spaceship blasts off in the foreground. A city with tall skyscrapers is in the distance, with a mountain and ocean in the background. A dark moon is in the sky. realistic high-contrast anime illustration.",
-    "subject": "S5",
-    "style": "T3",
-    "camera": "C8",
-    "source": "parti_prompts",
-    "language": "en"
-  },
-  {
-    "text": "a sport car melting into a clock, surrealist painting in the style of Salvador Dali",
-    "subject": "S7",
-    "style": "T2",
-    "camera": "C1",
-    "source": "parti_prompts",
-    "language": "en"
-  },
-  {
-    "text": "a capybara made of voxels sitting in a field",
-    "subject": "S5",
-    "style": "T4",
-    "camera": "C1",
-    "source": "parti_prompts",
-    "language": "en"
-  },
-  {
-    "text": "A cartoon house with red roof",
-    "subject": "S6",
-    "style": "T3",
-    "camera": "C1",
-    "source": "parti_prompts",
-    "language": "en"
-  },
-  {
-    "text": "A vector illustration of a tree",
-    "subject": "S8",
-    "style": "T3",
-    "camera": "C1",
-    "source": "parti_prompts",
-    "language": "en"
-  },
-  {
-    "text": "a futuristic city in synthwave style",
-    "subject": "S14",
     "style": "T7",
-    "camera": "C1",
-    "source": "parti_prompts",
-    "language": "en"
+    "camera": "C2"
   },
   {
-    "text": "a cartoon of a train going to the moon",
-    "subject": "S7",
-    "style": "T3",
-    "camera": "C1",
-    "source": "parti_prompts",
-    "language": "en"
-  },
-  {
-    "text": "the letters P A X forming a very simple outline of an elephant's shape.  the elephant is facing left. vector art, orange logo.",
-    "subject": "S11",
-    "style": "T3",
-    "camera": "C1",
-    "source": "parti_prompts",
-    "language": "en"
-  },
-  {
-    "text": "cinematic film still, photo portrait of a red Dragonborn, from dungeons and dragons, full plate, analog film grain",
-    "subject": "S1",
-    "style": "T5",
-    "camera": "C1",
-    "source": "genai_bench",
-    "language": "en"
-  },
-  {
-    "text": "Buildings on fire, old film still,long exposure,film grain,dull colours",
-    "subject": "S6",
-    "style": "T5",
-    "camera": "C7",
-    "source": "genai_bench",
-    "language": "en"
-  },
-  {
-    "text": "beautiful witch, hyper detailed, flowing psychadelic background intricate and detailed, 8 k, octane render",
-    "subject": "S1",
-    "style": "T4",
-    "camera": "C1",
-    "source": "genai_bench",
-    "language": "en"
-  },
-  {
-    "text": "Photo of a mega Lego space station inside a kid's bedroom.",
+    "text": "This image displays a 3D rendering of a wrist cast. The cast is predominantly white with a smooth, glossy texture and has a curved design to fit the contours of a wrist. The interior of the cast is visible, showing a pattern of small, round holes that are likely for ventilation. On the side of the cast, there is text that reads \"moollean casts\" in a lowercase, sans-serif font, followed by the phrase \"heal in style\" in a smaller font size. The background is a neutral gray, providing a contrast that highlights the cast. The overall composition is clean and minimalistic, focusing attention on the cast itself.",
+    "source": "densefusion",
+    "lang": "en",
     "subject": "S4",
     "style": "T4",
-    "camera": "C1",
-    "source": "genai_bench",
-    "language": "en"
+    "camera": "C5"
   },
   {
-    "text": "Create a photorealistic, cinematic, high-quality 4k background for a mini juicer. Set it in a modern, well-lit kitchen with fresh fruits and vegetables nearby. Use soft, natural lighting and a clean, minimalistic countertop. Highlight the juicer's sleek design with subtle bokeh in the background. Ensure the image is in ultra-high-definition 4k to capture every detail.",
+    "text": "The image displays a three-dimensional molecular model of theobromine, a compound found in the leaves of the yerba mate plant. The model is set against a black background, with the molecule itself rendered in gray, blue, and red colors. The gray atoms represent the central carbon atom, which is bonded to four oxygen atoms. Attached to the carbon are two nitrogen atoms, forming a ring with a red oxygen atom. This ring is connected to a blue oxygen atom, which is bonded to a yellow oxygen atom. The yellow oxygen atom is connected to a red oxygen atom, which is bonded to a gray oxygen atom.\n\nBelow the molecular model, there is text in yellow and white that reads \"THEOBROMINE\" and \"Yerba Mate qualities - RESEARCH\". Additionally, there is a URL in white text that says \"WWW.TEAMATESHOP.COM\". The text and the molecular model are the main focus of the image, with no other objects or elements present. The layout is simple, with the molecular model centered and the text positioned at the bottom of the image. The colors used for the text contrast with the black background, making it stand out.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S3",
+    "style": "T4",
+    "camera": "C8"
+  },
+  {
+    "text": "The image displays a graphic with a predominantly red and purple color scheme. In the center, there is white text that reads \"AMD Radeon Software Adrenalin 2019.\" The text is arranged in a stacked format with \"AMD Radeon Software\" on the top line, \"Adrenalin\" in a larger font size in the middle, and \"2019\" on the bottom line. The background features a swirling pattern of red and purple hues, creating a dynamic and abstract visual effect. The red areas have a smoother texture, while the purple regions have a more pixelated appearance, suggesting a digital or technological theme. The overall design is modern and sleek, likely associated with a software update or product branding for AMD Radeon graphics cards.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S7",
+    "style": "T7",
+    "camera": "C8"
+  },
+  {
+    "text": "This image features a stylized illustration of a group of male figures, likely basketball players, in various poses. The central figure is prominently displayed in the foreground, wearing a crown and a cape, holding a sword in his right hand. He is flanked by five other figures, each wearing a basketball jersey with the number \"2\" visible on one of the jerseys. The figures are depicted in a dynamic array, suggesting movement and energy.\n\nThe background is a gradient of purple and pink hues, with bokeh effects that give a sense of depth. The text \"LEBRON CAVALIERS\" is visible, which is likely a reference to the Cleveland Cavaliers, an NBA team. The overall composition of the image is vibrant and colorful, with a focus on the central figure who is larger in scale compared to the other figures. The illustration style is reminiscent of comic book art, with bold lines and vivid colors.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S3",
+    "style": "T3",
+    "camera": "C6"
+  },
+  {
+    "text": "The image is a collage of four photographs showcasing different areas of a Monolithic Cabin. The top left photo displays a living area with a blue sofa, a wooden coffee table, and a floor lamp. A window allows natural light into the room, and a painting hangs on the wall. The top right photo shows a kitchen with wooden cabinets, a refrigerator, and a microwave on the countertop. The bottom left photo depicts a bedroom with a bed covered in a patterned blanket and multiple pillows. A round wall clock is visible above the bed, and a window provides a view of the outside. The bottom right photo presents a hallway with wooden flooring and a wooden cabinet with drawers. The walls are painted white, and the ceiling is arched, characteristic of a Monolithic Dome structure. The text overlay on the image reads: \"The Monolithic Cabin is a modified Monolithic Dome – like a tunnel with rounded ends. These domes all have a diameter (width) of 12 feet, but their total length and interior space depends on the model.\"",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S3",
+    "style": "T7",
+    "camera": "C2"
+  },
+  {
+    "text": "The image displays a textual presentation with a blue background that transitions from a lighter shade at the top to a darker shade at the bottom. The text is predominantly in white with some parts highlighted in yellow. The heading \"Subsequent Treatment Rounds\" is in a larger font size than the rest of the text.\n\nThe main body of text explains a process related to Emotional Freedom Techniques (EFT), also known as tapping. It outlines the steps to modify the opening statement during subsequent treatment rounds based on the severity of a problem. The text suggests changing the opening statement when the problem is not completely resolved but still noticeable. It provides examples of how to modify the statement and emphasizes that any tapping done is beneficial.\n\nAt the bottom of the image, there is a website address \"www.EFTireland.net\" and an email \"info@eftireland.net\" in white text. The layout is simple and informative, designed to convey the instructions clearly. The text is aligned to the left and is presented in a straightforward, easy-to-read font.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S9",
+    "style": "T5",
+    "camera": "C8"
+  },
+  {
+    "text": "The image displays a series of three linear illustrations of the city skyline of Badajoz, presented in a vertical sequence. Each illustration is rendered in a different color and features a simplified representation of the city's architecture.\n\nThe top illustration is in a gradient of pink to purple, with the word \"Badajoz\" prominently displayed in the center. The middle illustration is in a monochromatic black and white scheme, with the same word \"Badajoz\" below the skyline. The bottom illustration is in a gradient of blue to green, again with the word \"Badajoz\" centered.\n\nEach skyline depiction includes recognizable architectural silhouettes such as towers, spires, and buildings with varying rooflines. The illustrations are stylized and abstract, with no detailed textures or shading, emphasizing the outlines and shapes of the structures.\n\nThe word \"Badajoz\" is written in a bold, sans-serif font, and is placed directly below each skyline. The background of the image is white, which contrasts with the colorful illustrations and the black text. The overall layout is clean and organized, with each illustration separated by white space.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S6",
+    "style": "T7",
+    "camera": "C4"
+  },
+  {
+    "text": "The image displays a title screen from a movie, predominantly in black and white with red accents. The title \"missing.\" is prominently featured in the center in a large, red, distressed font. Above the title, in smaller white text, it reads \"An EDWARD LEWIS Production A COSTA-GAVRAS Film\" and below the title, in a smaller white font, the names \"JACK LEMMON SISSY SPACEK MELANIE MAYRON JOHN SHEA\" are listed.\n\nThe screen also contains additional information in white text, which includes credits for the production crew. It mentions \"SCREENPLAY BY COSTA-GAVRAS & DONALD STEWART,\" \"Based on the book by THOMAS HAUSER,\" \"Music by VANGELIS,\" \"Produced by EDWARD and MILDRED LEWIS,\" \"Costa-Gavras Directed by COSTA-GAVRAS,\" and \"Read the AVON Book.\" At the bottom, there is a copyright notice that states \"Copyright © 1981 by UNIVERSAL CITY STUDIOS, INC.\"\n\nThe layout of the text is organized and hierarchical, with the most important information at the top and bottom, and the supporting details in the middle. The use of red for the title creates a stark contrast against the black background, drawing attention to the word \"missing.\" The overall design is simple and informative, providing essential details about the film's production and creative team.",
+    "source": "densefusion",
+    "lang": "en",
     "subject": "S3",
     "style": "T5",
-    "camera": "C6",
-    "source": "genai_bench",
-    "language": "en"
+    "camera": "C5"
   },
   {
-    "text": "hyperrealism backstreet, in front of a massive building, cinematic, neon signs, high resolution, realistic lighting, octane render, hyper realistic, 8k",
-    "subject": "S6",
-    "style": "T4",
-    "camera": "C1",
-    "source": "genai_bench",
-    "language": "en"
-  },
-  {
-    "text": "Design Style: Emblem\n\nBusiness: Shoe company\n\nBrand Name: Solemates\n\nDescription: Develop an emblem logo for Solemates featuring a geometric shoe shape at the center with abstract lines radiating outwards, symbolizing growth and movement. Surround the design with a wreath of laurel leaves to evoke a sense of achievement and success. Use a color palette of deep purple and gold on a white background for a luxurious feel.",
-    "subject": "S11",
-    "style": "T6",
-    "camera": "C1",
-    "source": "genai_bench",
-    "language": "en"
-  },
-  {
-    "text": "movie scene screencap, cinematic footage. thanos smelling a little yellow rose. extreme wide angle,",
+    "text": "The image displays a 3D rendering of a Nelson Coconut Lounge Chair. The chair features a curved, shell-like backrest and seat, both upholstered in a light beige fabric with a visible texture that resembles leather. The seat is attached to a dark brown, wooden armrest that extends to form the base of the chair. The chair is supported by a metallic frame with four slender, angled legs that converge at the floor, providing stability. The background is a gradient from white at the top to a light gray at the bottom, which contrasts with the chair and emphasizes its design. The text \"COCONUT CHAIR 3D LUXEON\" is overlaid on the image in a bold, sans-serif font, with \"COCONUT CHAIR\" in larger letters and \"3D LUXEON\" in smaller letters below. The text is in black, which stands out against the lighter background. The overall composition of the image is centered, with the chair positioned in the middle, allowing for a clear view of its design and features.",
+    "source": "densefusion",
+    "lang": "en",
     "subject": "S5",
-    "style": "T5",
-    "camera": "C3",
-    "source": "genai_bench",
-    "language": "en"
-  },
-  {
-    "text": "1girl, Ahri, cat girl, drawn by unreal engine",
-    "subject": "S2",
     "style": "T4",
-    "camera": "C1",
-    "source": "genai_bench",
-    "language": "en"
+    "camera": "C4"
   },
   {
-    "text": "photorealistic futuristic black and white mech sitting in a factory at night, heavy rain, giant metal cables, cinematic",
-    "subject": "S14",
-    "style": "T5",
-    "camera": "C1",
-    "source": "genai_bench",
-    "language": "en"
-  },
-  {
-    "text": "Create an image for an educational presentation slide. The image should have a professional and clean design. Include the following text elements prominently:\n\n'Welcome to the lesson on' (smaller font)\n'Definition and Purpose of Hedging' (larger, bold font)\n'in the module' (smaller font)\n'Introduction to Hedging Strategies' (large, bold font)\nUse a neutral background with subtle financial elements, such as graphs or charts, to suggest the topic of hedging without overwhelming the text. The overall style should be modern and academic.",
-    "subject": "S10",
-    "style": "T6",
-    "camera": "C1",
-    "source": "genai_bench",
-    "language": "en"
-  },
-  {
-    "text": "Robot lawyer, 1980s courtroom, black suit with power shoulders, tie, gleaming metal face, analog gauges, surrounded by vintage wood paneling, brass accents, ray of sunlight highlighting dust motes in air, retro futuristic, dramatic lighting, digital painting.",
-    "subject": "S14",
-    "style": "T3",
-    "camera": "C8",
-    "source": "genai_bench",
-    "language": "en"
-  },
-  {
-    "text": "earth is a hedgehog bristling with its spikes, the spikes are bayonets of marching world war 1 armies, surrealist, 1915, socialist realist artwork of decadent Europe, elaborate, 8k uhd top quality masterpiece shocking color drawing",
-    "subject": "S2",
-    "style": "T7",
-    "camera": "C1",
-    "source": "genai_bench",
-    "language": "en"
-  },
-  {
-    "text": "Cologne’s cathedral castle towers like bowling pins are grimacing smoke-streaked under world war I cannonball bombardments, graphic elaborate scene in war-ravaged city of cologne in WWI, surrealist, 1915, socialist realist artwork of decadent Europe, elaborate, 8k uhd top quality masterpiece shocking color drawing",
-    "subject": "S6",
-    "style": "T7",
-    "camera": "C1",
-    "source": "genai_bench",
-    "language": "en"
-  },
-  {
-    "text": "hypno-horse in synthwave style, dancing in the middle of an epic battle",
+    "text": "The image is a collage of two photographs. On the left, there is a single black racing tire with visible tread patterns and the text \"Kooks\" on its sidewall. The tire is resting on a concrete floor with a shadow cast by an unseen object. The background is a plain, light-colored wall.\n\nOn the right, the photograph shows a long black fatigue mat with a grid pattern, stretched out on a red shelving unit filled with various tools and equipment. The shelving unit has multiple compartments, each holding a single tool, and the tools appear to be wrenches. The floor is a grayish color, and the lighting in both photographs is natural, suggesting the images were taken outdoors or in a well-lit garage or workshop.",
+    "source": "densefusion",
+    "lang": "en",
     "subject": "S10",
     "style": "T7",
-    "camera": "C1",
-    "source": "genai_bench",
-    "language": "en"
+    "camera": "C3"
   },
   {
-    "text": "christina hendricks at age 32 in dark green raincoat, film noir mood",
+    "text": "This image displays a pair of Josephine High lace kneesocks in a shade of rose, specifically number 331 Vieux. The socks are presented against a textured white fabric background. The socks are positioned with one rolled up and the other laid flat, revealing the ribbed texture and lace detailing at the top. A tag attached to the rolled sock provides product information, including the brand \"collegeien,\" the color \"February rose,\" and the size \"FRANÇAISE.\" Below the socks, there is a bow tie with a plaid pattern in shades of pink and white. The overall composition is neatly arranged, with the socks and bow tie placed centrally for emphasis. The color palette is soft and pastel, with the rose color of the socks standing out against the white background.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S8",
+    "style": "T2",
+    "camera": "C8"
+  },
+  {
+    "text": "The image displays a vibrant firework display against a dark night sky. Multiple fireworks are captured in various stages of explosion, creating a dynamic and colorful scene. The fireworks exhibit a range of colors, including red, blue, white, and orange, with some emitting long trails of sparks. The fireworks are of different sizes and are positioned at different heights and angles, suggesting a three-dimensional space.\n\nIn the foreground, there is text overlaid on the image. The text reads \"WUD & STAGEX FIREWORKS FINALE SATURDAY, AUGUST 24 11 PM\" in white and red font, with the logo of South County Co-op to the right. The text is clear and legible, contrasting with the darker background of the fireworks.\n\nThe composition of the image is such that the fireworks are the central focus, with the text providing context to the event being depicted. The layout of the image is balanced, with the text at the bottom and the fireworks occupying the majority of the space above. The colors of the fireworks are bright and saturated, standing out against the dark backdrop. The overall impression is one of a celebratory event, captured in the midst of a firework display.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S9",
+    "style": "T4",
+    "camera": "C8"
+  },
+  {
+    "text": "The image is a collage of two photographs. The upper photo shows a close-up of a gray outdoor sprinkler system with the brand \"Hunter\" visible on the top panel. A green and white label with the text \"AIRWAX\" and a phone number \"973-366-8754\" is affixed to the center of the panel. The lower photo depicts a lawn with green grass, and a sprinkler head is actively spraying water onto the grass, creating a mist. In the foreground, there is a neon green tag with the text \"AIRWAX\" and \"Watering System\" visible, suggesting the brand of the sprinkler system. The background of the lower photo is blurred, but it appears to be a residential outdoor setting with a lawn and a sidewalk. The overall condition of the sprinkler system in the lower photo seems to be in good working order, as evidenced by the active watering of the lawn.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S11",
+    "style": "T7",
+    "camera": "C2"
+  },
+  {
+    "text": "The image displays a large text overlay on a background featuring industrial structures. The text is promotional material for ROT systems ROTARY INCINERATORS by G. &G. IMPIANTI Sas of Ing.Gallarati Carlo & C. It lists services for municipal waste big incineration plants (MW), hospitals and medical waste plants (HW), industrial special - hazard waste plants (HW), and RDF, pellet, fluff exploitation plants. It mentions the inclusion of automatic loading, ash unloading, stack gas cleaning system at CEE norms, turbogenerators for electric energy and heat recovery. The company's website, www.inggallarati.com, is also mentioned.\n\nIn the background, there are two large industrial buildings with flat roofs. The building on the left is partially obscured by the text overlay and appears to have a white facade, while the building on the right is mostly visible and has a blue facade with a curved roofline. Between the buildings, there is a clear blue sky. The text is in bold red and green colors, making it stand out against the industrial backdrop.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S6",
+    "style": "T4",
+    "camera": "C8"
+  },
+  {
+    "text": "The image displays a collection of black indexable lathe tools with white and pink detailing, arranged vertically within a pink and white box. The tools have a series of triangular cutting inserts at their tips, designed for wood turning. Each tool has multiple bolts, with a total of 12 bolts visible, used for securing the inserts. The background is white, and the tools are the central focus of the image.\n\nAt the top of the image, there is a large blue text \"PRECO\" with a green circular badge with a leaf symbol and the text \"100%\". Below the tools, additional text reads \"Qingdao preco imp. & exp. co.\" in black font against the white background. The overall composition is simple, with the tools and text sharply in focus against the plain backdrop.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S8",
+    "style": "T3",
+    "camera": "C3"
+  },
+  {
+    "text": "The image displays a textual presentation with a purple background and white text. The title at the top reads \"The Peace Policy Ends\" in bold, larger font. Below the title, there are four bullet points, each describing a historical event. The first bullet point states, \"This attack became known as the Warren Wagontrain Raid.\" The second bullet point mentions \"Sataanta and two other Kiowa chiefs, Big Tree and Sataank, were arrested and taken back for trial.\" The third bullet point recounts an unsuccessful escape attempt by \"Sataank as killed along the way,\" and the subsequent trial of \"Sataanta and Big Tree\" who were found guilty and sentenced to hang. The final bullet point reveals that \"Federal officials were afraid the death sentence would start a war so each chief was paroled.\" The text is aligned to the left and there are no images or other graphics present.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S7",
+    "style": "T5",
+    "camera": "C5"
+  },
+  {
+    "text": "The image displays a square sticker with a watercolor illustration of a red door. Above the door, the number \"932\" is painted in white. The door has a golden doorknob and a mail slot, and is flanked by two potted plants with green foliage. Above the door, two lanterns are depicted, one on each side. Below the door, a doormat is illustrated with the word \"Welcome\" written across it. The illustration is set against a white background.\n\nBelow the artwork, there is text in a serif font that reads \"We've Moved\" followed by the address \"932 Grant Street Bullard, Texas, 75762\". The text is black, providing a contrast to the white background. The overall design of the sticker is symmetrical and balanced, with the elements evenly distributed around the central door. The illustration has a soft, painterly texture, giving it a gentle and welcoming appearance.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S6",
+    "style": "T2",
+    "camera": "C8"
+  },
+  {
+    "text": "The image displays a white plastic bottle with a red cap on a green background. The bottle has a label with the brand name \"Runking\" in red and green text, and additional Chinese characters in red. Below the brand name, there are three lines of text in English: \"Thanksgiving altruistic,\" \"Social commitment.\" The bottle has a rectangular shape with a slightly tapered design, a handle on the top, and a slot on the front for pouring. The cap appears to be a screw-top design. The green background is uniform in color and texture, providing a contrasting backdrop to the white bottle. The overall image is a product advertisement or label design for a water soluble cutting oil by the brand Runking.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S10",
+    "style": "T6",
+    "camera": "C4"
+  },
+  {
+    "text": "The image displays a close-up of Godzilla's open mouth, showcasing its sharp teeth and the rough, bumpy texture of its inner mouth. The color palette is dominated by dark hues, with the interior of Godzilla's mouth appearing in shades of black and brown, contrasting with the lighter blue-gray background. The creature's teeth are uneven and numerous, with some teeth protruding more than others, creating a jagged edge to the mouth.\n\nIn the foreground, there is text overlaid on the image. The text reads \"WHY AM I NOT IN US THEATERS?\" in white capital letters, which is positioned at the top of the image. Below this text, in the bottom right corner, is the hashtag \"#DRAFTGODZILLA\" in white capital letters. Additionally, there is a logo in the bottom left corner that reads \"ALAMO DRAFTHOUSE CINEMA\" in white capital letters, set against a red background with a white border.\n\nThe image composition focuses on the contrast between the sharpness of Godzilla's teeth and the softness of the background, drawing attention to the creature's menacing presence. The text elements suggest a promotional message related to the movie \"Resurgence\" and a campaign to encourage the Alamo Drafthouse to show the film in US theaters.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S4",
+    "style": "T5",
+    "camera": "C2"
+  },
+  {
+    "text": "The image displays a table titled \"Cepillos El Cazador S.A. de C.V. Hardwood Blocks Surplus Inventory.\" It lists four items with their respective codes, descriptions, available quantities, unit prices, and total amounts. The items are:\n\n1. \"7 Acid Scrub Brush Block\" with code 1-12-0028, available quantity 4,189, unit price $0.32, total amount $1,340.48.\n2. \"12\" Smoothing Brush Block\" with code 1-12-0031, available quantity 2,784, unit price $0.80, total amount $2,250.20.\n3. \"8 Deck Scrub Brush Block\" with code 1-12-1006, available quantity 5,178, unit price $0.32, total amount $1,696.59.\n\nBelow the table, there is a section titled \"TOTAL AMOUNT\" with a subtotal of $17,167.12, a line through it, and a handwritten note asking for $10,300.27 F.O.B. Laredo, TX. Additionally, there is contact information for Eduardo Casas at genercia@cepilloselcazador.com.\n\nThe table is accompanied by three photographs of wooden blocks, each with a hole in the center, presumably the hardwood blocks mentioned in the inventory. The blocks are shown from different angles, with one block having a label attached to it. The background of the image is white, and the text is primarily in black with some red highlights.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S10",
+    "style": "T2",
+    "camera": "C3"
+  },
+  {
+    "text": "This image features a red, four-armed, fidget spinner toy with a design theme based on the video game \"Crash Bandicoot N. Sane Trilogy.\" Each arm of the fidget spinner has a circular cutout displaying a different image. The central circle shows a stylized, animated character with a red mask, yellow eyes, and a brown body, which is reminiscent of the character Crash Bandicoot. The three outer circles each contain a different image: the top left circle shows a green background with a brown mask and a white feather; the top right circle has a similar green background with a brown mask and a white feather; the bottom left circle displays a brown mask with a white feather and a green background; and the bottom right circle mirrors the top left with a green background and a brown mask with a white feather. The toy is set against a plain white background, emphasizing its vibrant red color and the contrasting images within the cutouts.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S14",
+    "style": "T3",
+    "camera": "C4"
+  },
+  {
+    "text": "The image displays two Anycubic wash and cure machines side by side against a white background. Both machines have a transparent yellow chamber with measurement markings, and a black base with a digital control panel. The left machine has a figurine inside the chamber, while the right one has a blender. The machines are labeled with the Anycubic logo and the text \"EASY RESIN PRINTING\" prominently displayed above them. Below the machines, the text \"WASH & CURE MACHINE\" is visible, and the phrase \"TWO IN ONE STATION\" is positioned at the bottom center of the image. The Anycubic logo is also present in the lower left corner of the image. The overall color scheme of the image is a combination of black, yellow, and white, with the machines being the central focus.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S11",
+    "style": "T4",
+    "camera": "C7"
+  },
+  {
+    "text": "The image displays a black background with white text centered in the middle. The text reads \"Liu Zi Ju: Six Sounds Approach to Qigong Breathing Exercises (Chinese Health Qigong).\" The font is sans-serif, which is simple and clear to read. There are no other discernible objects, textures, or elements present in the image. The layout is straightforward with the text as the focal point. The color contrast between the black background and the white text is high, which makes the text stand out prominently.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S13",
+    "style": "T3",
+    "camera": "C4"
+  },
+  {
+    "text": "The image displays a stylized illustration featuring a smiling male character with brown hair, wearing a white shirt and a black tie. He is pointing towards a cork bulletin board on a light blue wall. The bulletin board contains various items: a silver metallic cylinder, possibly a canister or container; a pink heart-shaped object; a purple syringe; a laptop with a light blue cover and a keyboard; a cell phone with a white screen displaying colorful icons; and a roll of tape with a piece of tape sticking to the board. Additionally, there is a small monitor or screen with a dark frame, and a heart-shaped object with a red dot in the center. The text \"My top Sectorial Funds\" is written at the top of the bulletin board. The bottom right corner of the image contains the text \"30 Stades\" in a stylized font. The overall image has a flat design with a limited color palette, primarily consisting of shades of blue, brown, pink, purple, and white.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S10",
+    "style": "T3",
+    "camera": "C8"
+  },
+  {
+    "text": "The image displays a table titled \"Table 1. Amami Taiko Matsuri (Amami Drum Festival)\" with two columns: \"Year\" and \"Island.\" The table lists years from 2000 to 2011, with corresponding names of islands under each year. The years are listed in a column on the left, and the islands are listed in a column on the right. The text is in English, and the font appears to be a standard serif type, commonly used in documents. The background of the image is white, and the text is black, providing a clear contrast for readability. The table is organized in a straightforward, tabular format, with no additional images or graphics.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S13",
+    "style": "T1",
+    "camera": "C8"
+  },
+  {
+    "text": "The image features a central graphic with the text \"POWERS EST. 1791 IRISH WHISKEY JOHN'S LANE RELEASE\" prominently displayed in white and red font against a black background. The text \"POWERS\" is the largest and is positioned at the top, with \"EST. 1791\" just below it in a smaller font. \"IRISH WHISKEY\" is written in a medium-sized font, and \"JOHN'S LANE RELEASE\" is at the bottom in a smaller size. To the right of the graphic is a bottle of Powers Irish Whiskey from John's Lane. The bottle has a label with the text \"POWERS JOHN'S LANE\" and additional details about the whiskey, including the age statement \"12 YEARS OLD\" and the volume \"40% ALCOHOL BY VOL.\" The label also features a small illustration of a tree and the signature of the master blender. The bottle is transparent with a golden-amber liquid visible inside, and it has a black cap. The overall layout of the image is simple, with a clear focus on the branding and the product.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S8",
+    "style": "T4",
+    "camera": "C8"
+  },
+  {
+    "text": "The image displays a bright yellow background with centered text in blue. The text reads, \"The absence of permafrost and presence of coniferous trees as the dominant climax plants characterize the biome.\" Below the text, there is a logo with the word \"TAIGA\" in red, encased within a red rectangle with a thin black border. The text and logo are the focal points of the image, with no additional elements or details present. The overall layout is simple and clear, with a high-contrast color scheme that emphasizes the text and logo.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S8",
+    "style": "T5",
+    "camera": "C3"
+  },
+  {
+    "text": "The image displays a close-up of a textured, metallic gold-colored plaque with Chinese characters and English text. At the top, the Chinese characters are written in a traditional calligraphy style, and they translate to \"Guangdong Furniture Association.\" Below the characters, there is a large emblem featuring a red circle with a white diagonal stripe cutting through it, resembling a simplified representation of a flag or a stylized letter 'C.' Adjacent to the emblem, the English text reads \"MEMBER OF GUANGDONG FURNITURE ASSOCIATION,\" with each word capitalized and the phrase \"FURNITURE ASSOCIATION\" in a slightly smaller font size than the word \"MEMBER.\" The text and emblem are centrally aligned on the plaque. The background of the image is not visible, as the focus is on the plaque itself. The overall condition of the plaque appears to be well-maintained with no visible signs of wear or damage.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S13",
+    "style": "T2",
+    "camera": "C2"
+  },
+  {
+    "text": "This image features a black folding umbrella with a graphic design printed on its canopy. The design includes the text \"SUSWATARI GYM Est. 2001\" in white and yellow fonts, with \"Work hard for Konpeito\" written below in smaller white font. Above the text, there is a stylized graphic of a creature with a round body, large eyes, and a tuft of hair on top, surrounded by colorful stars and a gray rock. The umbrella has a curved canopy with a smooth texture and is shown in an open position. The background is plain and does not contain any additional objects or scenery.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S14",
+    "style": "T6",
+    "camera": "C3"
+  },
+  {
+    "text": "The image displays a blue background with a list of bullet points in white text, detailing historical references to the Curzon line. The bullet points are as follows:\n\n- 1919 Poolse Oostgrens\n- 1921 oorlog Polen-USSR, Oostgrens 135 km ten Oosten van Curzon line\n- 1939 Stalin Molotov pact, curzon line wordt de Duits-Russische grens\n- 1945 Yalta Curzon line wordt Poole Oostgrens\n- 1945/1951 bevestig Poools-Russisch verdrag\n\nAt the top of the image, in larger white text, the title \"Curzon line\" is presented. The text is aligned to the left and the font appears to be a standard sans-serif type. The background has a gradient effect, transitioning from a darker blue at the top to a lighter blue at the bottom. There are no other discernible objects or elements in the image.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S12",
+    "style": "T1",
+    "camera": "C5"
+  },
+  {
+    "text": "The image displays a presentation slide with a white background and primarily black text. At the top, the slide is titled \"SMPTE Working Group - 2016 - AFD.\" Below the title, there is a bullet point followed by the name \"Dr Kerns Powers – Sarnoff.\" The subsequent text describes a process where Dr. Powers is said to have \"cut out little squares and tried to fit all of the aspects ratios on a grid.\" Listed are various film aspect ratios: \"1.33:1 (4:3) – 35mm,\" \"1.67:1 (European Wide) – 16mm,\" \"1.85:1 (American Wide) – 70mm/Panavision,\" and \"2.00:1 (70mm/Panavision) – 2.35:1 (Anamorphic Wide Screen/Cinemascope).\"\n\nAt the bottom of the slide, there are two logos. On the left is the \"VideoClarity\" logo, which includes a colorful design with the text \"Tools for Video Analysis.\" On the right is the \"SMPTE\" logo, which features a stylized \"SMPTE\" text within a circle, accompanied by a blue and white design.\n\nThe slide appears to be part of a professional presentation, likely discussing the history or development of various film aspect ratios and their relevance to video analysis. The text is clear and legible, with no additional images or graphics beyond the logos mentioned.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S14",
+    "style": "T5",
+    "camera": "C2"
+  },
+  {
+    "text": "The image displays a close-up of a bottle labeled \"LUCIDE RECOVER 2000mg CBD-Öl hochdosiert\" with a red and black color scheme. The bottle appears to contain a viscous, amber-colored liquid, which is likely to be CBD oil, given the context provided by the text on the bottle. The bottle cap is detached and placed on top of the bottle, suggesting the bottle is open. The background is blurred with hues of pink and purple, giving the impression of a soft, diffused light source. The texture of the liquid in the bottle is smooth, and the bottle itself has a matte finish. The cap has a ribbed texture, typical of bottle caps designed to facilitate easy removal. The overall composition of the image is dynamic, with the bottle positioned slightly off-center to the left, and the cap placed asymmetrically on top. The image has a dreamy, surreal quality due to the blurred background and the color saturation.",
+    "source": "densefusion",
+    "lang": "en",
+    "subject": "S14",
+    "style": "T7",
+    "camera": "C2"
+  },
+  {
+    "text": "house burning down aesthetic, golden hour, ultra hd, shot on a kodak 3 5 mm film camera, smooth sharp focus, tumblr aesthetic,",
+    "source": "diffusiondb",
+    "lang": "en",
     "subject": "S10",
     "style": "T5",
-    "camera": "C1",
-    "source": "genai_bench",
-    "language": "en"
+    "camera": "C8"
   },
   {
-    "text": "cute animals with beautiful elf, cinematic",
-    "subject": "S2",
-    "style": "T5",
-    "camera": "C1",
-    "source": "genai_bench",
-    "language": "en"
-  },
-  {
-    "text": "an apple on a white ceramic plate with gold engravings, digital art, anime, by studio ghibli",
-    "subject": "S3",
-    "style": "T3",
-    "camera": "C1",
-    "source": "genai_bench",
-    "language": "en"
-  },
-  {
-    "text": "A cute nerd fox sticker, sitting, laptop, coffee",
-    "subject": "S2",
-    "style": "T6",
-    "camera": "C1",
-    "source": "genai_bench",
-    "language": "en"
-  },
-  {
-    "text": "a beautiful photorealistic anime illustration of urbex industrial architecture city architecture unfinished building abandoned post office by renzo piano, laser extraterrestial sunset lake vaporwave elysian at night reclaimed by nature magic realism myst wilderness, archdaily, wallpaper, highly detailed, trending on artstation.",
-    "subject": "S5",
-    "style": "T7",
-    "camera": "C1",
-    "source": "genai_bench",
-    "language": "en"
-  },
-  {
-    "text": "Generate an album cover featuring a single male figure in a realistic scene that subtly conveys the duality of life. Think contrasting elements, nuanced expressions, and a moody atmosphere that invites interpretation. Avoid clichés and overt symbols. Focus on evoking emotions, not telling a story.",
-    "subject": "S1",
-    "style": "T6",
-    "camera": "C1",
-    "source": "genai_bench",
-    "language": "en"
-  },
-  {
-    "text": "athletic girls posing in bikini",
-    "subject": "S9",
-    "style": "T1",
-    "camera": "C1",
-    "source": "genai_bench",
-    "language": "en"
-  },
-  {
-    "text": "create logo of Web development studio called devheim",
-    "subject": "S4",
-    "style": "T6",
-    "camera": "C1",
-    "source": "genai_bench",
-    "language": "en"
-  },
-  {
-    "text": "sleek high-performance sports car, futuristic aerodynamic design, drifting on a mountain pass, nature background, dynamic action, cinematic light, vibrant color grading, dramatic motion blur, high resolution --ar 16:9",
-    "subject": "S7",
-    "style": "T5",
-    "camera": "C7",
-    "source": "genai_bench",
-    "language": "en"
-  },
-  {
-    "text": "Design a favicon for 'EdenBots' featuring a psychedelic-colored apple shaped like a globe, with vibrant hues of red, orange, and green. The apple should have a digital pattern of 0s and 1s embedded within it, symbolizing the fusion of nature and technology. Ensure the design is clear and recognizable even at small sizes, with the vibrant colors creating a striking and dynamic effect.\"",
-    "subject": "S3",
-    "style": "T7",
-    "camera": "C1",
-    "source": "genai_bench",
-    "language": "en"
-  },
-  {
-    "text": "in white minimal space , the futuristic kitchen is clean and ready for us to use, futuristic laboratory, futuristic setting,  futuristic concept design, sleek utopian design, futuristic design, very futuristic, retro futuristic apartment, sci - fi interior, futuristic style, futuristic decor, sci-fi themed, futuristic decoration",
-    "subject": "S14",
-    "style": "T6",
-    "camera": "C1",
-    "source": "genai_bench",
-    "language": "en"
-  },
-  {
-    "text": "collage poster for \"spill\" concept, dada and pop-art style",
-    "subject": "S11",
-    "style": "T7",
-    "camera": "C1",
-    "source": "genai_bench",
-    "language": "en"
-  },
-  {
-    "text": "rectangular unique logo with a cyberpunk city setting, wide banner, for forum usage, flat, hd, realistic, unique border, simple, plain background, rectangular art",
-    "subject": "S6",
-    "style": "T6",
-    "camera": "C1",
-    "source": "genai_bench",
-    "language": "en"
-  },
-  {
-    "text": "An isometric vector drawing of a port, next to a container ship, with a white background, for use as website art",
-    "subject": "S7",
-    "style": "T4",
-    "camera": "C1",
-    "source": "genai_bench",
-    "language": "en"
-  },
-  {
-    "text": "a surrealistic painting that depicts a vibrant red sports car with its form melting over the curved edges of a large, ornate golden clock. The background of the painting is a desolate landscape with a clear blue sky, reminiscent of Salvador Dali's distinctive style. The car's glossy paint appears to be dripping like liquid, blending the concepts of time and motion in a dreamlike tableau.",
-    "subject": "S7",
-    "style": "T7",
-    "camera": "C1",
-    "source": "dpg_bench",
-    "language": "en"
-  },
-  {
-    "text": "A large, bold sign with the words 'KEEP OFF THE GRASS' is painted in white letters on a weathered brick wall. The wall has a rough texture and shows signs of age with some bricks slightly chipped and discolored. In front of the wall, there's a small strip of green grass that appears well-maintained, contrasting with the urban backdrop.",
-    "subject": "S11",
-    "style": "T2",
-    "camera": "C1",
-    "source": "dpg_bench",
-    "language": "en"
-  },
-  {
-    "text": "On the barren, gray surface of the moon, two chestnut horses adorned with silver harnesses are depicted pulling an antique carriage. In the surreal background, the Statue of Liberty stands tall, its green patina contrasting with the sandy hues of the Great Pyramid nearby. Above this otherworldly scene, the Planet Earth hangs majestically in the dark lunar sky, its blues and greens vibrant against the starkness of space.",
+    "text": "a beautiful hyperdetailed painting of missile launch facility nature by john william casilear, postcyberpunk, archdaily, wallpaper, highly detailed, trending on artstation.",
+    "source": "diffusiondb",
+    "lang": "en",
     "subject": "S12",
-    "style": "T7",
-    "camera": "C1",
-    "source": "dpg_bench",
-    "language": "en"
+    "style": "T3",
+    "camera": "C3"
   },
   {
-    "text": "An intricately detailed oil painting depicts a raccoon dressed in a black suit with a crisp white shirt and a red bow tie. The raccoon stands upright, donning a black top hat and gripping a wooden cane with a silver handle in one paw, while the other paw clutches a dark garbage bag. The background of the painting features soft, brush-stroked trees and mountains, reminiscent of traditional Chinese landscapes, with a delicate mist enveloping the scene.",
-    "subject": "S9",
-    "style": "T2",
-    "camera": "C1",
-    "source": "dpg_bench",
-    "language": "en"
-  },
-  {
-    "text": "A hefty, red-painted chainsaw rests prominently on the surface of a sturdy, solid oak table. The metal components of the chainsaw catch the soft glow of the early morning sunlight, causing a shimmering effect. The wood's rich, deep grain stands in contrast to the boldness of the chainsaw, and there are wood shavings scattered nearby, hinting at recent activity.",
-    "subject": "S4",
-    "style": "T2",
-    "camera": "C1",
-    "source": "dpg_bench",
-    "language": "en"
-  },
-  {
-    "text": "A modern kitchen vignette where a sleek, black induction cooker is placed on a polished granite countertop. Its surface glows as it heats a stainless steel pot, from which tendrils of steam rise, indicating a simmering soup within. Adjacent to the cooker, a vibrant red blender is in operation, its contents swirling at high speed, presenting a dynamic contrast to the tranquil act of the soup slowly cooking. The countertop around these appliances is dotted with various culinary tools and ingredients, embodying the lively activity typical of meal preparation time.",
-    "subject": "S3",
-    "style": "T4",
-    "camera": "C1",
-    "source": "dpg_bench",
-    "language": "en"
-  },
-  {
-    "text": "A visually striking isometric design spells out the word 'DRAW' using an array of artist pencils with softly rounded edges, demonstrating the principles of modular constructivism. Each pencil features a pastel color palette, blending harmoniously against a serene blue background. The entire composition benefits from soft, smooth lighting that accentuates the textures and forms, created with a physically based rendering technique that provides a realistic appearance, with the entire artwork centrally positioned within the frame, creating a trendy and aesthetically pleasing image.",
-    "subject": "S11",
-    "style": "T4",
-    "camera": "C1",
-    "source": "dpg_bench",
-    "language": "en"
-  },
-  {
-    "text": "Within a grand extraterrestrial place of worship, a group of alien beings is depicted in reverent prayer, illuminated by beams of light filtering through stained glass panels featuring cosmic motifs. The advanced alien architecture captures the imagination with soaring arches and embedded technology, rendered in striking yellow and blue tones that highlight the meticulous detail and realism of the scene. This masterpiece of science fiction, brought to life with the precision of Octane rendering software at an 8K resolution, showcases an awe-inspiring tableau, reminiscent of the most sophisticated pieces found on the ArtStation platform.",
+    "text": "yber god of time rebooting the chronology of universe, by sorayama, clockwork, hourglass, sand, organic mecanism, chrono trigger, glow, octane render, 3 d render, hyper realist, ligne claire, sharp edges",
+    "source": "diffusiondb",
+    "lang": "en",
     "subject": "S14",
     "style": "T4",
-    "camera": "C1",
-    "source": "dpg_bench",
-    "language": "en"
+    "camera": "C3"
   },
   {
-    "text": "A retro-futuristic album cover that encapsulates the essence of the synthwave movement in 1985, crafted exclusively in varying shades of blue. The primary visual is an old-fashioned car emerging from the mouth of a dimly lit tunnel, its gleaming headlights cutting through the surrounding darkness. The artwork is cinematic in its composition, featuring vintage elements that suggest motion and speed, finished with a fine film grain texture that mimics the classic look of a 35mm photograph. The band's name, \"BRO,\" is emblazoned above the image in a bold, stylized font that complements the album's overall theme.",
-    "subject": "S11",
-    "style": "T5",
-    "camera": "C1",
-    "source": "dpg_bench",
-    "language": "en"
+    "text": "ever since i first saw them, i have been fascinated by the beauty of the phenomena of thin - film interference, the iridescent display of swirling colors resulting from the simultaneous reflection and refraction of light when oil and water interact with each other, oil painting by tim hildebrandt and greg rutkowski",
+    "source": "diffusiondb",
+    "lang": "en",
+    "subject": "S14",
+    "style": "T2",
+    "camera": "C7"
   },
   {
-    "text": "A dynamic scene unfolds at the historic Colosseum, where a fleet of sleek, multicolored racing cars roar past an excited crowd. The vehicles, adorned with vibrant decals and sponsor logos, navigate a temporary circuit that has been meticulously laid out within the ancient arena's interior. Spectators are perched on stone seats that have withstood the test of time, their attention fixed on the blur of machines vying for the lead under the bright afternoon sun.",
-    "subject": "S7",
-    "style": "T6",
-    "camera": "C1",
-    "source": "dpg_bench",
-    "language": "en"
-  },
-  {
-    "text": "2男孩，3女孩，多个男孩，多个女孩，室内，拿着，拿着刀，露齿笑，微笑，牙齿，闭眼，睫毛，黑框眼镜，眼镜，圆形眼镜，棕色头发，辫子，胸袋，校服，衬衫，背心，黄色背心，领带，短袖，高分辨率，刀，海报（物品），碗，胡萝卜，天花板，卡通印花，水龙头，口袋，玻璃碗，橙子蜜柑，筛子，动漫",
-    "subject": "S13",
-    "style": "T3",
-    "camera": "C1",
-    "source": "oneig_zh",
-    "language": "zh"
-  },
-  {
-    "text": "创建一幅土耳其和伊拉克地图，突出主要城市、河流和地理标志，使用土色调、鲜艳的蓝色来表示水域，绿色表示山脉，以确保清晰。",
-    "subject": "S5",
-    "style": "T6",
-    "camera": "C1",
-    "source": "oneig_zh",
-    "language": "zh"
-  },
-  {
-    "text": "在中心用两支交叉的棒球棒代替左轮手枪创建一个标志。在棒球棒的两侧放置玫瑰，周围环绕一个金色圆圈以突出它们的重要性，融合摇滚和棒球主题。",
-    "subject": "S8",
-    "style": "T6",
-    "camera": "C1",
-    "source": "oneig_zh",
-    "language": "zh"
-  },
-  {
-    "text": "为一家精品咖啡店设计一个复古风格的标志，使用圆形徽章布局。包括“Brew & Co.”，“手工咖啡”以及“始于2015年”。",
-    "subject": "S13",
-    "style": "T6",
-    "camera": "C1",
-    "source": "oneig_zh",
-    "language": "zh"
-  },
-  {
-    "text": "A playful, vivid comic-style illustration depicting a conversation between two cartoon vegetables. A concerned carrot and an amused broccoli are in a lively kitchen setting featuring colorful dishes, fresh ingredients, kitchen cabinets, and hanging utensils in the background. In the top-left corner, the carrot stands upright, eyes wide open in shock, nervously glancing sideways. Its speech bubble is oval-shaped, clearly delineated with rounded, smooth, thin outlines, positioned directly above its head. The text inside uses a neat, expressive, hand-lettered style emphasizing concern and reads \"Wait, we're ingredients for today's soup? Nobody mentioned this earlier!\". At the bottom-right area, the broccoli leans casually against a small kitchen bowl, sporting a playful smirk and relaxed posture, responding humorously. Its rectangular speech bubble with rounded corners sits lower and slightly overlaps the bottom edge of the carrot's bubble, visually guiding the reader diagonally downward through the image. The broccoli's speech text, set in whimsical, lightly italicized font to emphasize its ironic and amused tone, states, \"You didn't get the memo? Good luck, buddy!\".",
-    "subject": "S4",
-    "style": "T3",
-    "camera": "C1",
-    "source": "longtext_bench",
-    "language": "en"
-  },
-  {
-    "text": "minimalist food poster design for an artisan coffee roastery with bold typography and bean illustration",
-    "subject": "S3",
-    "style": "T6",
-    "camera": "C1",
-    "source": "generated",
-    "language": "en"
-  },
-  {
-    "text": "cinematic shot of an abandoned hospital corridor with peeling paint and flickering fluorescent lights",
-    "subject": "S4",
-    "style": "T5",
-    "camera": "C1",
-    "source": "generated",
-    "language": "en"
-  },
-  {
-    "text": "surreal impossible room where staircases connect in all directions like an Escher lithograph",
-    "subject": "S4",
-    "style": "T7",
-    "camera": "C1",
-    "source": "generated",
-    "language": "en"
-  },
-  {
-    "text": "3D render of a dense enchanted forest with volumetric light rays piercing the canopy",
-    "subject": "S8",
+    "text": "the cutest little polymer clay 🐷 and 🐰 hybrid, unreal engine, bokeh",
+    "source": "diffusiondb",
+    "lang": "en",
+    "subject": "S10",
     "style": "T4",
-    "camera": "C1",
-    "source": "generated",
-    "language": "en"
+    "camera": "C6"
   },
   {
-    "text": "dramatic lighting on cinematic shot of an ancient old-growth forest with shafts of golden light through towering trees",
-    "subject": "S8",
-    "style": "T5",
-    "camera": "C8",
-    "source": "generated",
-    "language": "en"
-  },
-  {
-    "text": "psychedelic flower garden where petals are made of swirling rainbow fractals and light",
-    "subject": "S8",
-    "style": "T7",
-    "camera": "C1",
-    "source": "generated",
-    "language": "en"
-  },
-  {
-    "text": "anime fashion illustration of a girl in a pastel Lolita dress with bows and lace parasol",
-    "subject": "S9",
-    "style": "T3",
-    "camera": "C1",
-    "source": "generated",
-    "language": "en"
-  },
-  {
-    "text": "long exposure shot of 3D render of a haute couture gown with intricate beadwork and flowing silk on a virtual model",
-    "subject": "S9",
+    "text": "chinese painting of shanghai full of sakura unreal engine ghibly, disney. pixar, dreamworks",
+    "source": "diffusiondb",
+    "lang": "en",
+    "subject": "S13",
     "style": "T4",
-    "camera": "C7",
-    "source": "generated",
-    "language": "en"
+    "camera": "C3"
   },
   {
-    "text": "aerial view of cinematic fashion photoshoot of a model in a black velvet gown on a fog-covered lake pier",
-    "subject": "S9",
-    "style": "T5",
-    "camera": "C4",
-    "source": "generated",
-    "language": "en"
-  },
-  {
-    "text": "low-angle shot of fashion poster for a summer collection with bold tropical colors and model silhouettes",
-    "subject": "S9",
-    "style": "T6",
-    "camera": "C5",
-    "source": "generated",
-    "language": "en"
-  },
-  {
-    "text": "surreal melting designer handbag dripping like Dali clock over a marble pedestal",
-    "subject": "S9",
-    "style": "T7",
-    "camera": "C1",
-    "source": "generated",
-    "language": "en"
-  },
-  {
-    "text": "3D rendered Pyramids of Giza with photorealistic sand textures and dramatic golden hour lighting",
+    "text": "found footage recording of nether map from minecraft, dark, extremely high detail, 8 k, volumetric lightning, unreal engine, photorealism, hyperrealism",
+    "source": "diffusiondb",
+    "lang": "en",
     "subject": "S12",
     "style": "T4",
-    "camera": "C4",
-    "source": "generated",
-    "language": "en"
+    "camera": "C8"
   },
   {
-    "text": "Cinematic Northern Lights over Iceland, film still with wide anamorphic lens and teal-orange color grading",
+    "text": "red square russia, extremely detailed, concept art, illustration, vivid colors, volumetric lighting, volumetric shadows, realistic oil painting by greg rutkowski,",
+    "source": "diffusiondb",
+    "lang": "en",
+    "subject": "S12",
+    "style": "T2",
+    "camera": "C8"
+  },
+  {
+    "text": "uchiha madara cinematic epic shot in an marvel avengers movie",
+    "source": "diffusiondb",
+    "lang": "en",
     "subject": "S12",
     "style": "T5",
-    "camera": "C1",
-    "source": "generated",
-    "language": "en"
+    "camera": "C3"
   },
   {
-    "text": "Travel poster for Tokyo featuring cherry blossoms, pagoda, and Mount Fuji in retro style",
+    "text": "a cyberpunk bioluminecent chinese dragon, cinematic volumetric lightning",
+    "source": "diffusiondb",
+    "lang": "en",
+    "subject": "S13",
+    "style": "T5",
+    "camera": "C8"
+  },
+  {
+    "text": "poster of the movie : the space commies",
+    "source": "diffusiondb",
+    "lang": "en",
     "subject": "S12",
     "style": "T6",
-    "camera": "C1",
-    "source": "generated",
-    "language": "en"
+    "camera": "C4"
   },
   {
-    "text": "3D rendered Forbidden City with photorealistic glazed tile roofs and imperial courtyard at golden hour",
+    "text": "elon musk on a chinese propaganda poster colored ink illustration art key art, photorealistic",
+    "source": "diffusiondb",
+    "lang": "en",
     "subject": "S13",
-    "style": "T4",
-    "camera": "C2",
-    "source": "generated",
-    "language": "en"
+    "style": "T6",
+    "camera": "C3"
   },
   {
-    "text": "Cinematic Great Wall at sunrise with golden light streaming through watchtowers and mist in valleys",
-    "subject": "S13",
-    "style": "T5",
-    "camera": "C1",
-    "source": "generated",
-    "language": "en"
+    "text": "fractal of the last survivors on earth witness the end of the world, big titan creature apocalypse scene, by giger and vladimir kush",
+    "source": "diffusiondb",
+    "lang": "en",
+    "subject": "S12",
+    "style": "T7",
+    "camera": "C3"
   },
   {
-    "text": "Surreal jade phoenix rising from fractured porcelain shards into a kaleidoscopic sky",
+    "text": "seraph of glitches, porcelain mask, Junji Ito and Takato Yamamoto",
+    "source": "diffusiondb",
+    "lang": "en",
     "subject": "S13",
     "style": "T7",
-    "camera": "C3",
-    "source": "generated",
-    "language": "en"
+    "camera": "C3"
   }
 ]
