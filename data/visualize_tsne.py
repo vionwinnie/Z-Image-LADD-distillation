@@ -20,7 +20,7 @@ from collections import Counter
 import numpy as np
 import torch
 from transformers import AutoTokenizer, AutoModel
-from sklearn.manifold import TSNE
+from openTSNE import TSNE
 from tqdm import tqdm
 
 logging.basicConfig(
@@ -87,7 +87,7 @@ def embed_texts(texts, tokenizer, model):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--n-samples", type=int, default=30000)
+    parser.add_argument("--n-samples", type=int, default=50000)
     parser.add_argument("--axis", choices=["subject", "style"], default="subject")
     parser.add_argument("--perplexity", type=int, default=50)
     parser.add_argument("--seed", type=int, default=42)
@@ -103,11 +103,35 @@ def main():
         records = [json.loads(l) for l in f if l.strip()]
     logger.info(f"Loaded {len(records)} prompts")
 
-    # Sample
+    # Balanced sampling: equal samples per category
     random.seed(args.seed)
-    if len(records) > args.n_samples:
-        records = random.sample(records, args.n_samples)
-    logger.info(f"Using {len(records)} samples for t-SNE")
+    if args.axis == "subject":
+        group_key = "subject"
+        n_groups = len(SUBJECTS)
+    else:
+        group_key = "style"
+        n_groups = len(STYLES)
+
+    from collections import defaultdict
+    groups = defaultdict(list)
+    for r in records:
+        groups[r[group_key]].append(r)
+
+    per_group = args.n_samples // n_groups
+    sampled = []
+    for code in sorted(groups.keys()):
+        pool = groups[code]
+        random.shuffle(pool)
+        sampled.extend(pool[:per_group])
+    # Fill remainder from largest groups
+    remaining = args.n_samples - len(sampled)
+    if remaining > 0:
+        leftover = [r for g in groups.values() for r in g[per_group:]]
+        random.shuffle(leftover)
+        sampled.extend(leftover[:remaining])
+
+    records = sampled
+    logger.info(f"Using {len(records)} balanced samples for t-SNE ({per_group} per {group_key})")
 
     # Choose axis
     if args.axis == "subject":
@@ -144,14 +168,14 @@ def main():
     centroid_embs = np.stack([centroids[c] for c in centroid_codes])
     all_embs = np.vstack([embeddings, centroid_embs])
 
-    # t-SNE
-    logger.info(f"Running t-SNE (n={all_embs.shape[0]}, perplexity={args.perplexity})...")
-    tsne = TSNE(n_components=2, perplexity=args.perplexity, random_state=args.seed,
-                n_iter=1000, learning_rate="auto", init="pca")
-    coords_2d = tsne.fit_transform(all_embs)
+    # t-SNE (openTSNE — much faster than sklearn for large n)
+    logger.info(f"Running openTSNE (n={all_embs.shape[0]}, perplexity={args.perplexity})...")
+    tsne = TSNE(perplexity=args.perplexity, random_state=args.seed,
+                n_iter=750, initialization="pca", n_jobs=-1)
+    coords_2d = tsne.fit(all_embs)
 
-    prompt_coords = coords_2d[:n]
-    centroid_coords = coords_2d[n:]
+    prompt_coords = np.array(coords_2d[:n])
+    centroid_coords = np.array(coords_2d[n:])
 
     # Plot
     logger.info("Plotting...")
