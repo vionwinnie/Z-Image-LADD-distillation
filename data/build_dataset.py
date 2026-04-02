@@ -119,6 +119,8 @@ def main():
     parser.add_argument("--output", type=str, default=str(OUTPUT_PATH))
     parser.add_argument("--min-words", type=int, default=8)
     parser.add_argument("--max-words", type=int, default=150)
+    parser.add_argument("--subject-cap", type=float, default=0.15,
+                        help="Max fraction per subject (default 0.15 = 15%%)")
     parser.add_argument("--debug", action="store_true")
     args = parser.parse_args()
 
@@ -138,13 +140,42 @@ def main():
     for r in records:
         wc = len(r["text"].split())
         if r.get("lang") == "zh":
-            if len(r["text"]) >= 10:
+            if len(r["text"]) >= 20:
                 filtered.append(r)
         else:
             if args.min_words <= wc <= args.max_words:
                 filtered.append(r)
     records = filtered
     logger.info(f"After length filter: {len(records)} (removed {before - len(records)})")
+
+    # Subject balance: cap each subject at --subject-cap of total
+    if args.subject_cap < 1.0:
+        import random
+        random.seed(42)
+        n_total = len(records)
+        max_per_subject = int(n_total * args.subject_cap)
+
+        by_subject = defaultdict(list)
+        for r in records:
+            by_subject[r["subject"]].append(r)
+
+        balanced = []
+        capped_subjects = []
+        for subj in sorted(by_subject.keys()):
+            pool = by_subject[subj]
+            if len(pool) > max_per_subject:
+                capped_subjects.append((subj, len(pool), max_per_subject))
+                random.shuffle(pool)
+                balanced.extend(pool[:max_per_subject])
+            else:
+                balanced.extend(pool)
+
+        if capped_subjects:
+            logger.info(f"Subject balance (cap={args.subject_cap:.0%}, max={max_per_subject}):")
+            for subj, orig, cap in capped_subjects:
+                logger.info(f"  {subj}: {orig} -> {cap}")
+            logger.info(f"After subject cap: {len(balanced)} (removed {len(records) - len(balanced)})")
+        records = balanced
 
     # Validation
     validate(records)

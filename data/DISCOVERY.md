@@ -470,6 +470,53 @@ T6 dropped from 18.5% to 4.7% — most of the 14% reduction was false positives 
 
 **Key insight**: pure zero-shot classification doesn't work for this task — MiniLM confuses caption register (formal descriptive writing) with visual style (graphic design). The hybrid approach uses keywords as a high-precision first pass and zero-shot as a recall booster for defaults only, with domain-specific heuristics to guard against known failure modes. Vague catch-all categories (T6 GraphicDesign, T7 Mixed/Experimental) need keyword gating to prevent the embedding model from using them as dumping grounds.
 
+### Phase 3 Revisited Again: Caption First-Sentence Stripping
+
+The hybrid approach still had a critical flaw: **keyword classification on full descriptive captions is unreliable for ALL categories, not just defaults.** DenseFusion/ShareGPT4V/Recap-DataComp captions are verbose and mention many objects incidentally:
+
+- "The image displays a green hoodie... worn by a **person**" → keyword matches "person" → S1 (People). Wrong — subject is the hoodie.
+- "The image displays a promotional flyer... with a **bird** logo" → keyword matches "bird" → S2 (Animals). Wrong — subject is the flyer.
+- "The image displays a slide... about a **car** recall" → keyword matches "car" → S7 (Vehicles). Wrong — subject is the slide.
+
+DenseFusion was classified 60% S1 (People) by keywords — manual inspection showed the majority were objects, graphics, text, and clothing that happened to mention a person.
+
+**Fix: first-sentence stripping for descriptive captions.**
+
+For prompts matching the pattern `"The image displays/shows/features/captures..."`:
+1. Strip the prefix ("The image displays")
+2. Extract the first sentence (up to the first period)
+3. Embed that stripped sentence with MiniLM for zero-shot classification
+4. Use the stripped-sentence embedding for BOTH subject and style (not just subject)
+
+This works because VLM-generated captions follow a consistent structure: the first sentence names the primary subject, subsequent sentences describe details, context, and incidental elements. By classifying only the first sentence, we avoid keyword pollution from later text.
+
+**Validation on 200 DenseFusion samples:**
+
+| Subject | Keyword-only | Hybrid (first-sentence) |
+|---------|-------------|------------------------|
+| S1 People | 116 (58%) | 33 (17%) |
+| S2 Animals | 52 (26%) | 2 (1%) |
+| S10 Objects | 1 (0.5%) | 28 (14%) |
+| S11 Text/Typography | 4 (2%) | 68 (34%) |
+| S14 Abstract | 0 (0%) | 22 (11%) |
+| S9 Fashion | 4 (2%) | 10 (5%) |
+| S7 Vehicles | 7 (3.5%) | 10 (5%) |
+| S3 Food | 3 (1.5%) | 10 (5%) |
+
+S2 (Animals) dropped from 52 to 2 — the keyword classifier had been matching "bird", "fish", "cat" mentioned in logos, book titles, and metaphors. The remaining S1 prompts were verified to genuinely feature people as the primary subject.
+
+Non-caption prompts (DiffusionDB user prompts, JourneyDB Midjourney prompts) still use the original hybrid approach since they don't have the "The image displays..." prefix structure.
+
+### Phase 4 Revisited: Subject Balance Cap + Chinese Filter
+
+Two additional data quality measures:
+
+**1. Chinese prompt minimum length**: raised from 10 to 20 characters. Short Chinese captions (e.g. product names, single phrases) lack enough context for T2I generation.
+
+**2. Subject percentage cap (15%)**: no single subject category can exceed 15% of the final dataset. Without this, S1 (People) dominates at ~30-50% depending on classification version, which biases the student model toward people-centric generation. Subjects exceeding the cap are randomly downsampled. Small subjects keep all their prompts.
+
+This is applied in `build_dataset.py` via `--subject-cap 0.15`.
+
 ## 12. Lessons Learned
 
 1. **Keyword classification is unreliable** for ambiguous prompts. Semantic classification (via LLM) is worth the cost for datasets under 50K.
@@ -486,3 +533,5 @@ T6 dropped from 18.5% to 4.7% — most of the 14% reduction was false positives 
 12. **Hybrid keyword+zero-shot outperforms either alone.** Keywords are high-precision but low-recall (67% default rate). Zero-shot has good recall but poor precision for ambiguous categories. Keyword-first with zero-shot fallback on defaults combines both strengths.
 13. **Margin thresholds prevent low-confidence reclassification.** Without a margin, zero-shot reclassifies on differences of 0.01 cosine similarity — essentially random. A 0.05 margin ensures only confident predictions override the default.
 14. **Validate classification on small subsets before scaling.** Testing on 200-500 samples with side-by-side comparison (keyword vs zero-shot vs hybrid) caught all three major failure modes before running on 630K prompts.
+15. **Keyword classification on verbose captions is wrong for ALL categories, not just defaults.** A caption mentioning "bird" in a logo description gets S2 (Animals). The fix is to classify only the primary subject (first sentence, prefix stripped) rather than the full text. This is specific to VLM-generated captions — user-written prompts don't have this problem.
+16. **Subject balance requires explicit enforcement.** Without a cap, People/Portraits dominates at 30-50% because most image datasets are human-centric. A 15% per-subject cap ensures the student model sees diverse content during training.
