@@ -12,6 +12,7 @@ Output: data/full_batch.jsonl (overwritten with new classifications)
 
 import json
 import logging
+import re
 import sys
 from pathlib import Path
 from collections import Counter, defaultdict
@@ -291,9 +292,26 @@ def _has_strong_experimental(text: str) -> bool:
 
 
 def hybrid_classify_style(text: str, kw_style: str, zs_sims: np.ndarray,
-                          style_codes: list[str]) -> str:
-    """Hybrid style: trust keyword if non-default, else zero-shot with margin + heuristics."""
-    # If keyword matched T6 but only via weak keywords, demote to default
+                          style_codes: list[str],
+                          tokenizer=None, model=None, style_matrix=None) -> str:
+    """Hybrid style: for descriptive captions, use first-sentence embedding.
+    For non-caption prompts, keyword + zero-shot with heuristics."""
+
+    # For descriptive captions: use first-sentence embedding
+    first_sent = extract_first_sentence_stripped(text)
+    if first_sent and tokenizer is not None and model is not None and style_matrix is not None:
+        sent_emb = embed_texts([first_sent], tokenizer, model)
+        sent_sims = (sent_emb @ style_matrix.T)[0]
+        best_idx = int(sent_sims.argmax())
+        best_code = style_codes[best_idx]
+        # Still apply T6/T7 keyword gating on first sentence
+        if best_code == 'T6' and not _has_strong_design(first_sent):
+            return 'T1'
+        if best_code == 'T7' and not _has_strong_experimental(first_sent):
+            return 'T1'
+        return best_code
+
+    # Non-caption: keyword matched T6 but only via weak keywords, demote
     if kw_style == 'T6' and _kw_t6_is_weak(text):
         kw_style = 'T1'
 
@@ -308,11 +326,8 @@ def hybrid_classify_style(text: str, kw_style: str, zs_sims: np.ndarray,
     t1_sim = zs_sims[t1_idx]
     gap = zs_sims[best_idx] - t1_sim
 
-    # T6 from zero-shot requires strong design keywords in text
     if best_code == 'T6' and not _has_strong_design(text):
         return 'T1'
-
-    # T7 from zero-shot requires experimental keywords in text
     if best_code == 'T7' and not _has_strong_experimental(text):
         return 'T1'
 
@@ -321,12 +336,49 @@ def hybrid_classify_style(text: str, kw_style: str, zs_sims: np.ndarray,
     return 'T1'
 
 
+_CAPTION_PREFIX_RE = re.compile(
+    r'^(?:The|This)\s+image\s+(?:displays?|shows?|features?|captures?|depicts?|presents?|is)\s+',
+    re.IGNORECASE
+)
+
+
+def extract_first_sentence_stripped(text: str) -> str | None:
+    """For descriptive captions, strip 'The image displays' prefix and return first sentence.
+    Returns None if text doesn't match the caption pattern."""
+    m = _CAPTION_PREFIX_RE.match(text.strip())
+    if not m:
+        return None
+    stripped = text.strip()[m.end():]
+    # Take first sentence
+    for delim in ['. ', '.\n']:
+        idx = stripped.find(delim)
+        if idx > 0:
+            stripped = stripped[:idx]
+            break
+    return stripped.strip()
+
+
 def hybrid_classify_subject(text: str, source: str, kw_subject: str,
-                            zs_sims: np.ndarray, subj_codes: list[str]) -> str:
-    """Hybrid subject: trust keyword if non-default, else zero-shot with margin."""
+                            zs_sims: np.ndarray, subj_codes: list[str],
+                            tokenizer=None, model=None, subj_matrix=None) -> str:
+    """Hybrid subject: for descriptive captions, always use stripped first-sentence
+    embedding (keyword matching on full captions is unreliable — incidental word
+    mentions like 'bird', 'bench', 'van' trigger wrong categories).
+    For non-caption prompts, use keyword + zero-shot fallback."""
+
+    # For descriptive captions: ALWAYS classify via first-sentence embedding
+    first_sent = extract_first_sentence_stripped(text)
+    if first_sent and tokenizer is not None and model is not None and subj_matrix is not None:
+        sent_emb = embed_texts([first_sent], tokenizer, model)
+        sent_sims = (sent_emb @ subj_matrix.T)[0]
+        best_idx = int(sent_sims.argmax())
+        return subj_codes[best_idx]
+
+    # Non-caption prompts: trust non-default keyword matches
     if kw_subject != 'S10':
         return kw_subject
 
+    # Zero-shot with margin on full text
     best_idx = int(zs_sims.argmax())
     best_code = subj_codes[best_idx]
     s10_idx = subj_codes.index('S10')
@@ -414,8 +466,10 @@ def main():
             kw_c = kw_classify_camera(text)
 
             # Hybrid
-            r["subject"] = hybrid_classify_subject(text, source, kw_s, subj_sims[j], subj_codes)
-            r["style"] = hybrid_classify_style(text, kw_t, style_sims[j], style_codes)
+            r["subject"] = hybrid_classify_subject(text, source, kw_s, subj_sims[j], subj_codes,
+                                                    tokenizer, model, subj_matrix)
+            r["style"] = hybrid_classify_style(text, kw_t, style_sims[j], style_codes,
+                                                   tokenizer, model, style_matrix)
             r["camera"] = hybrid_classify_camera(kw_c, cam_sims[j], cam_codes)
 
     # Print distribution
