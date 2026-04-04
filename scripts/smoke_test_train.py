@@ -2,14 +2,19 @@
 
 Validates that the components used by train.py (as opposed to train_ladd.py)
 work correctly: model creation, forward pass, loss, gradient flow, optimizer
-step, and checkpoint round-trip.  Uses tiny dummy models so no real weights
-are needed.
+step, and checkpoint round-trip.
 
 Usage:
+    # With real weights:
+    python scripts/smoke_test_train.py \
+        --pretrained_model_name_or_path=models/Z-Image
+
+    # With dummy weights (no model download needed):
     python scripts/smoke_test_train.py --dummy
 """
 
 import argparse
+import gc
 import os
 import shutil
 import sys
@@ -145,6 +150,46 @@ def custom_mse_loss(noise_pred, target, weighting=None, threshold=50):
 
 
 # ---------------------------------------------------------------------------
+# Dummy VAE for inference testing
+# ---------------------------------------------------------------------------
+
+class _DummyVAEConfig:
+    """Minimal config matching what pipeline.generate() reads from the VAE."""
+    block_out_channels = (128, 256, 512, 512)  # 4 blocks -> scale_factor=8, vae_scale=16
+    scaling_factor = 0.18215
+    shift_factor = 0.0
+
+
+class _DummyVAE(nn.Module):
+    """Minimal VAE that decodes latents to RGB images of the right shape."""
+
+    def __init__(self, dtype):
+        super().__init__()
+        self.config = _DummyVAEConfig()
+        # A single conv to go from latent channels to 3 (RGB)
+        self.conv = nn.Conv2d(16, 3, 1)
+        self._dtype = dtype
+
+    @property
+    def dtype(self):
+        return self._dtype
+
+    def decode(self, latents, return_dict=False):
+        # Upsample latents by 16x to match expected image resolution
+        # latent shape: (B, C, H_latent, W_latent) where H_latent = 2*(H//vae_scale)
+        # output should be (B, 3, H, W) where H = H_latent * vae_scale / 2 = H_latent * 8
+        x = torch.nn.functional.interpolate(latents.float(), scale_factor=8, mode="nearest")
+        x = self.conv(x)
+        return (x,)
+
+
+def _create_dummy_vae(dtype, device):
+    vae = _DummyVAE(dtype).to(device).to(torch.float32)
+    vae.eval()
+    return vae
+
+
+# ---------------------------------------------------------------------------
 # CLI
 # ---------------------------------------------------------------------------
 
@@ -152,6 +197,8 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Smoke test for train.py")
     parser.add_argument("--dummy", action="store_true",
                         help="Use tiny randomly-initialized models (no weights needed).")
+    parser.add_argument("--pretrained_model_name_or_path", type=str, default=None,
+                        help="Path to model weights (e.g. models/Z-Image). Required unless --dummy.")
     parser.add_argument("--image_sample_size", type=int, default=512)
     parser.add_argument("--device", type=str, default=None)
     parser.add_argument("--dtype", type=str, default=None,
@@ -179,31 +226,68 @@ def main():
     else:
         dtype = torch.bfloat16 if device.type == "cuda" else torch.float32
 
-    if not args.dummy:
-        print("ERROR: Only --dummy mode is supported for this smoke test.")
+    dummy = args.dummy
+    if not dummy and not args.pretrained_model_name_or_path:
+        print("ERROR: Either --dummy or --pretrained_model_name_or_path is required.")
         sys.exit(1)
 
-    print(f"Device: {device}, dtype: {dtype}")
+    print(f"Device: {device}, dtype: {dtype}, dummy: {dummy}")
     results = []
 
     # -------------------------------------------------------------------
-    # 1. Create models (same tiny architecture as smoke_test.py)
+    # 1. Create models
     # -------------------------------------------------------------------
     print_header("Step 1: Create models")
 
-    feature_dim = TINY_DIM
-    n_layers = TINY_N_LAYERS
-    disc_layer_indices = tuple(range(n_layers))
+    if dummy:
+        feature_dim = TINY_DIM
+        n_layers = TINY_N_LAYERS
+        disc_layer_indices = tuple(range(n_layers))
 
-    student = create_tiny_transformer(dtype).to(device)
-    student.train()
-    student.requires_grad_(True)
-    print_pass(f"Student: {sum(p.numel() for p in student.parameters())/1e6:.2f}M params")
+        student = create_tiny_transformer(dtype).to(device)
+        student.train()
+        student.requires_grad_(True)
+        print_pass(f"Student: {sum(p.numel() for p in student.parameters())/1e6:.2f}M params")
 
-    teacher = create_tiny_transformer(dtype).to(device)
-    teacher.requires_grad_(False)
-    teacher.eval()
-    print_pass(f"Teacher (frozen): {sum(p.numel() for p in teacher.parameters())/1e6:.2f}M params")
+        teacher = create_tiny_transformer(dtype).to(device)
+        teacher.requires_grad_(False)
+        teacher.eval()
+        print_pass(f"Teacher (frozen): {sum(p.numel() for p in teacher.parameters())/1e6:.2f}M params")
+
+        text_encoder = DummyTextEncoder().to(device).to(dtype)
+        text_encoder.requires_grad_(False)
+        text_encoder.eval()
+        tokenizer = DummyTokenizer()
+        print_pass("Dummy text encoder + tokenizer created")
+    else:
+        from training.train_ladd import load_transformer
+        from transformers import AutoModel, AutoTokenizer
+
+        feature_dim = DEFAULT_TRANSFORMER_DIM
+        n_layers = 30
+        disc_layer_indices = (5, 10, 15, 20, 25, 29)
+
+        student = load_transformer(args.pretrained_model_name_or_path, dtype).to(device)
+        student.train()
+        student.requires_grad_(True)
+        print_pass(f"Student loaded: {sum(p.numel() for p in student.parameters())/1e9:.2f}B params")
+
+        teacher = load_transformer(args.pretrained_model_name_or_path, dtype).to(device)
+        teacher.requires_grad_(False)
+        teacher.eval()
+        print_pass(f"Teacher loaded (frozen): {sum(p.numel() for p in teacher.parameters())/1e9:.2f}B params")
+
+        text_encoder_dir = os.path.join(args.pretrained_model_name_or_path, "text_encoder")
+        tokenizer_dir = os.path.join(args.pretrained_model_name_or_path, "tokenizer")
+        text_encoder = AutoModel.from_pretrained(text_encoder_dir, torch_dtype=dtype, trust_remote_code=True)
+        text_encoder.to(device)
+        text_encoder.requires_grad_(False)
+        text_encoder.eval()
+        if os.path.exists(tokenizer_dir):
+            tokenizer = AutoTokenizer.from_pretrained(tokenizer_dir, trust_remote_code=True)
+        else:
+            tokenizer = AutoTokenizer.from_pretrained(text_encoder_dir, trust_remote_code=True)
+        print_pass("Text encoder + tokenizer loaded")
 
     discriminator = LADDDiscriminator(
         feature_dim=feature_dim,
@@ -212,13 +296,8 @@ def main():
         layer_indices=disc_layer_indices,
     ).to(device).to(dtype)
     discriminator.train()
-    print_pass(f"Discriminator: {sum(p.numel() for p in discriminator.parameters())/1e6:.2f}M params")
-
-    text_encoder = DummyTextEncoder().to(device).to(dtype)
-    text_encoder.requires_grad_(False)
-    text_encoder.eval()
-    tokenizer = DummyTokenizer()
-    print_pass("Dummy text encoder + tokenizer created")
+    print_pass(f"Discriminator: {sum(p.numel() for p in discriminator.parameters())/1e6:.2f}M params, "
+               f"heads at layers {list(disc_layer_indices)}")
 
     results.append(("Model creation", True))
 
@@ -234,6 +313,12 @@ def main():
             text_encoder=text_encoder, tokenizer=tokenizer,
             max_sequence_length=512,
         )
+
+    # Free text encoder early — no longer needed (saves significant memory for real weights)
+    del text_encoder, tokenizer
+    gc.collect()
+    if device.type == "cuda":
+        torch.cuda.empty_cache()
 
     assert isinstance(prompt_embeds, list), "encode_prompt should return a list"
     assert len(prompt_embeds) == 1, f"Expected 1 embedding, got {len(prompt_embeds)}"
@@ -295,6 +380,12 @@ def main():
     # -------------------------------------------------------------------
     print_header("Step 5: Baseline MSE training (train.py main path)")
 
+    # For real weights: free teacher before baseline (not needed), reload later for LADD
+    if not dummy:
+        del teacher
+        gc.collect()
+        torch.cuda.empty_cache()
+
     bsz = 1
     noise = torch.randn(bsz, in_channels, height_latent, width_latent, device=device, dtype=dtype)
     latent = torch.randn_like(noise)
@@ -348,6 +439,19 @@ def main():
     # 6. LADD path (train.py --use_ladd / main_ladd)
     # -------------------------------------------------------------------
     print_header("Step 6: LADD training path (train.py --use_ladd)")
+
+    # Free baseline optimizer states before LADD path
+    del baseline_optimizer
+    student.zero_grad(set_to_none=True)
+    gc.collect()
+    torch.cuda.empty_cache()
+
+    # Reload teacher for LADD path (was freed for baseline memory)
+    if not dummy:
+        teacher = load_transformer(args.pretrained_model_name_or_path, dtype).to(device)
+        teacher.requires_grad_(False)
+        teacher.eval()
+        print_pass(f"Teacher reloaded for LADD path: {sum(p.numel() for p in teacher.parameters())/1e9:.2f}B params")
 
     bsz = 1
     student_t = sample_student_timestep(
@@ -467,6 +571,12 @@ def main():
     assert not teacher_has_param_grad, "Teacher params should not accumulate .grad"
     print_pass("Teacher parameters remain gradient-free")
 
+    # Free teacher and discriminator before student optimizer step to save memory
+    if not dummy:
+        del teacher, discriminator
+        gc.collect()
+        torch.cuda.empty_cache()
+
     # Student optimizer step — pick a param with non-zero grad
     student_optimizer = torch.optim.AdamW(student.parameters(), lr=1e-5)
     s_param_with_grad = None
@@ -486,60 +596,177 @@ def main():
     # -------------------------------------------------------------------
     # 9. Checkpoint save/load round-trip
     # -------------------------------------------------------------------
+    # Save in the format inference_ladd.py expects so step 11 can reuse it:
+    # <checkpoint_dir>/student_transformer/pytorch_model.bin
     print_header("Step 9: Checkpoint save/load round-trip")
+
+    # Free optimizer states before checkpoint test
+    del student_optimizer
+    student.zero_grad(set_to_none=True)
+    gc.collect()
+    torch.cuda.empty_cache()
 
     tmpdir = tempfile.mkdtemp(prefix="train_smoke_", dir=_project_root)
     try:
-        # Save student
-        student_path = os.path.join(tmpdir, "student.pt")
-        torch.save(student.state_dict(), student_path)
-        print_pass(f"Student saved ({os.path.getsize(student_path)/1e6:.1f} MB)")
+        # Save student in inference-compatible format
+        student_transformer_dir = os.path.join(tmpdir, "student_transformer")
+        os.makedirs(student_transformer_dir)
+        student_ckpt_path = os.path.join(student_transformer_dir, "pytorch_model.bin")
+        torch.save(student.state_dict(), student_ckpt_path)
+        print_pass(f"Student saved ({os.path.getsize(student_ckpt_path)/1e6:.1f} MB)")
 
-        # Save discriminator
-        disc_path = os.path.join(tmpdir, "discriminator.pt")
-        torch.save(discriminator.state_dict(), disc_path)
-        print_pass(f"Discriminator saved ({os.path.getsize(disc_path)/1e6:.1f} MB)")
+        if dummy:
+            # Save and verify discriminator (still available in dummy mode)
+            disc_path = os.path.join(tmpdir, "discriminator.pt")
+            torch.save(discriminator.state_dict(), disc_path)
+            print_pass(f"Discriminator saved ({os.path.getsize(disc_path)/1e6:.1f} MB)")
 
-        # Reload and verify student
-        student_loaded = create_tiny_transformer(dtype).to(device)
-        student_loaded.load_state_dict(torch.load(student_path, map_location=device, weights_only=True))
-        for (n1, p1), (n2, p2) in zip(student.named_parameters(), student_loaded.named_parameters()):
+            disc_loaded = LADDDiscriminator(
+                feature_dim=feature_dim, hidden_dim=256, cond_dim=256,
+                layer_indices=disc_layer_indices,
+            ).to(device).to(dtype)
+            disc_loaded.load_state_dict(torch.load(disc_path, map_location=device, weights_only=True))
+            for (n1, p1), (n2, p2) in zip(discriminator.named_parameters(), disc_loaded.named_parameters()):
+                assert torch.equal(p1.data, p2.data), f"Disc mismatch in {n1}"
+            print_pass("Discriminator checkpoint round-trip: parameters match")
+
+        # Reload student into fresh architecture and verify
+        if dummy:
+            student_fresh = create_tiny_transformer(dtype).to(device)
+        else:
+            student_fresh = load_transformer(args.pretrained_model_name_or_path, dtype).to(device)
+
+        # Sanity: fresh init must differ from trained student
+        any_differ = any(
+            not torch.equal(p1.data, p2.data)
+            for (_, p1), (_, p2) in zip(student.named_parameters(), student_fresh.named_parameters())
+        )
+        assert any_differ, "Fresh student should differ from trained student after optimizer step"
+        print_pass("Fresh student differs from trained student (optimizer step took effect)")
+
+        # Load checkpoint and verify exact match (same path inference_ladd.py uses)
+        student_fresh.load_state_dict(
+            torch.load(student_ckpt_path, map_location=device, weights_only=True),
+            strict=True,
+        )
+        for (n1, p1), (n2, p2) in zip(student.named_parameters(), student_fresh.named_parameters()):
             assert torch.equal(p1.data, p2.data), f"Student mismatch in {n1}"
         print_pass("Student checkpoint round-trip: parameters match")
 
-        # Reload and verify discriminator
-        disc_loaded = LADDDiscriminator(
-            feature_dim=feature_dim, hidden_dim=256, cond_dim=256,
-            layer_indices=disc_layer_indices,
-        ).to(device).to(dtype)
-        disc_loaded.load_state_dict(torch.load(disc_path, map_location=device, weights_only=True))
-        for (n1, p1), (n2, p2) in zip(discriminator.named_parameters(), disc_loaded.named_parameters()):
-            assert torch.equal(p1.data, p2.data), f"Disc mismatch in {n1}"
-        print_pass("Discriminator checkpoint round-trip: parameters match")
-
         results.append(("Checkpoint round-trip", True))
+
+        # -------------------------------------------------------------------
+        # 10. Alternating D/G update schedule
+        # -------------------------------------------------------------------
+        print_header("Step 10: Alternating D/G update schedule")
+
+        gen_update_interval = 5
+        d_steps = 0
+        g_steps = 0
+        for step in range(20):
+            is_gen_step = (step % gen_update_interval == 0)
+            d_steps += 1
+            if is_gen_step:
+                g_steps += 1
+
+        assert d_steps == 20, f"Expected 20 disc steps, got {d_steps}"
+        assert g_steps == 4, f"Expected 4 gen steps (every 5th), got {g_steps}"
+        print_pass(f"20 steps -> {d_steps} disc updates, {g_steps} gen updates (interval={gen_update_interval})")
+
+        results.append(("D/G update schedule", True))
+
+        # -------------------------------------------------------------------
+        # 11. Inference round-trip: load checkpoint and generate an image
+        # -------------------------------------------------------------------
+        print_header("Step 11: Inference round-trip (checkpoint -> generate image)")
+
+        # Reuses the checkpoint saved in step 9 and the loaded student_fresh
+        # to validate the full train -> save -> load -> generate loop.
+
+        from zimage.pipeline import generate as pipeline_generate
+        from zimage.scheduler import FlowMatchEulerDiscreteScheduler
+
+        # student_fresh already has the checkpoint loaded from step 9
+        student_fresh.eval()
+        print_pass("Reusing checkpoint loaded in step 9")
+
+        # Load VAE, text encoder, and scheduler for generation
+        if dummy:
+            infer_vae = _create_dummy_vae(dtype, device)
+            infer_text_encoder = DummyTextEncoder().to(device).to(dtype)
+            infer_text_encoder.eval()
+            infer_tokenizer = DummyTokenizer()
+        else:
+            # Free trained student to make room for VAE + text encoder
+            del student
+            gc.collect()
+            torch.cuda.empty_cache()
+
+            from training.train_ladd import load_vae
+            infer_vae = load_vae(args.pretrained_model_name_or_path)
+            infer_vae.to(device, dtype=torch.float32)
+            infer_vae.eval()
+            from transformers import AutoModel, AutoTokenizer
+            text_encoder_dir = os.path.join(args.pretrained_model_name_or_path, "text_encoder")
+            tokenizer_dir = os.path.join(args.pretrained_model_name_or_path, "tokenizer")
+            infer_text_encoder = AutoModel.from_pretrained(text_encoder_dir, torch_dtype=dtype, trust_remote_code=True)
+            infer_text_encoder.to(device)
+            infer_text_encoder.eval()
+            if os.path.exists(tokenizer_dir):
+                infer_tokenizer = AutoTokenizer.from_pretrained(tokenizer_dir, trust_remote_code=True)
+            else:
+                infer_tokenizer = AutoTokenizer.from_pretrained(text_encoder_dir, trust_remote_code=True)
+
+        import json as _json
+        scheduler_config_path = os.path.join(
+            args.pretrained_model_name_or_path or "", "scheduler", "scheduler_config.json"
+        )
+        if not dummy and os.path.exists(scheduler_config_path):
+            with open(scheduler_config_path) as f:
+                sched_cfg = _json.load(f)
+        else:
+            sched_cfg = {}
+        infer_scheduler = FlowMatchEulerDiscreteScheduler(
+            num_train_timesteps=sched_cfg.get("num_train_timesteps", 1000),
+            shift=sched_cfg.get("shift", 3.0),
+            use_dynamic_shifting=sched_cfg.get("use_dynamic_shifting", False),
+        )
+
+        # Generate an image
+        gen_height = 256 if dummy else 512
+        gen_width = 256 if dummy else 512
+        generator = torch.Generator(device).manual_seed(42)
+        images = pipeline_generate(
+            transformer=student_fresh,
+            vae=infer_vae,
+            text_encoder=infer_text_encoder,
+            tokenizer=infer_tokenizer,
+            scheduler=infer_scheduler,
+            prompt="A red circle on a white background",
+            height=gen_height,
+            width=gen_width,
+            num_inference_steps=4,
+            guidance_scale=0.0,
+            generator=generator,
+        )
+
+        from PIL import Image as PILImage
+        assert isinstance(images, list), f"Expected list of images, got {type(images)}"
+        assert len(images) == 1, f"Expected 1 image, got {len(images)}"
+        assert isinstance(images[0], PILImage.Image), f"Expected PIL Image, got {type(images[0])}"
+        assert images[0].size == (gen_width, gen_height), \
+            f"Expected {gen_width}x{gen_height}, got {images[0].size}"
+        print_pass(f"Generated {gen_width}x{gen_height} PIL image in 4 steps")
+
+        # Save the generated image as proof
+        img_path = os.path.join(tmpdir, "smoke_test_output.png")
+        images[0].save(img_path)
+        assert os.path.getsize(img_path) > 0, "Saved image is empty"
+        print_pass(f"Image saved successfully ({os.path.getsize(img_path)/1e3:.1f} KB)")
+
+        results.append(("Inference round-trip", True))
     finally:
         shutil.rmtree(tmpdir, ignore_errors=True)
-
-    # -------------------------------------------------------------------
-    # 10. Alternating D/G update schedule
-    # -------------------------------------------------------------------
-    print_header("Step 10: Alternating D/G update schedule")
-
-    gen_update_interval = 5
-    d_steps = 0
-    g_steps = 0
-    for step in range(20):
-        is_gen_step = (step % gen_update_interval == 0)
-        d_steps += 1
-        if is_gen_step:
-            g_steps += 1
-
-    assert d_steps == 20, f"Expected 20 disc steps, got {d_steps}"
-    assert g_steps == 4, f"Expected 4 gen steps (every 5th), got {g_steps}"
-    print_pass(f"20 steps -> {d_steps} disc updates, {g_steps} gen updates (interval={gen_update_interval})")
-
-    results.append(("D/G update schedule", True))
 
     # -------------------------------------------------------------------
     # Summary
