@@ -167,6 +167,11 @@ class LADDDiscriminator(nn.Module):
         Returns:
             dict with keys: 'logits' (dict of layer_idx -> (B,)), 'total_logit' (B,)
         """
+        # Cast inputs to match parameter dtype (needed when DeepSpeed wraps this module)
+        param_dtype = next(self.parameters()).dtype
+        timesteps = timesteps.to(param_dtype)
+        hidden_states_list = [hs.to(param_dtype) for hs in hidden_states_list]
+
         # Timestep embedding -- t_embedder expects raw timesteps, scale by 1000 as in transformer
         t_embed = self.t_embedder(timesteps * 1000.0)  # (B, cond_dim)
 
