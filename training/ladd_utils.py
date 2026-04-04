@@ -5,6 +5,7 @@ Includes timestep sampling, text dataset, prompt encoding, and noise utilities.
 
 import json
 import math
+import os
 import random
 from typing import List, Optional, Union
 
@@ -83,24 +84,56 @@ class TextDataset(Dataset):
     """Simple JSON prompt dataset.
 
     Expects a JSON file that is a list of dicts, each with a "text" key.
+    Optionally loads precomputed embeddings from an embeddings directory.
 
     Args:
         ann_path: Path to the JSON annotation file.
         text_drop_ratio: Probability of dropping text (classifier-free guidance).
+        embeddings_dir: Optional path to precomputed embeddings directory.
+            If provided, returns precomputed embedding tensors instead of text.
     """
 
-    def __init__(self, ann_path: str, text_drop_ratio: float = 0.0):
+    def __init__(self, ann_path: str, text_drop_ratio: float = 0.0,
+                 embeddings_dir: Optional[str] = None):
         with open(ann_path, "r") as f:
             self.dataset = json.load(f)
         self.text_drop_ratio = text_drop_ratio
 
+        # Load precomputed embeddings if available
+        self.embeddings = None
+        self.empty_embedding = None
+        if embeddings_dir and os.path.isdir(embeddings_dir):
+            emb_path = os.path.join(embeddings_dir, "embeddings.pt")
+            empty_path = os.path.join(embeddings_dir, "empty_embedding.pt")
+            if os.path.exists(emb_path):
+                data = torch.load(emb_path, map_location="cpu", weights_only=False)
+                self.embeddings = data["embeddings"]
+                assert len(self.embeddings) == len(self.dataset), \
+                    f"Embedding count {len(self.embeddings)} != dataset count {len(self.dataset)}"
+            if os.path.exists(empty_path):
+                self.empty_embedding = torch.load(empty_path, map_location="cpu", weights_only=True)
+
     def __len__(self):
         return len(self.dataset)
+
+    @property
+    def has_precomputed_embeddings(self):
+        return self.embeddings is not None
 
     def __getitem__(self, idx):
         item = self.dataset[idx]
         text = item.get("text", item.get("prompt", ""))
-        if random.random() < self.text_drop_ratio:
+        is_dropped = random.random() < self.text_drop_ratio
+
+        if self.embeddings is not None:
+            # Return precomputed embedding
+            if is_dropped and self.empty_embedding is not None:
+                emb = self.empty_embedding
+            else:
+                emb = self.embeddings[idx]
+            return {"text": text, "idx": idx, "embedding": emb}
+
+        if is_dropped:
             text = ""
         return {"text": text, "idx": idx}
 

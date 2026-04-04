@@ -112,6 +112,9 @@ def parse_args():
                         help="Path to JSON annotation file with text prompts.")
     parser.add_argument("--text_drop_ratio", type=float, default=0.1,
                         help="Probability of dropping text for CFG training.")
+    parser.add_argument("--embeddings_dir", type=str, default=None,
+                        help="Path to precomputed embeddings (from precompute_embeddings.py). "
+                             "Skips text encoder loading to save ~3GB GPU memory.")
     parser.add_argument("--max_sequence_length", type=int, default=512,
                         help="Maximum token length for text encoder.")
 
@@ -464,20 +467,24 @@ def main():
     vae.requires_grad_(False)
     vae.eval()
 
-    # Text encoder (frozen)
-    from transformers import AutoModel, AutoTokenizer as HFAutoTokenizer
-    text_encoder_dir = os.path.join(args.pretrained_model_name_or_path, "text_encoder")
-    text_encoder = AutoModel.from_pretrained(text_encoder_dir, dtype=weight_dtype, trust_remote_code=True)
-    text_encoder.requires_grad_(False)
-    text_encoder.eval()
+    # Text encoder (frozen) — skip if using precomputed embeddings
+    text_encoder = None
+    tokenizer = None
+    if not args.embeddings_dir:
+        from transformers import AutoModel, AutoTokenizer as HFAutoTokenizer
+        text_encoder_dir = os.path.join(args.pretrained_model_name_or_path, "text_encoder")
+        text_encoder = AutoModel.from_pretrained(text_encoder_dir, dtype=weight_dtype, trust_remote_code=True)
+        text_encoder.requires_grad_(False)
+        text_encoder.eval()
 
-    # Tokenizer
-    os.environ["TOKENIZERS_PARALLELISM"] = "false"
-    tokenizer_dir = os.path.join(args.pretrained_model_name_or_path, "tokenizer")
-    if os.path.exists(tokenizer_dir):
-        tokenizer = HFAutoTokenizer.from_pretrained(tokenizer_dir, trust_remote_code=True)
+        os.environ["TOKENIZERS_PARALLELISM"] = "false"
+        tokenizer_dir = os.path.join(args.pretrained_model_name_or_path, "tokenizer")
+        if os.path.exists(tokenizer_dir):
+            tokenizer = HFAutoTokenizer.from_pretrained(tokenizer_dir, trust_remote_code=True)
+        else:
+            tokenizer = HFAutoTokenizer.from_pretrained(text_encoder_dir, trust_remote_code=True)
     else:
-        tokenizer = HFAutoTokenizer.from_pretrained(text_encoder_dir, trust_remote_code=True)
+        logger.info(f"Using precomputed embeddings from {args.embeddings_dir} — skipping text encoder")
 
     # Noise scheduler
     scheduler_dir = os.path.join(args.pretrained_model_name_or_path, "scheduler")
@@ -545,10 +552,14 @@ def main():
     )
 
     # Dataset and dataloader
-    train_dataset = TextDataset(args.train_data_meta, text_drop_ratio=args.text_drop_ratio)
+    train_dataset = TextDataset(args.train_data_meta, text_drop_ratio=args.text_drop_ratio,
+                                embeddings_dir=args.embeddings_dir)
 
     def collate_fn(examples):
-        return {"text": [ex["text"] for ex in examples]}
+        batch = {"text": [ex["text"] for ex in examples]}
+        if "embedding" in examples[0]:
+            batch["embeddings"] = [ex["embedding"] for ex in examples]
+        return batch
 
     batch_sampler_gen = torch.Generator().manual_seed(args.seed if args.seed else 0)
     batch_sampler = BatchSampler(
@@ -589,7 +600,8 @@ def main():
 
     # Move frozen models to device
     teacher.to(accelerator.device, dtype=weight_dtype)
-    text_encoder.to(accelerator.device)
+    if text_encoder is not None:
+        text_encoder.to(accelerator.device)
     vae.to(accelerator.device, dtype=torch.float32)
 
     # -----------------------------------------------------------------------
@@ -685,15 +697,19 @@ def main():
             with torch.cuda.amp.autocast(dtype=weight_dtype):
                 bsz = len(batch["text"])
 
-                # 1. Encode prompts
-                with torch.no_grad():
-                    prompt_embeds = encode_prompt(
-                        batch["text"],
-                        device=accelerator.device,
-                        text_encoder=text_encoder,
-                        tokenizer=tokenizer,
-                        max_sequence_length=args.max_sequence_length,
-                    )
+                # 1. Encode prompts (or use precomputed embeddings)
+                if "embeddings" in batch:
+                    prompt_embeds = [e.to(accelerator.device, dtype=weight_dtype)
+                                    for e in batch["embeddings"]]
+                else:
+                    with torch.no_grad():
+                        prompt_embeds = encode_prompt(
+                            batch["text"],
+                            device=accelerator.device,
+                            text_encoder=text_encoder,
+                            tokenizer=tokenizer,
+                            max_sequence_length=args.max_sequence_length,
+                        )
 
                 # 2. Sample student timestep
                 student_t = sample_student_timestep(
