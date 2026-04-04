@@ -73,6 +73,7 @@ from zimage.scheduler import FlowMatchEulerDiscreteScheduler
 
 from training.ladd_discriminator import LADDDiscriminator
 from training.ladd_eval import compute_discriminator_metrics
+from training.ladd_model_utils import load_transformer, load_vae
 from training.ladd_utils import (
     DiscreteSampling,
     TextDataset,
@@ -182,6 +183,8 @@ def parse_args():
     parser.add_argument("--checkpointing_steps", type=int, default=500)
     parser.add_argument("--checkpoints_total_limit", type=int, default=3)
     parser.add_argument("--resume_from_checkpoint", type=str, default=None)
+    parser.add_argument("--skip_save", action="store_true",
+                        help="Skip checkpoint saving (for quick experiment runs).")
 
     # Validation
     parser.add_argument("--validation_prompts", nargs="+", type=str,
@@ -215,69 +218,6 @@ def parse_args():
     if env_local_rank != -1 and env_local_rank != args.local_rank:
         args.local_rank = env_local_rank
     return args
-
-
-# ---------------------------------------------------------------------------
-# Model loading helpers
-# ---------------------------------------------------------------------------
-
-def load_transformer(model_dir: str, dtype: torch.dtype) -> ZImageTransformer2DModel:
-    """Load a ZImageTransformer2DModel from a directory with config.json + safetensors."""
-    from utils.loader import load_config, load_sharded_safetensors
-
-    transformer_dir = Path(model_dir) / "transformer"
-    config = load_config(str(transformer_dir / "config.json"))
-
-    with torch.device("meta"):
-        transformer = ZImageTransformer2DModel(
-            all_patch_size=tuple(config.get("all_patch_size", DEFAULT_TRANSFORMER_PATCH_SIZE)),
-            all_f_patch_size=tuple(config.get("all_f_patch_size", DEFAULT_TRANSFORMER_F_PATCH_SIZE)),
-            in_channels=config.get("in_channels", DEFAULT_TRANSFORMER_IN_CHANNELS),
-            dim=config.get("dim", DEFAULT_TRANSFORMER_DIM),
-            n_layers=config.get("n_layers", DEFAULT_TRANSFORMER_N_LAYERS),
-            n_refiner_layers=config.get("n_refiner_layers", DEFAULT_TRANSFORMER_N_REFINER_LAYERS),
-            n_heads=config.get("n_heads", DEFAULT_TRANSFORMER_N_HEADS),
-            n_kv_heads=config.get("n_kv_heads", DEFAULT_TRANSFORMER_N_KV_HEADS),
-            norm_eps=config.get("norm_eps", DEFAULT_TRANSFORMER_NORM_EPS),
-            qk_norm=config.get("qk_norm", DEFAULT_TRANSFORMER_QK_NORM),
-            cap_feat_dim=config.get("cap_feat_dim", DEFAULT_TRANSFORMER_CAP_FEAT_DIM),
-            rope_theta=config.get("rope_theta", ROPE_THETA),
-            t_scale=config.get("t_scale", DEFAULT_TRANSFORMER_T_SCALE),
-            axes_dims=config.get("axes_dims", ROPE_AXES_DIMS),
-            axes_lens=config.get("axes_lens", ROPE_AXES_LENS),
-        ).to(dtype)
-
-    state_dict = load_sharded_safetensors(transformer_dir, device="cpu", dtype=dtype)
-    transformer.load_state_dict(state_dict, strict=False, assign=True)
-    del state_dict
-    return transformer
-
-
-def load_vae(model_dir: str) -> AutoencoderKL:
-    """Load VAE from model directory."""
-    from utils.loader import load_config, load_sharded_safetensors
-
-    vae_dir = Path(model_dir) / "vae"
-    vae_config = load_config(str(vae_dir / "config.json"))
-    vae = AutoencoderKL(
-        in_channels=vae_config.get("in_channels", 3),
-        out_channels=vae_config.get("out_channels", 3),
-        down_block_types=tuple(vae_config.get("down_block_types", ("DownEncoderBlock2D",))),
-        up_block_types=tuple(vae_config.get("up_block_types", ("UpDecoderBlock2D",))),
-        block_out_channels=tuple(vae_config.get("block_out_channels", (64,))),
-        layers_per_block=vae_config.get("layers_per_block", 1),
-        latent_channels=vae_config.get("latent_channels", 4),
-        norm_num_groups=vae_config.get("norm_num_groups", 32),
-        scaling_factor=vae_config.get("scaling_factor", 0.18215),
-        shift_factor=vae_config.get("shift_factor", None),
-        use_quant_conv=vae_config.get("use_quant_conv", True),
-        use_post_quant_conv=vae_config.get("use_post_quant_conv", True),
-        mid_block_add_attention=vae_config.get("mid_block_add_attention", True),
-    )
-    vae_state_dict = load_sharded_safetensors(vae_dir, device="cpu")
-    vae.load_state_dict(vae_state_dict, strict=False)
-    del vae_state_dict
-    return vae
 
 
 # ---------------------------------------------------------------------------
@@ -462,24 +402,12 @@ def main():
     # - student: ZeRO-2 with CPU optimizer offload (saves ~24GB for 6B params)
     # - disc: ZeRO-2 on GPU (small model, no offload needed)
     # Per Accelerate docs, disjoint multi-model training needs two Accelerator instances.
-    if args.cpu_offload_optimizer:
-        from accelerate.utils import DeepSpeedPlugin
-        _script_dir = os.path.dirname(os.path.abspath(__file__))
-        student_plugin = DeepSpeedPlugin(hf_ds_config=os.path.join(_script_dir, "ds_student_config.json"))
-        accelerator = Accelerator(
-            gradient_accumulation_steps=args.gradient_accumulation_steps,
-            mixed_precision=args.mixed_precision,
-            log_with=args.report_to,
-            project_config=accelerator_project_config,
-            deepspeed_plugins={"student": student_plugin},
-        )
-    else:
-        accelerator = Accelerator(
-            gradient_accumulation_steps=args.gradient_accumulation_steps,
-            mixed_precision=args.mixed_precision,
-            log_with=args.report_to,
-            project_config=accelerator_project_config,
-        )
+    accelerator = Accelerator(
+        gradient_accumulation_steps=args.gradient_accumulation_steps,
+        mixed_precision=args.mixed_precision,
+        log_with=args.report_to,
+        project_config=accelerator_project_config,
+    )
 
     logging.basicConfig(
         format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
@@ -587,12 +515,18 @@ def main():
     # internally.  We pass DummyOptim/DummyScheduler so accelerator.prepare() lets
     # DeepSpeed create the real ones from the JSON config.
     if args.cpu_offload_optimizer:
-        from accelerate.utils import DummyOptim, DummyScheduler
-        student_optimizer = DummyOptim(
+        # 8-bit Adam: uses ~2 bytes/param for optimizer states instead of 8,
+        # saving ~18GB for 6B param models. Drop-in replacement for AdamW.
+        # Compatible with FSDP/DDP for multi-GPU scaling.
+        import bitsandbytes as bnb
+        student_optimizer = bnb.optim.AdamW8bit(
             student.parameters(),
             lr=args.learning_rate,
+            betas=(args.adam_beta1, args.adam_beta2),
             weight_decay=args.adam_weight_decay,
+            eps=args.adam_epsilon,
         )
+        logger.info("Using 8-bit Adam for student optimizer")
     else:
         student_optimizer = torch.optim.AdamW(
             student.parameters(),
@@ -632,19 +566,12 @@ def main():
 
     # LR schedulers
     from diffusers.optimization import get_scheduler
-    if args.cpu_offload_optimizer:
-        student_lr_scheduler = DummyScheduler(
-            student_optimizer,
-            warmup_num_steps=args.lr_warmup_steps * accelerator.num_processes,
-            total_num_steps=args.max_train_steps * accelerator.num_processes,
-        )
-    else:
-        student_lr_scheduler = get_scheduler(
-            args.lr_scheduler,
-            optimizer=student_optimizer,
-            num_warmup_steps=args.lr_warmup_steps * accelerator.num_processes,
-            num_training_steps=args.max_train_steps * accelerator.num_processes,
-        )
+    student_lr_scheduler = get_scheduler(
+        args.lr_scheduler,
+        optimizer=student_optimizer,
+        num_warmup_steps=args.lr_warmup_steps * accelerator.num_processes,
+        num_training_steps=args.max_train_steps * accelerator.num_processes,
+    )
     disc_lr_scheduler = get_scheduler(
         args.lr_scheduler,
         optimizer=disc_optimizer,
@@ -652,23 +579,13 @@ def main():
         num_training_steps=args.max_train_steps * accelerator.num_processes,
     )
 
-    # Prepare with accelerator
-    if args.cpu_offload_optimizer:
-        # Only student goes through DeepSpeed (ZeRO-2 + CPU optimizer offload).
-        # Discriminator is small (14M) — plain PyTorch on GPU, no DS wrapping needed.
-        accelerator.state.select_deepspeed_plugin("student")
-        accelerator.state.deepspeed_plugin.deepspeed_config["train_micro_batch_size_per_gpu"] = args.train_batch_size
-        student, student_optimizer, train_dataloader, student_lr_scheduler = accelerator.prepare(
-            student, student_optimizer, train_dataloader, student_lr_scheduler,
-        )
-        discriminator.to(accelerator.device, dtype=weight_dtype)
-    else:
-        student, student_optimizer, train_dataloader, student_lr_scheduler = accelerator.prepare(
-            student, student_optimizer, train_dataloader, student_lr_scheduler,
-        )
-        discriminator, disc_optimizer, disc_lr_scheduler = accelerator.prepare(
-            discriminator, disc_optimizer, disc_lr_scheduler,
-        )
+    # Prepare with accelerator (plain Accelerate — no DeepSpeed)
+    student, student_optimizer, train_dataloader, student_lr_scheduler = accelerator.prepare(
+        student, student_optimizer, train_dataloader, student_lr_scheduler,
+    )
+    discriminator, disc_optimizer, disc_lr_scheduler = accelerator.prepare(
+        discriminator, disc_optimizer, disc_lr_scheduler,
+    )
 
     # Move frozen models to device
     teacher.to(accelerator.device, dtype=weight_dtype)
@@ -890,19 +807,20 @@ def main():
                 )
 
                 # ---- Discriminator update (every step) ----
-                if args.cpu_offload_optimizer:
-                    # Disc is plain PyTorch (not wrapped in DeepSpeed)
-                    d_loss.backward()
-                    torch.nn.utils.clip_grad_norm_(discriminator.parameters(), args.max_grad_norm)
-                else:
-                    accelerator.backward(d_loss)
-                    if accelerator.sync_gradients:
-                        accelerator.clip_grad_norm_(discriminator.parameters(), args.max_grad_norm)
+                accelerator.backward(d_loss)
+                if accelerator.sync_gradients:
+                    accelerator.clip_grad_norm_(discriminator.parameters(), args.max_grad_norm)
+                # Capture disc grad norm before zero_grad
+                _disc_grad_norm = sum(
+                    p.grad.norm().item() for p in discriminator.parameters()
+                    if p.grad is not None
+                )
                 disc_optimizer.step()
                 disc_lr_scheduler.step()
                 disc_optimizer.zero_grad()
 
                 # ---- Student (generator) update (every gen_update_interval steps) ----
+                _student_grad_norm = 0.0
                 if is_gen_step:
                     # Recompute fake logits with student grad path.
                     # The teacher forward runs WITHOUT torch.no_grad() so that
@@ -913,10 +831,6 @@ def main():
                         student_pred.float(), renoise.float(), t_hat.float()
                     ).to(weight_dtype)
                     fake_input_grad = list(student_renoised_grad.unsqueeze(2).unbind(dim=0))
-
-                    # Freeze discriminator during generator backward to avoid
-                    # gradient leakage (required for DeepSpeed dual-engine setup).
-                    discriminator.requires_grad_(False)
 
                     # Teacher forward WITH gradient graph (frozen weights, live graph)
                     _, fake_extras_grad = teacher(
@@ -935,15 +849,23 @@ def main():
                     )
                     g_loss_update = -torch.mean(fake_result_grad["total_logit"])
 
+                    # Use the DeepSpeed engine's backward so ZeRO-2 properly
+                    # manages gradient reduction and CPU offloading.
+                    # student IS the DeepSpeed engine when cpu_offload_optimizer is set.
                     accelerator.backward(g_loss_update)
+                    # Capture student grad norm before clipping/zero_grad
+                    _student_grad_norm = sum(
+                        p.grad.float().norm().item()
+                        for p in accelerator.unwrap_model(student).parameters()
+                        if p.grad is not None
+                    )
                     if accelerator.sync_gradients:
                         accelerator.clip_grad_norm_(student.parameters(), args.max_grad_norm)
                     student_optimizer.step()
                     student_lr_scheduler.step()
                     student_optimizer.zero_grad()
-
-                    # Unfreeze discriminator for next step
-                    discriminator.requires_grad_(True)
+                    # Zero disc grads that leaked through the gen step
+                    disc_optimizer.zero_grad()
 
             # Logging
             if accelerator.is_main_process:
@@ -961,17 +883,25 @@ def main():
                 # Discriminator health metrics
                 logs.update(compute_discriminator_metrics(real_result, fake_result))
 
-                # Gradient norms
-                disc_grad_norm = torch.nn.utils.clip_grad_norm_(
-                    discriminator.parameters(), float("inf")
-                ).item() if any(p.grad is not None for p in discriminator.parameters()) else 0.0
-                logs["grad_norm/discriminator"] = disc_grad_norm
-
+                # Gradient norms (captured before zero_grad above)
+                logs["grad_norm/discriminator"] = _disc_grad_norm
                 if is_gen_step:
-                    student_grad_norm = torch.nn.utils.clip_grad_norm_(
-                        student.parameters(), float("inf")
-                    ).item() if any(p.grad is not None for p in accelerator.unwrap_model(student).parameters()) else 0.0
-                    logs["grad_norm/student"] = student_grad_norm
+                    logs["grad_norm/student"] = _student_grad_norm
+
+                # Student weight change tracking — log delta from initial weights
+                # to confirm weights are actually changing during training
+                student_unwrapped = accelerator.unwrap_model(student)
+                if not hasattr(main, '_initial_weights'):
+                    main._initial_weights = {}
+                for _track_name, _track_param in student_unwrapped.named_parameters():
+                    if any(k in _track_name for k in ["layers.0.attention.to_q.weight",
+                                                       "layers.15.attention.to_q.weight",
+                                                       "layers.29.attention.to_q.weight"]):
+                        _cur = _track_param.data.float()
+                        if _track_name not in main._initial_weights:
+                            main._initial_weights[_track_name] = _cur.clone()
+                        _delta = (_cur - main._initial_weights[_track_name]).norm().item()
+                        logs[f"weight_delta/{_track_name.replace('.', '_')}"] = _delta
 
                 # GPU memory
                 if torch.cuda.is_available():
@@ -989,7 +919,7 @@ def main():
             global_step += 1
 
             # Checkpointing
-            if global_step % args.checkpointing_steps == 0:
+            if not args.skip_save and global_step % args.checkpointing_steps == 0:
                 if accelerator.is_main_process:
                     save_path = os.path.join(args.output_dir, f"checkpoint-{global_step}")
                     accelerator.save_state(save_path)
@@ -1030,7 +960,7 @@ def main():
 
     # Final save
     accelerator.wait_for_everyone()
-    if accelerator.is_main_process:
+    if accelerator.is_main_process and not args.skip_save:
         save_path = os.path.join(args.output_dir, f"checkpoint-{global_step}")
         accelerator.save_state(save_path)
         unwrapped_student = accelerator.unwrap_model(student)
@@ -1039,6 +969,8 @@ def main():
             os.path.join(save_path, "student_transformer", "pytorch_model.bin"),
         )
         logger.info(f"Training complete. Final checkpoint at step {global_step}")
+    elif args.skip_save:
+        logger.info(f"Training complete at step {global_step}. Checkpoint saving skipped (--skip_save).")
 
     accelerator.end_training()
 

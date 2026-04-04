@@ -90,9 +90,8 @@ def generate_eval_images(
     Returns list of saved image paths.
     """
     from zimage.pipeline import generate
-    from zimage.autoencoder import AutoencoderKL, load_vae
-    from zimage.transformer import ZImageTransformer2DModel, load_transformer
     from zimage.scheduler import FlowMatchEulerDiscreteScheduler
+    from training.ladd_model_utils import load_transformer, load_vae
     from transformers import AutoModel, AutoTokenizer
 
     dtype = torch.bfloat16

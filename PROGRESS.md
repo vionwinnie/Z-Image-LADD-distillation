@@ -1,63 +1,152 @@
-# Progress Report — 2026-03-31
+# LADD Training Progress
 
-## What Was Done Today
+## Context
 
-### 1. Environment & Infrastructure
-- Initialized the `uv` environment with all dependencies (`uv sync --all-extras`)
-- Verified Python 3.10+ and all required packages (torch, transformers, diffusers, accelerate, etc.)
-- Confirmed model weights are present at `models/Z-Image/` (transformer, text_encoder, tokenizer, vae, scheduler)
+LADD (Latent Adversarial Diffusion Distillation) training for Z-Image, a 6.15B parameter
+image generation model. Student (6.15B, trainable) + teacher (6.15B, frozen) + discriminator
+(14M, trainable) + text encoder + VAE. Production target: 8 GPUs with FSDP.
+Single-GPU verification needed first.
 
-### 2. LADD Distillation Pipeline (committed in `b273e97`)
-- **Transformer feature extraction**: Modified `src/zimage/transformer.py` to support `return_hidden_states=True`, extracting intermediate features from all 30 transformer blocks
-- **Discriminator heads**: Implemented `training/ladd_discriminator.py` — lightweight 2D conv heads with FiLM conditioning (timestep + pooled text embedding), following the Projected GAN / LADD design
-- **Training utilities**: Created `training/ladd_utils.py` — logit-normal sampling, `TextDataset`, `encode_prompt()`, `add_noise()`
-- **Full training script**: Created `training/train_ladd.py` — Accelerate-based LADD training with alternating student/discriminator updates, gradient checkpointing, FSDP support
-- **Launch script**: Created `training/train_ladd.sh` for 8-GPU training
+## Memory Budget (Single A100 80GB)
 
-### 3. Data Pipeline
-- **Benchmark ingestion**: `data/prepare_prompts.py` downloads and classifies prompts from PartiPrompts, GenAI-Bench, DrawBench into a 3-axis MECE taxonomy (Subject x Style x Camera)
-- **Gap-filling**: `data/generate_prompts.py` uses Claude API to fill taxonomy gaps to ~10K prompts
-- **Debug dataset**: `data/debug/metadata.json` — 73 prompts for smoke testing
-- **Classified prompts**: `data/all_classified_prompts.json` — 2,553 benchmark prompts
+| Component                | bf16     | fp32 Adam states |
+|--------------------------|----------|------------------|
+| Student                  | 12 GB    | 24 GB (regular) / 6 GB (8-bit) |
+| Teacher                  | 12 GB    | -                |
+| Discriminator            | 0.03 GB  | negligible       |
+| Text encoder             | ~3 GB   | -                |
+| Activations (grad ckpt)  | ~30 GB (512px) / ~10 GB (256px) | - |
+| **Total (regular Adam)** | **~81 GB** | **OOM** |
+| **Total (8-bit Adam)**   | **~63 GB (512px)** | fits at 256px |
 
-### 4. Inference & Smoke Test Scripts (committed in `e4914d8`)
-- **Smoke test**: `scripts/smoke_test.py` — end-to-end validation of the full pipeline
-- **Inference script**: `scripts/inference_ladd.py` — student inference + teacher comparison
+## What Worked
 
-### 5. Smoke Test Results (with real model weights)
-Ran `scripts/smoke_test.py` with full Z-Image weights on CPU:
+### smoke_test_train.py (11/11 checks pass)
+- Added `--pretrained_model_name_or_path` for real weights (was dummy-only)
+- Strategic GPU memory management: free/reload teacher between baseline and LADD steps
+- Step 11: inference round-trip (save checkpoint -> load -> generate PIL image -> verify)
+- All 11 checks pass with both dummy and real 6.15B weights
 
-| Step | Result |
-|------|--------|
-| 1. Model loading (6.15B student + 6.15B teacher) | PASS |
-| 2. Forward pass shape validation | PASS |
-| 3. Teacher feature extraction (30 hidden states) | PASS |
-| 4. Discriminator head outputs (6 heads at layers 5,10,15,20,25,29) | PASS |
-| 5. Loss computation (hinge loss, finite scalars) | PASS |
-| 6. Gradient flow (student + disc have grads, teacher frozen) | PASS |
-| 7. Optimizer step (weights update) | PASS |
-| 8. Checkpoint save/load round-trip | FAIL — disk space on `/tmp` (4.8GB free, student is ~12GB) |
+### ladd_discriminator.py dtype fix
+- Input dtype casting in `forward()` to match parameter dtype
+- Needed because hidden states from teacher may arrive in different dtype than disc weights
 
-The Step 8 failure is an environment issue (insufficient disk on `/tmp`), not a code bug. The discriminator checkpoint (57.2 MB) saved and round-tripped successfully. Fix: use `/workspace` for temp dir (336TB available).
+### inference_ladd.py
+- Added wandb logging with `--log_to_wandb` flag
+- Results logged as a table: idx | student [| teacher] | prompt
+- Added `FlowMatchEulerDiscreteScheduler` import (was missing)
+- Verified: 10 images generated at 512x512, 4 steps, ~0.48s each
 
----
+### Research automation framework (research/)
+- `program.md`: Agent instructions for autoresearch-style experiment loop
+- `experiment.py`: Hyperparameter config that shells out to train_ladd.py
+- `evaluate.py`: FID + CLIP score evaluation (uses pre-computed reference stats)
+- `results.tsv`: Experiment log
 
-## TODOs for Tomorrow
+## What Failed and Why
 
-### High Priority
-- [ ] **Fix smoke test Step 8**: Change `tempfile.mkdtemp()` to use `/workspace` as the temp directory, then rerun and confirm all 9 steps pass
-- [ ] **Add W&B (Weights & Biases) integration** to `training/train_ladd.py`:
-  - Log training metrics: student loss, discriminator loss, per-head logits, gradient norms, learning rates
-  - Log generated image samples at checkpointing intervals
-  - Log GPU memory usage
-  - Add `--report_to=wandb` option alongside existing tensorboard support
-- [ ] **Run `data/generate_prompts.py`** to fill the training dataset to ~10K prompts (requires `ANTHROPIC_API_KEY`)
+### Attempt 1: DeepSpeed ZeRO-2 with CPU optimizer offload
 
-### Medium Priority
-- [ ] **Run smoke test on GPU** to validate bf16 dtype path and CUDA-specific behavior
-- [ ] **Test multi-GPU launch** with `accelerate launch --num_processes=2` on a dev instance
-- [ ] **Run a short training run** (~100 steps) on GPU to verify loss trends downward
+**Goal**: Offload student's fp32 Adam states to CPU to save ~24GB GPU memory.
 
-### Lower Priority
-- [ ] **Run full 20K-step training** on 8x A100
-- [ ] **Run inference demo** with `scripts/inference_ladd.py` and collect sample images for comparison (student 4-step vs teacher 50-step)
+**Problems encountered**:
+
+1. **Dual DeepSpeed engines**: Wrapping both student and discriminator in DeepSpeed
+   caused `IndexError: list index out of range` in gradient reduction. DeepSpeed engines
+   assume single-model training; the GAN alternating D/G update pattern with
+   `retain_graph=True` breaks their internal bookkeeping.
+
+2. **Two-Accelerator pattern**: HuggingFace Accelerate docs suggest using two Accelerator
+   instances for multi-model DeepSpeed. Failed with `mpi4py` import errors because the
+   second `deepspeed.initialize()` tries to create a new process group.
+
+3. **Single-engine approach** (student only in DeepSpeed, disc as plain PyTorch):
+   - `DummyOptim` + `DummyScheduler` resulted in **student LR stuck at 0** for the entire
+     run. DeepSpeed's internal WarmupLR scheduler wasn't being configured correctly by
+     Accelerate's auto-fill of "auto" values.
+   - Student weight norms flat in wandb — confirmed student was not learning.
+
+4. **`discriminator.requires_grad_(False)` during gen step**: Added per DeepSpeed GAN
+   tutorial to prevent gradient leakage. But this **broke gradient flow** — the discriminator's
+   forward pass with frozen parameters doesn't create a computation graph, so
+   `g_loss.backward()` can't trace gradients back through disc -> teacher -> student.
+   **Student grad norms were zero.**
+
+5. **`student.backward()` vs `accelerator.backward()`**: Using the DeepSpeed engine's
+   backward method caused `AssertionError: gradient computed twice for this partition` because
+   both `d_loss.backward()` and `g_loss_update.backward()` triggered ZeRO-2's gradient
+   reduction hooks on the student's parameters.
+
+6. **Grad norm logging**: Grad norms were captured **after** `optimizer.zero_grad()`,
+   always showing 0. With DeepSpeed, even capturing before zero_grad showed 0 because
+   ZeRO-2 manages gradients in internal buffers, not on `param.grad`.
+
+7. **Checkpoint save failures**: `PytorchStreamWriter failed writing file data/2` when
+   saving the ~24GB optimizer state file. Likely a filesystem limitation with very large
+   single files.
+
+8. **`os.execv` + `tee` incompatibility**: The experiment runner used `os.execv` to replace
+   the Python process (avoiding GPU memory leak from fork), but this broke the `tee` pipe
+   so output wasn't captured.
+
+9. **`os.system` / `subprocess` GPU memory leak**: Parent Python process holds GPU memory
+   even without importing torch, because `fork()` duplicates the process memory space.
+   Child process then OOMs because parent holds ~36GB.
+
+**Conclusion**: DeepSpeed ZeRO-2 is designed for single-model training. The GAN setup
+with alternating D/G updates, cross-model gradient flow, and two optimizers is fundamentally
+incompatible with DeepSpeed's assumptions on a single GPU.
+
+### Attempt 2: 8-bit Adam (bitsandbytes)
+
+**Goal**: Use 8-bit Adam to reduce optimizer states from ~24GB to ~6GB. No DeepSpeed.
+
+**Result**: Partially successful.
+- LR warmup works correctly (0 -> 1e-5 over 50 steps)
+- Student grad norms are **non-zero** (gradients flowing!)
+- Discriminator training works
+- **OOM at 512px** on gen steps (activation memory for student + teacher forward with
+  grad graph exceeds remaining GPU memory)
+- **Works at 256px** -- all 50 steps complete, losses finite, grad norms non-zero
+
+**Current status**: 256px training works. 512px needs either multi-GPU or further
+memory optimization (e.g., offloading text encoder during gen steps).
+
+## Current Working Configuration
+
+```bash
+# 256px, single A100 80GB, 8-bit Adam
+PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True \
+accelerate launch --num_processes=1 training/train_ladd.py \
+    --pretrained_model_name_or_path=models/Z-Image \
+    --train_data_meta=data/debug/metadata.json \
+    --output_dir=research/output \
+    --cpu_offload_optimizer \
+    --image_sample_size=256 \
+    --mixed_precision=bf16 --gradient_checkpointing --allow_tf32 \
+    --learning_rate=1e-5 --learning_rate_disc=1e-4 \
+    --gen_update_interval=5 \
+    --report_to=wandb --tracker_project_name=ladd
+```
+
+## Validated (baseline-256px-delta-v2)
+
+Run: https://wandb.ai/yeun-yeungs/ladd/runs/952u5wzr
+
+- 50 steps at 256px, 8-bit Adam, `--skip_save`, single A100 80GB
+- **LR warmup**: 0 -> 1e-5 over 10 steps (working correctly)
+- **Student grad norms**: non-zero on gen steps (every 5th step)
+- **Weight deltas**: gradually increasing to 0.006 by step 50 (student is learning)
+- **d_loss**: oscillating 0-4 (discriminator active)
+- **g_loss**: oscillating -3 to +3 (healthy adversarial dynamics)
+- Completed in 21 seconds, clean exit, no OOM, no NFS hang
+
+## Next Steps
+
+- Run 500-step experiment at 256px with evaluation (FID, CLIP score)
+- LR sweep: student_lr {5e-6, 1e-5, 2e-5} x disc_lr {5e-5, 1e-4, 2e-4}
+- Scale to 512px on multi-GPU once hyperparameters are validated
+
+## Dependencies Installed
+
+omegaconf, deepspeed, mpi4py, wandb, bitsandbytes
