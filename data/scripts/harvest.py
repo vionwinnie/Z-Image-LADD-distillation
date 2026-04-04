@@ -8,7 +8,7 @@ normalizes format, and saves as JSONL to data/raw/{source_name}.jsonl.
 Schema: {"text": "...", "source": "...", "lang": "en"|"zh"}
 
 Usage:
-    python3.13 data/harvest.py [--source SOURCE_NAME] [--all]
+    python3.13 data/scripts/harvest.py [--source SOURCE_NAME] [--all]
 """
 
 import json
@@ -27,7 +27,8 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-RAW_DIR = SCRIPT_DIR / "raw"
+DATA_DIR = SCRIPT_DIR.parent
+RAW_DIR = DATA_DIR / "raw"
 RAW_DIR.mkdir(parents=True, exist_ok=True)
 
 HF_TOKEN = os.environ.get("HF_TOKEN") or os.environ.get("HUGGING_FACE_HUB_TOKEN")
@@ -528,7 +529,7 @@ def harvest_existing():
         logger.info(f"Skipping existing (already exists: {output})")
         return
 
-    meta_path = SCRIPT_DIR / "train" / "metadata.json"
+    meta_path = DATA_DIR / "train" / "metadata.json"
     if not meta_path.exists():
         logger.warning(f"No existing metadata at {meta_path}")
         return
@@ -575,7 +576,7 @@ def cross_source_dedup():
     logger.info(f"After cross-source dedup: {len(unique)} ({len(all_records) - len(unique)} removed)")
 
     # Save merged output
-    output = SCRIPT_DIR / "raw_merged.jsonl"
+    output = DATA_DIR / "raw_merged.jsonl"
     save_jsonl(unique, output)
 
     # Stats

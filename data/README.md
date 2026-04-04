@@ -52,7 +52,7 @@ LADD distillation does not use real images. The teacher model generates syntheti
 
 ## Data Sources (629K prompts)
 
-Harvested from 9 datasets via `harvest.py`, deduplicated, and classified:
+Harvested from 9 datasets via `scripts/harvest.py`, deduplicated, and classified:
 
 | Source | Count | HuggingFace Dataset | Notes |
 |--------|-------|---------------------|-------|
@@ -75,7 +75,7 @@ Two-stage dedup removed 35% of raw prompts:
 
 ## Classification
 
-Hybrid keyword + zero-shot embedding classifier (`zeroshot_classify.py`):
+Hybrid keyword + zero-shot embedding classifier (`scripts/zeroshot_classify.py`):
 
 - Keywords first (high precision when they match)
 - Zero-shot fallback with `all-MiniLM-L6-v2` embeddings for unmatched prompts
@@ -101,15 +101,20 @@ data/
 │   └── metadata.json               # 629K training prompts (Git LFS)
 ├── debug/
 │   └── metadata.json               # 98 prompts (1 per Subject×Style cell)
-├── harvest.py                      # Phase 1: Download & filter from HuggingFace
-├── dedup_minhash.py                # Phase 2.1: MinHash LSH dedup
-├── dedup_semantic.py               # Phase 2.2-2.3: Embedding + FAISS semantic dedup
-├── zeroshot_classify.py            # Hybrid classification
-├── classify_and_sample.py          # Phase 3: Taxonomy classification + sampling
-├── build_dataset.py                # Phase 4: Length filter, validation, assembly
-├── prepare_prompts.py              # Original benchmark downloader
-└── generate_prompts.py             # Gap-fill via Claude API
+└── scripts/
+    ├── harvest.py                  # Phase 1: Download & filter from HuggingFace
+    ├── dedup_minhash.py            # Phase 2.1: MinHash LSH dedup
+    ├── dedup_semantic.py           # Phase 2.2-2.3: Embedding + FAISS semantic dedup
+    ├── zeroshot_classify.py        # Hybrid classification
+    ├── classify_and_sample.py      # Phase 3: Taxonomy classification + sampling
+    ├── build_dataset.py            # Phase 4: Length filter, validation, assembly
+    ├── prepare_prompts.py          # Original benchmark downloader
+    ├── generate_prompts.py         # Gap-fill via Claude API
+    ├── merge_prompts.py            # Merge benchmark + gap-fill prompts
+    └── visualize_tsne.py           # t-SNE embedding visualization
 ```
+
+Plots are stored in the top-level `assets/` directory (`tsne_subject.png`, `tsne_style.png`).
 
 ## How to Use
 
@@ -131,27 +136,27 @@ The full pipeline can be re-run if needed (requires `HF_TOKEN` for gated dataset
 export HF_TOKEN=your_token_here
 
 # Phase 1: Download (~2-4 hours)
-python3.13 data/harvest.py
+python3.13 data/scripts/harvest.py
 
 # Phase 2.1: MinHash dedup (~40 min)
-python3.13 data/dedup_minhash.py
+python3.13 data/scripts/dedup_minhash.py
 
 # Phase 2.2-2.3: Semantic dedup (~3 hours on CPU)
-python3.13 data/dedup_semantic.py
+python3.13 data/scripts/dedup_semantic.py
 
 # Phase 3: Classify (hybrid, ~2.5 hours on CPU)
-python3.13 data/zeroshot_classify.py
+python3.13 data/scripts/zeroshot_classify.py
 
 # Phase 4: Assemble final dataset
-python3.13 data/build_dataset.py --max-words 300
+python3.13 data/scripts/build_dataset.py --max-words 300
 ```
 
 ## Pipeline Scripts
 
 | Script | Input | Output | Time (16-core CPU) |
 |--------|-------|--------|-------------------|
-| `harvest.py` | HuggingFace datasets | `data/raw/*.jsonl`, `raw_merged.jsonl` | ~2-4 hours |
-| `dedup_minhash.py` | `raw_merged.jsonl` | `deduped_stage1.jsonl` | ~40 min |
-| `dedup_semantic.py` | `deduped_stage1.jsonl` | `deduped_stage2.jsonl` | ~3 hours |
-| `zeroshot_classify.py` | `deduped_stage2.jsonl` | `full_batch.jsonl` | ~2.5 hours |
-| `build_dataset.py` | `full_batch.jsonl` | `train/metadata.json` | ~2 min |
+| `scripts/harvest.py` | HuggingFace datasets | `data/raw/*.jsonl`, `raw_merged.jsonl` | ~2-4 hours |
+| `scripts/dedup_minhash.py` | `raw_merged.jsonl` | `deduped_stage1.jsonl` | ~40 min |
+| `scripts/dedup_semantic.py` | `deduped_stage1.jsonl` | `deduped_stage2.jsonl` | ~3 hours |
+| `scripts/zeroshot_classify.py` | `deduped_stage2.jsonl` | `full_batch.jsonl` | ~2.5 hours |
+| `scripts/build_dataset.py` | `full_batch.jsonl` | `train/metadata.json` | ~2 min |

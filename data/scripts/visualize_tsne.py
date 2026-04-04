@@ -6,7 +6,7 @@ Embeds a random subsample of prompts, runs t-SNE, and produces a 2D scatter
 plot colored by Subject (or Style), with category centroid markers overlaid.
 
 Usage:
-    python3.13 data/visualize_tsne.py [--n-samples 30000] [--axis subject|style]
+    python3.13 data/scripts/visualize_tsne.py [--n-samples 30000] [--axis subject|style]
 """
 
 import json
@@ -31,7 +31,10 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-INPUT_PATH = SCRIPT_DIR / "full_batch.jsonl"
+DATA_DIR = SCRIPT_DIR.parent
+REPO_ROOT = DATA_DIR.parent
+ASSETS_DIR = REPO_ROOT / "assets"
+INPUT_PATH = DATA_DIR / "full_batch.jsonl"
 
 MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
 EMBED_DIM = 384
@@ -95,7 +98,7 @@ def main():
     args = parser.parse_args()
 
     if args.output is None:
-        args.output = str(SCRIPT_DIR / f"tsne_{args.axis}.png")
+        args.output = str(ASSETS_DIR / f"tsne_{args.axis}.png")
 
     # Load data
     logger.info(f"Loading data from {INPUT_PATH}...")

@@ -2,7 +2,7 @@
 """Merge benchmark prompts with generated gap-fill prompts into the final training dataset.
 
 Usage:
-    python data/merge_prompts.py
+    python data/scripts/merge_prompts.py
 """
 
 import json
@@ -15,11 +15,12 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-BENCHMARK_PATH = SCRIPT_DIR / "all_classified_prompts.json"
-GENERATED_DIR = SCRIPT_DIR / "generated"
-TRAIN_DIR = SCRIPT_DIR / "train"
+DATA_DIR = SCRIPT_DIR.parent
+BENCHMARK_PATH = DATA_DIR / "all_classified_prompts.json"
+GENERATED_DIR = DATA_DIR / "generated"
+TRAIN_DIR = DATA_DIR / "train"
 TRAIN_META = TRAIN_DIR / "metadata.json"
-DEBUG_DIR = SCRIPT_DIR / "debug"
+DEBUG_DIR = DATA_DIR / "debug"
 DEBUG_META = DEBUG_DIR / "metadata.json"
 
 SUBJECTS = {

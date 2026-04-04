@@ -30,8 +30,9 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-INPUT_PATH = SCRIPT_DIR / "deduped_stage2.jsonl"
-OUTPUT_PATH = SCRIPT_DIR / "full_batch.jsonl"
+DATA_DIR = SCRIPT_DIR.parent
+INPUT_PATH = DATA_DIR / "deduped_stage2.jsonl"
+OUTPUT_PATH = DATA_DIR / "full_batch.jsonl"
 
 MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
 EMBED_DIM = 384
