@@ -82,6 +82,8 @@ def generate(
     cfg_truncation: float = DEFAULT_CFG_TRUNCATION,
     max_sequence_length: int = DEFAULT_MAX_SEQUENCE_LENGTH,
     output_type: str = "pil",
+    teacache_thresh: float = 0.0,
+    teacache_coefficients: Optional[list] = None,
 ):
     device = next(transformer.parameters()).device
 
@@ -210,6 +212,18 @@ def generate(
 
     logger.info(f"Sampling loop start: {num_inference_steps} steps")
 
+    # TeaCache state
+    teacache_state = None
+    if teacache_thresh > 0:
+        teacache_state = {
+            "threshold": teacache_thresh,
+            "coefficients": teacache_coefficients,
+            "previous_modulated_input": None,
+            "previous_residual": None,
+            "accumulated_rel_l1": 0.0,
+        }
+        logger.info(f"TeaCache enabled: threshold={teacache_thresh}")
+
     from tqdm import tqdm
 
     # Denoising loop with progress bar
@@ -245,10 +259,13 @@ def generate(
         latent_model_input = latent_model_input.unsqueeze(2)
         latent_model_input_list = list(latent_model_input.unbind(dim=0))
 
+        # Pass TeaCache state only when not doing CFG (guidance_scale=0 for teacher/student)
+        tc_state = teacache_state if (teacache_state is not None and not apply_cfg) else None
         model_out_list = transformer(
             latent_model_input_list,
             timestep_model_input,
             prompt_embeds_model_input,
+            teacache_state=tc_state,
         )[0]
 
         if apply_cfg:
@@ -280,7 +297,17 @@ def generate(
 
     shift_factor = getattr(vae.config, "shift_factor", 0.0) or 0.0
     latents = (latents.to(vae.dtype) / vae.config.scaling_factor) + shift_factor
-    image = vae.decode(latents, return_dict=False)[0]
+
+    # Decode in chunks to avoid VAE OOM at large batch sizes
+    vae_batch_size = 8
+    if latents.shape[0] <= vae_batch_size:
+        image = vae.decode(latents, return_dict=False)[0]
+    else:
+        image_chunks = []
+        for i in range(0, latents.shape[0], vae_batch_size):
+            chunk = vae.decode(latents[i : i + vae_batch_size], return_dict=False)[0]
+            image_chunks.append(chunk)
+        image = torch.cat(image_chunks, dim=0)
 
     if output_type == "pil":
         from PIL import Image

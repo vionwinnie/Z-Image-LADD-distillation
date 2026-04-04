@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Pre-compute FID reference statistics from teacher-generated images.
 
-Generates images for all val prompts using the teacher model (50 steps),
+Generates images for all val/test prompts using the teacher model (50 steps),
 extracts Inception-v3 features, and saves (mu, sigma, num_samples) to a
 .npz file for use during training eval.
 
-This is a one-time cost (~8 hours on one GPU for 13k images).
+This is a one-time cost (~6 hours on one GPU for 13k images per split).
 
 Usage:
     # Val split (default):
@@ -54,12 +54,12 @@ def generate_teacher_images(
     device: str = "cuda",
     seed: int = 42,
     batch_size: int = 4,
+    teacache_thresh: float = 0.0,
 ) -> list[str]:
     """Generate reference images using the teacher model."""
     from zimage.pipeline import generate
-    from zimage.autoencoder import load_vae
-    from zimage.transformer import load_transformer
     from zimage.scheduler import FlowMatchEulerDiscreteScheduler
+    from training.ladd_model_utils import load_transformer, load_vae
     from transformers import AutoModel, AutoTokenizer
 
     dtype = torch.bfloat16
@@ -126,6 +126,7 @@ def generate_teacher_images(
             num_inference_steps=num_inference_steps,
             guidance_scale=0,
             generator=generator,
+            teacache_thresh=teacache_thresh,
         )
         for j, img in enumerate(images):
             path = os.path.join(output_dir, f"{start + j:05d}.png")
@@ -197,6 +198,8 @@ def main():
     parser.add_argument("--image_size", type=int, default=512)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--batch_size", type=int, default=4)
+    parser.add_argument("--teacache_thresh", type=float, default=0.5,
+                        help="TeaCache threshold for inference speedup (0=disabled, 0.5=~4.5x faster)")
     parser.add_argument("--skip_generation", action="store_true",
                         help="Skip image generation, only compute stats from existing images")
     args = parser.parse_args()
@@ -229,6 +232,7 @@ def main():
             device=args.device,
             seed=args.seed,
             batch_size=args.batch_size,
+            teacache_thresh=args.teacache_thresh,
         )
 
     # Extract Inception stats

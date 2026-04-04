@@ -479,6 +479,7 @@ class ZImageTransformer2DModel(nn.Module):
         patch_size=2,
         f_patch_size=1,
         return_hidden_states=False,
+        teacache_state: Optional[dict] = None,
     ):
         assert patch_size in self.all_patch_size
         assert f_patch_size in self.all_f_patch_size
@@ -565,10 +566,49 @@ class ZImageTransformer2DModel(nn.Module):
         if return_hidden_states:
             hidden_states_collection = []
 
-        for layer in self.layers:
-            unified = layer(unified, unified_attn_mask, unified_freqs_cis, adaln_input)
-            if return_hidden_states:
-                hidden_states_collection.append(unified)
+        # --- TeaCache: decide whether to skip the main layer loop ---
+        skip_layers = False
+        if teacache_state is not None and not return_hidden_states:
+            # Compute modulated input proxy from layer 0's AdaLN
+            layer0 = self.layers[0]
+            scale_msa_proxy = layer0.adaLN_modulation[0](adaln_input).unsqueeze(1).chunk(4, dim=2)[0]
+            modulated_inp = layer0.attention_norm1(unified) * (1.0 + scale_msa_proxy)
+
+            if teacache_state.get("previous_modulated_input") is not None:
+                # Relative L1 distance
+                prev = teacache_state["previous_modulated_input"]
+                rel_l1 = (modulated_inp - prev).abs().mean() / (prev.abs().mean() + 1e-6)
+
+                # Polynomial rescaling (coefficients fitted for the model)
+                coeffs = teacache_state.get("coefficients")
+                if coeffs is not None:
+                    rescaled = sum(c * rel_l1.item() ** (len(coeffs) - 1 - i) for i, c in enumerate(coeffs))
+                else:
+                    rescaled = rel_l1.item()
+
+                teacache_state["accumulated_rel_l1"] = teacache_state.get("accumulated_rel_l1", 0.0) + rescaled
+
+                if teacache_state["accumulated_rel_l1"] < teacache_state["threshold"]:
+                    skip_layers = True
+                else:
+                    teacache_state["accumulated_rel_l1"] = 0.0
+
+            teacache_state["previous_modulated_input"] = modulated_inp.detach()
+
+        if skip_layers and teacache_state.get("previous_residual") is not None:
+            # Reuse cached residual
+            unified = unified + teacache_state["previous_residual"]
+        else:
+            # Full computation — cache the residual
+            unified_before = unified.clone() if teacache_state is not None and not return_hidden_states else None
+
+            for layer in self.layers:
+                unified = layer(unified, unified_attn_mask, unified_freqs_cis, adaln_input)
+                if return_hidden_states:
+                    hidden_states_collection.append(unified)
+
+            if unified_before is not None:
+                teacache_state["previous_residual"] = (unified - unified_before).detach()
 
         unified = self.all_final_layer[f"{patch_size}-{f_patch_size}"](unified, adaln_input)
         unified = list(unified.unbind(dim=0))
