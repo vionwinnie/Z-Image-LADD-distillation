@@ -32,7 +32,8 @@ python scripts/precompute_fid_reference.py \
     --device cuda:0 \
     --num_inference_steps 50 \
     --image_size 512 \
-    --batch_size 4 \
+    --batch_size 16 \
+    --teacache_thresh 0.5 \
     --seed 42
 
 # Test split (used for final held-out evaluation):
@@ -42,15 +43,34 @@ python scripts/precompute_fid_reference.py \
     --device cuda:0 \
     --num_inference_steps 50 \
     --image_size 512 \
-    --batch_size 4 \
+    --batch_size 16 \
+    --teacache_thresh 0.5 \
     --seed 42
 ```
 
+### TeaCache acceleration
+
+The script uses [TeaCache](https://github.com/ali-vilab/TeaCache) to skip redundant
+transformer evaluations during denoising. At each step the first layer's AdaLN
+modulation is used as a cheap proxy to estimate whether the output will change
+significantly; if not, the previous step's residual is reused.
+
+`--teacache_thresh` controls the speed/quality tradeoff (0 = disabled):
+
+| Threshold | Per-image time | Speedup | Quality |
+|-----------|---------------|---------|---------|
+| 0.0       | 4.0 s         | 1.0x    | Baseline |
+| 0.3       | 1.2 s         | 3.4x    | Near-baseline |
+| **0.5**   | **0.9 s**     | **4.5x** | **Good (recommended for FID reference)** |
+| 0.8       | 0.7 s         | 5.4x    | Acceptable |
+
 ### Expected runtime
 
-- ~13,173 images at ~1.5s/image (50-step teacher, batch_size=4 on A100) = **~5-6 hours on one GPU**.
+With TeaCache 0.5 and batch_size=16 on a single A100-80GB:
+
+- ~13,173 images at ~0.82s/image = **~3 hours per split**.
 - Inception feature extraction adds ~10 minutes.
-- Total: **~6 hours on a single A100**.
+- Total: **~3.5 hours per split, ~7 hours for both val and test**.
 
 ### Resume support
 
