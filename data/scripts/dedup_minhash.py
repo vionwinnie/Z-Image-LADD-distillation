@@ -27,8 +27,9 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-INPUT_PATH = SCRIPT_DIR / "raw_merged.jsonl"
-OUTPUT_PATH = SCRIPT_DIR / "deduped_stage1.jsonl"
+DATA_DIR = SCRIPT_DIR.parent
+INPUT_PATH = DATA_DIR / "raw_merged.jsonl"
+OUTPUT_PATH = DATA_DIR / "deduped_stage1.jsonl"
 
 NUM_PERM = 128
 THRESHOLD = 0.7

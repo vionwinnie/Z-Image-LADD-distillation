@@ -28,9 +28,10 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-INPUT_PATH = SCRIPT_DIR / "deduped_stage1.jsonl"
-OUTPUT_PATH = SCRIPT_DIR / "deduped_stage2.jsonl"
-EMBEDDINGS_PATH = SCRIPT_DIR / "embeddings.mmap"
+DATA_DIR = SCRIPT_DIR.parent
+INPUT_PATH = DATA_DIR / "deduped_stage1.jsonl"
+OUTPUT_PATH = DATA_DIR / "deduped_stage2.jsonl"
+EMBEDDINGS_PATH = DATA_DIR / "embeddings.mmap"
 
 MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
 EMBED_DIM = 384

@@ -4,9 +4,9 @@ Read the coverage matrix from prepare_prompts.py output, identify gaps,
 and generate prompts to fill them using Claude API.
 
 Usage:
-    python data/generate_prompts.py              # generate prompts (skip if already done)
-    python data/generate_prompts.py --force      # regenerate even if output exists
-    python data/generate_prompts.py --dry-run    # just print coverage gaps
+    python data/scripts/generate_prompts.py              # generate prompts (skip if already done)
+    python data/scripts/generate_prompts.py --force      # regenerate even if output exists
+    python data/scripts/generate_prompts.py --dry-run    # just print coverage gaps
 """
 
 import argparse
@@ -27,12 +27,13 @@ logger = logging.getLogger(__name__)
 # Paths
 # ---------------------------------------------------------------------------
 SCRIPT_DIR = Path(__file__).resolve().parent
-INPUT_PATH = SCRIPT_DIR / "all_classified_prompts.json"
-TRAIN_DIR = SCRIPT_DIR / "train"
+DATA_DIR = SCRIPT_DIR.parent
+INPUT_PATH = DATA_DIR / "all_classified_prompts.json"
+TRAIN_DIR = DATA_DIR / "train"
 TRAIN_META = TRAIN_DIR / "metadata.json"
-DEBUG_DIR = SCRIPT_DIR / "debug"
+DEBUG_DIR = DATA_DIR / "debug"
 DEBUG_META = DEBUG_DIR / "metadata.json"
-COVERAGE_CSV = SCRIPT_DIR / "coverage_matrix.csv"
+COVERAGE_CSV = DATA_DIR / "coverage_matrix.csv"
 
 # ---------------------------------------------------------------------------
 # Taxonomy (mirrored from prepare_prompts.py)
@@ -310,7 +311,7 @@ def main():
     # Load existing prompts
     if not INPUT_PATH.exists():
         logger.error(
-            f"{INPUT_PATH} not found. Run 'python data/prepare_prompts.py' first."
+            f"{INPUT_PATH} not found. Run 'python data/scripts/prepare_prompts.py' first."
         )
         sys.exit(1)
 

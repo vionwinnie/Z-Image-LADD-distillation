@@ -24,9 +24,10 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-INPUT_PATH = SCRIPT_DIR / "full_batch.jsonl"
-OUTPUT_PATH = SCRIPT_DIR / "train" / "metadata.json"
-DEBUG_OUTPUT = SCRIPT_DIR / "debug" / "metadata.json"
+DATA_DIR = SCRIPT_DIR.parent
+INPUT_PATH = DATA_DIR / "full_batch.jsonl"
+OUTPUT_PATH = DATA_DIR / "train" / "metadata.json"
+DEBUG_OUTPUT = DATA_DIR / "debug" / "metadata.json"
 
 sys.path.insert(0, str(SCRIPT_DIR))
 from prepare_prompts import SUBJECTS, STYLES, CAMERAS

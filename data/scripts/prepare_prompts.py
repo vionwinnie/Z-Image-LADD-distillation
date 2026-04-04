@@ -4,7 +4,7 @@ Download prompts from T2I benchmarks, deduplicate, filter, and classify
 into a MECE taxonomy (Subject x Style x Camera).
 
 Usage:
-    python data/prepare_prompts.py
+    python data/scripts/prepare_prompts.py
 """
 
 import json
@@ -21,8 +21,9 @@ logger = logging.getLogger(__name__)
 # Paths
 # ---------------------------------------------------------------------------
 SCRIPT_DIR = Path(__file__).resolve().parent
-OUTPUT_PATH = SCRIPT_DIR / "all_classified_prompts.json"
-DEBUG_DIR = SCRIPT_DIR / "debug"
+DATA_DIR = SCRIPT_DIR.parent
+OUTPUT_PATH = DATA_DIR / "all_classified_prompts.json"
+DEBUG_DIR = DATA_DIR / "debug"
 DEBUG_META = DEBUG_DIR / "metadata.json"
 
 # ---------------------------------------------------------------------------

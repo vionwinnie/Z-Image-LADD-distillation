@@ -26,10 +26,11 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-INPUT_PATH = SCRIPT_DIR / "deduped_stage2.jsonl"
-EMBEDDINGS_PATH = SCRIPT_DIR / "embeddings.mmap"
-STAGE1_PATH = SCRIPT_DIR / "deduped_stage1.jsonl"
-OUTPUT_PATH = SCRIPT_DIR / "full_batch.jsonl"
+DATA_DIR = SCRIPT_DIR.parent
+INPUT_PATH = DATA_DIR / "deduped_stage2.jsonl"
+EMBEDDINGS_PATH = DATA_DIR / "embeddings.mmap"
+STAGE1_PATH = DATA_DIR / "deduped_stage1.jsonl"
+OUTPUT_PATH = DATA_DIR / "full_batch.jsonl"
 
 EMBED_DIM = 384
 TARGET_TOTAL = 1_000_000
