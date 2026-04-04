@@ -1,2 +1,4 @@
 data/train/metadata.json filter=lfs diff=lfs merge=lfs -text
+data/val/metadata.json filter=lfs diff=lfs merge=lfs -text
+data/test/metadata.json filter=lfs diff=lfs merge=lfs -text
 data/train/metadata_subsample.json filter=lfs diff=lfs merge=lfs -text
