@@ -27,6 +27,9 @@ training = [
     "tqdm",
     "anthropic",
     "rapidfuzz",
+    "torchmetrics[image]>=1.0.0",
+    "open-clip-torch",
+    "torchvision",
 ]
 dev = [
     "black",

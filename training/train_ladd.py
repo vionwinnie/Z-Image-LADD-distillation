@@ -72,6 +72,7 @@ from zimage.autoencoder import AutoencoderKL
 from zimage.scheduler import FlowMatchEulerDiscreteScheduler
 
 from training.ladd_discriminator import LADDDiscriminator
+from training.ladd_eval import compute_discriminator_metrics
 from training.ladd_utils import (
     DiscreteSampling,
     TextDataset,
@@ -161,6 +162,9 @@ def parse_args():
     parser.add_argument("--mixed_precision", type=str, default="bf16",
                         choices=["no", "fp16", "bf16"])
     parser.add_argument("--gradient_checkpointing", action="store_true")
+    parser.add_argument("--cpu_offload_optimizer", action="store_true",
+                        help="Keep student optimizer states on CPU to reduce GPU memory. "
+                             "Slower but fits on a single GPU.")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--dataloader_num_workers", type=int, default=4)
     parser.add_argument("--logging_dir", type=str, default="logs")
@@ -186,6 +190,20 @@ def parse_args():
     parser.add_argument("--validation_steps", type=int, default=1000)
     parser.add_argument("--num_inference_steps", type=int, default=4,
                         help="Number of steps for validation sampling.")
+
+    # Async evaluation (FID + CLIP score)
+    parser.add_argument("--eval_steps", type=int, default=500,
+                        help="Run expensive eval (FID/CLIP) every N steps.")
+    parser.add_argument("--eval_num_images", type=int, default=2048,
+                        help="Number of images to generate for FID/CLIP eval.")
+    parser.add_argument("--val_data_meta", type=str, default="data/val/metadata.json",
+                        help="Path to validation set JSON for eval metrics.")
+    parser.add_argument("--fid_reference_stats", type=str, default=None,
+                        help="Path to pre-computed FID reference .npz file.")
+    parser.add_argument("--eval_device", type=str, default=None,
+                        help="GPU for async eval subprocess (e.g. 'cuda:7'). Auto-detected if None.")
+    parser.add_argument("--skip_expensive_eval", action="store_true",
+                        help="Disable FID/CLIP eval (useful for debugging).")
 
     # Noise scheduler
     parser.add_argument("--train_sampling_steps", type=int, default=1000)
@@ -330,6 +348,66 @@ def log_validation(
 
 
 # ---------------------------------------------------------------------------
+# Async eval subprocess
+# ---------------------------------------------------------------------------
+
+_eval_process = None  # Track running eval subprocess
+
+
+def _launch_eval_subprocess(checkpoint_path, args, global_step, accelerator):
+    """Spawn a background process to compute FID + CLIP score."""
+    global _eval_process
+    import subprocess
+
+    # Skip if previous eval is still running
+    if _eval_process is not None and _eval_process.poll() is None:
+        logger.info(f"Skipping eval at step {global_step}: previous eval still running (pid={_eval_process.pid})")
+        return
+
+    # Determine eval device
+    eval_device = args.eval_device
+    if eval_device is None:
+        n_gpus = torch.cuda.device_count()
+        eval_device = f"cuda:{n_gpus - 1}" if n_gpus > 1 else "cuda:0"
+
+    # Get wandb run ID if available
+    wandb_run_id = None
+    wandb_entity = None
+    wandb_project = None
+    for tracker in accelerator.trackers:
+        if tracker.name == "wandb":
+            wandb_run_id = tracker.run.id
+            wandb_entity = args.wandb_entity
+            wandb_project = args.tracker_project_name
+            break
+
+    cmd = [
+        sys.executable, "-m", "training.ladd_eval",
+        "--checkpoint", checkpoint_path,
+        "--model_dir", args.pretrained_model_name_or_path,
+        "--val_data_meta", args.val_data_meta,
+        "--step", str(global_step),
+        "--output_dir", args.output_dir,
+        "--device", eval_device,
+        "--num_inference_steps", str(args.num_inference_steps),
+        "--image_size", str(args.image_sample_size),
+        "--eval_num_images", str(args.eval_num_images),
+    ]
+    if args.fid_reference_stats:
+        cmd.extend(["--fid_reference_stats", args.fid_reference_stats])
+    if wandb_run_id:
+        cmd.extend(["--wandb_run_id", wandb_run_id])
+    if wandb_project:
+        cmd.extend(["--wandb_project", wandb_project])
+    if wandb_entity:
+        cmd.extend(["--wandb_entity", wandb_entity])
+
+    logger.info(f"Launching eval subprocess for step {global_step} on {eval_device}")
+    _eval_process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    logger.info(f"Eval subprocess started (pid={_eval_process.pid})")
+
+
+# ---------------------------------------------------------------------------
 # Student timestep sampling with schedule
 # ---------------------------------------------------------------------------
 
@@ -379,12 +457,29 @@ def main():
     accelerator_project_config = ProjectConfiguration(
         project_dir=args.output_dir, logging_dir=logging_dir
     )
-    accelerator = Accelerator(
-        gradient_accumulation_steps=args.gradient_accumulation_steps,
-        mixed_precision=args.mixed_precision,
-        log_with=args.report_to,
-        project_config=accelerator_project_config,
-    )
+
+    # When --cpu_offload_optimizer is set, use two DeepSpeed plugins:
+    # - student: ZeRO-2 with CPU optimizer offload (saves ~24GB for 6B params)
+    # - disc: ZeRO-2 on GPU (small model, no offload needed)
+    # Per Accelerate docs, disjoint multi-model training needs two Accelerator instances.
+    if args.cpu_offload_optimizer:
+        from accelerate.utils import DeepSpeedPlugin
+        _script_dir = os.path.dirname(os.path.abspath(__file__))
+        student_plugin = DeepSpeedPlugin(hf_ds_config=os.path.join(_script_dir, "ds_student_config.json"))
+        accelerator = Accelerator(
+            gradient_accumulation_steps=args.gradient_accumulation_steps,
+            mixed_precision=args.mixed_precision,
+            log_with=args.report_to,
+            project_config=accelerator_project_config,
+            deepspeed_plugins={"student": student_plugin},
+        )
+    else:
+        accelerator = Accelerator(
+            gradient_accumulation_steps=args.gradient_accumulation_steps,
+            mixed_precision=args.mixed_precision,
+            log_with=args.report_to,
+            project_config=accelerator_project_config,
+        )
 
     logging.basicConfig(
         format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
@@ -487,14 +582,26 @@ def main():
     if args.allow_tf32:
         torch.backends.cuda.matmul.allow_tf32 = True
 
-    # Optimizers
-    student_optimizer = torch.optim.AdamW(
-        student.parameters(),
-        lr=args.learning_rate,
-        betas=(args.adam_beta1, args.adam_beta2),
-        weight_decay=args.adam_weight_decay,
-        eps=args.adam_epsilon,
-    )
+    # Optimizers and LR schedulers
+    # When using DeepSpeed (cpu_offload_optimizer), DS manages the optimizer/scheduler
+    # internally.  We pass DummyOptim/DummyScheduler so accelerator.prepare() lets
+    # DeepSpeed create the real ones from the JSON config.
+    if args.cpu_offload_optimizer:
+        from accelerate.utils import DummyOptim, DummyScheduler
+        student_optimizer = DummyOptim(
+            student.parameters(),
+            lr=args.learning_rate,
+            weight_decay=args.adam_weight_decay,
+        )
+    else:
+        student_optimizer = torch.optim.AdamW(
+            student.parameters(),
+            lr=args.learning_rate,
+            betas=(args.adam_beta1, args.adam_beta2),
+            weight_decay=args.adam_weight_decay,
+            eps=args.adam_epsilon,
+        )
+    # Discriminator is small (14M params) — always use plain PyTorch optimizer
     disc_optimizer = torch.optim.AdamW(
         discriminator.parameters(),
         lr=args.learning_rate_disc,
@@ -525,12 +632,19 @@ def main():
 
     # LR schedulers
     from diffusers.optimization import get_scheduler
-    student_lr_scheduler = get_scheduler(
-        args.lr_scheduler,
-        optimizer=student_optimizer,
-        num_warmup_steps=args.lr_warmup_steps * accelerator.num_processes,
-        num_training_steps=args.max_train_steps * accelerator.num_processes,
-    )
+    if args.cpu_offload_optimizer:
+        student_lr_scheduler = DummyScheduler(
+            student_optimizer,
+            warmup_num_steps=args.lr_warmup_steps * accelerator.num_processes,
+            total_num_steps=args.max_train_steps * accelerator.num_processes,
+        )
+    else:
+        student_lr_scheduler = get_scheduler(
+            args.lr_scheduler,
+            optimizer=student_optimizer,
+            num_warmup_steps=args.lr_warmup_steps * accelerator.num_processes,
+            num_training_steps=args.max_train_steps * accelerator.num_processes,
+        )
     disc_lr_scheduler = get_scheduler(
         args.lr_scheduler,
         optimizer=disc_optimizer,
@@ -539,12 +653,22 @@ def main():
     )
 
     # Prepare with accelerator
-    student, student_optimizer, train_dataloader, student_lr_scheduler = accelerator.prepare(
-        student, student_optimizer, train_dataloader, student_lr_scheduler,
-    )
-    discriminator, disc_optimizer, disc_lr_scheduler = accelerator.prepare(
-        discriminator, disc_optimizer, disc_lr_scheduler,
-    )
+    if args.cpu_offload_optimizer:
+        # Only student goes through DeepSpeed (ZeRO-2 + CPU optimizer offload).
+        # Discriminator is small (14M) — plain PyTorch on GPU, no DS wrapping needed.
+        accelerator.state.select_deepspeed_plugin("student")
+        accelerator.state.deepspeed_plugin.deepspeed_config["train_micro_batch_size_per_gpu"] = args.train_batch_size
+        student, student_optimizer, train_dataloader, student_lr_scheduler = accelerator.prepare(
+            student, student_optimizer, train_dataloader, student_lr_scheduler,
+        )
+        discriminator.to(accelerator.device, dtype=weight_dtype)
+    else:
+        student, student_optimizer, train_dataloader, student_lr_scheduler = accelerator.prepare(
+            student, student_optimizer, train_dataloader, student_lr_scheduler,
+        )
+        discriminator, disc_optimizer, disc_lr_scheduler = accelerator.prepare(
+            discriminator, disc_optimizer, disc_lr_scheduler,
+        )
 
     # Move frozen models to device
     teacher.to(accelerator.device, dtype=weight_dtype)
@@ -766,9 +890,14 @@ def main():
                 )
 
                 # ---- Discriminator update (every step) ----
-                accelerator.backward(d_loss, retain_graph=is_gen_step)
-                if accelerator.sync_gradients:
-                    accelerator.clip_grad_norm_(discriminator.parameters(), args.max_grad_norm)
+                if args.cpu_offload_optimizer:
+                    # Disc is plain PyTorch (not wrapped in DeepSpeed)
+                    d_loss.backward()
+                    torch.nn.utils.clip_grad_norm_(discriminator.parameters(), args.max_grad_norm)
+                else:
+                    accelerator.backward(d_loss)
+                    if accelerator.sync_gradients:
+                        accelerator.clip_grad_norm_(discriminator.parameters(), args.max_grad_norm)
                 disc_optimizer.step()
                 disc_lr_scheduler.step()
                 disc_optimizer.zero_grad()
@@ -784,6 +913,10 @@ def main():
                         student_pred.float(), renoise.float(), t_hat.float()
                     ).to(weight_dtype)
                     fake_input_grad = list(student_renoised_grad.unsqueeze(2).unbind(dim=0))
+
+                    # Freeze discriminator during generator backward to avoid
+                    # gradient leakage (required for DeepSpeed dual-engine setup).
+                    discriminator.requires_grad_(False)
 
                     # Teacher forward WITH gradient graph (frozen weights, live graph)
                     _, fake_extras_grad = teacher(
@@ -809,6 +942,9 @@ def main():
                     student_lr_scheduler.step()
                     student_optimizer.zero_grad()
 
+                    # Unfreeze discriminator for next step
+                    discriminator.requires_grad_(True)
+
             # Logging
             if accelerator.is_main_process:
                 logs = {
@@ -821,6 +957,9 @@ def main():
                 }
                 if is_gen_step:
                     logs["g_loss_update"] = g_loss_update.detach().item()
+
+                # Discriminator health metrics
+                logs.update(compute_discriminator_metrics(real_result, fake_result))
 
                 # Gradient norms
                 disc_grad_norm = torch.nn.utils.clip_grad_norm_(
@@ -871,6 +1010,13 @@ def main():
                             shutil.rmtree(os.path.join(args.output_dir, dirs.pop(0)))
 
                     logger.info(f"Saved checkpoint at step {global_step}")
+
+                    # Launch async eval subprocess (FID + CLIP)
+                    if (
+                        not args.skip_expensive_eval
+                        and global_step % args.eval_steps == 0
+                    ):
+                        _launch_eval_subprocess(save_path, args, global_step, accelerator)
 
             # Validation
             if global_step % args.validation_steps == 0 and args.validation_prompts:
