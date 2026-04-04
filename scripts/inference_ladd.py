@@ -25,6 +25,12 @@ import time
 import torch
 from PIL import Image
 
+try:
+    import wandb
+    HAS_WANDB = True
+except ImportError:
+    HAS_WANDB = False
+
 # Add project root to path
 _project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 _src_root = os.path.join(_project_root, "src")
@@ -32,6 +38,7 @@ sys.path.insert(0, _src_root)
 sys.path.insert(0, _project_root)
 
 from zimage.pipeline import generate, calculate_shift
+from zimage.scheduler import FlowMatchEulerDiscreteScheduler
 from training.train_ladd import load_transformer, load_vae
 
 
@@ -73,6 +80,12 @@ def parse_args():
     parser.add_argument("--skip_teacher", action="store_true",
                         help="Skip teacher generation (student-only mode).")
     parser.add_argument("--device", type=str, default=None)
+    parser.add_argument("--log_to_wandb", action="store_true",
+                        help="Log generated images to W&B.")
+    parser.add_argument("--wandb_project", type=str, default="ladd",
+                        help="W&B project name.")
+    parser.add_argument("--wandb_run_name", type=str, default=None,
+                        help="W&B run name (auto-generated if not set).")
     return parser.parse_args()
 
 
@@ -218,11 +231,24 @@ def main():
     print("\nAll models loaded. Starting generation...\n")
 
     # -----------------------------------------------------------------------
+    # W&B init
+    # -----------------------------------------------------------------------
+    wb_run = None
+    if args.log_to_wandb and HAS_WANDB:
+        wb_run = wandb.init(
+            project=args.wandb_project,
+            name=args.wandb_run_name or f"eval-{args.student_steps}step",
+            config=vars(args),
+        )
+        print(f"W&B run: {wb_run.url}")
+
+    # -----------------------------------------------------------------------
     # Generate images
     # -----------------------------------------------------------------------
     generator = torch.Generator(device).manual_seed(args.seed)
     student_times = []
     teacher_times = []
+    table_rows = []  # collected for W&B table
 
     for i, prompt in enumerate(prompts):
         print(f"[{i+1}/{len(prompts)}] {prompt[:70]}{'...' if len(prompt) > 70 else ''}")
@@ -251,6 +277,8 @@ def main():
         student_img.save(student_path)
         print(f"  Student: {student_time:.2f}s -> {student_path}")
 
+        row = {"idx": i, "prompt": prompt, "student": student_img}
+
         # Teacher generation (optional)
         if teacher is not None:
             gen_teacher = torch.Generator(device).manual_seed(args.seed + i)
@@ -276,10 +304,14 @@ def main():
             teacher_img.save(teacher_path)
             print(f"  Teacher: {teacher_time:.2f}s -> {teacher_path}")
 
+            row["teacher"] = teacher_img
+
             # Comparison grid
             grid = make_comparison_grid(student_img, teacher_img, prompt, i)
             grid_path = os.path.join(args.output_dir, "comparison", f"{i:03d}.png")
             grid.save(grid_path)
+
+        table_rows.append(row)
 
     # -----------------------------------------------------------------------
     # Summary
@@ -299,6 +331,26 @@ def main():
         speedup = (sum(teacher_times) / len(teacher_times)) / (sum(student_times) / len(student_times))
         print(f"  Speedup: {speedup:.1f}x")
     print(f"  Output directory: {args.output_dir}")
+
+    if wb_run:
+        # Build W&B table: idx | student | [teacher] | prompt
+        has_teacher = "teacher" in table_rows[0] if table_rows else False
+        columns = ["idx", "student"]
+        if has_teacher:
+            columns.append("teacher")
+        columns.append("prompt")
+
+        table = wandb.Table(columns=columns)
+        for row in table_rows:
+            vals = [row["idx"], wandb.Image(row["student"])]
+            if has_teacher:
+                vals.append(wandb.Image(row["teacher"]))
+            vals.append(row["prompt"])
+            table.add_data(*vals)
+
+        wb_run.log({"samples": table})
+        wb_run.finish()
+        print(f"  W&B run finished: {wb_run.url}")
 
 
 if __name__ == "__main__":
