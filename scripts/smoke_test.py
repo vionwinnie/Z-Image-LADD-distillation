@@ -489,10 +489,12 @@ def main():
     print_header("Step 7: Optimizer step (weights change)")
 
     disc_optimizer = torch.optim.AdamW(discriminator.parameters(), lr=1e-4)
+    student_optimizer = torch.optim.AdamW(student.parameters(), lr=1e-4)
 
-    # Snapshot a param before step
-    sample_param = next(discriminator.parameters())
-    param_before = sample_param.data.clone()
+    # Snapshot params before step
+    disc_param_before = next(discriminator.parameters()).data.clone()
+    student_params_list = list(student.parameters())
+    student_param_before = student_params_list[2].data.clone()  # skip first 2 (may get zero grad)
 
     # Do a fresh forward/backward for disc
     discriminator.zero_grad()
@@ -505,10 +507,35 @@ def main():
     d_loss3.backward()
     disc_optimizer.step()
 
-    param_after = sample_param.data
-    weight_changed = not torch.equal(param_before, param_after)
-    assert weight_changed, "Discriminator weights did not change after optimizer step"
+    assert not torch.equal(disc_param_before, next(discriminator.parameters()).data), \
+        "Discriminator weights did not change after optimizer step"
     print_pass("Discriminator weights updated after optimizer step")
+
+    # Do a fresh forward/backward for student (generator update)
+    # Teacher runs WITHOUT torch.no_grad() so gradients flow through
+    # the teacher's frozen ops back to the student (per LADD paper).
+    student.zero_grad()
+    fresh_noise = torch.randn(bsz, in_channels, height_latent, width_latent, device=device, dtype=dtype)
+    student_input = list(fresh_noise.unsqueeze(2).unbind(dim=0))
+    student_out2, _ = student(student_input, student_t, prompt_embeds, return_hidden_states=False)
+    student_pred2 = torch.stack(student_out2, dim=0).squeeze(2)
+    renoise2 = torch.randn_like(student_pred2)
+    student_renoised2 = add_noise(student_pred2.float(), renoise2.float(), t_hat.float()).to(dtype)
+    fake_input2 = list(student_renoised2.unsqueeze(2).unbind(dim=0))
+    _, extras2 = teacher(fake_input2, t_hat, prompt_embeds, return_hidden_states=True)
+    fake_result4 = discriminator(
+        extras2["hidden_states"], extras2["x_item_seqlens"],
+        extras2["cap_item_seqlens"], spatial_sizes, t_hat,
+    )
+    _, g_loss2 = LADDDiscriminator.compute_loss(
+        real_result3["total_logit"].detach(), fake_result4["total_logit"],
+    )
+    g_loss2.backward()
+    student_optimizer.step()
+
+    assert not torch.equal(student_param_before, student_params_list[2].data), \
+        "Student weights did not change after optimizer step"
+    print_pass("Student weights updated after optimizer step")
 
     results.append(("Optimizer step", True))
 
@@ -538,10 +565,27 @@ def main():
         ).to(device).to(dtype)
         disc_loaded.load_state_dict(torch.load(disc_save_path, map_location=device, weights_only=True))
 
-        # Verify parameter match
+        # Verify discriminator parameter match
         for (n1, p1), (n2, p2) in zip(discriminator.named_parameters(), disc_loaded.named_parameters()):
             assert torch.equal(p1.data, p2.data), f"Mismatch in {n1}"
         print_pass("Discriminator checkpoint round-trip: parameters match")
+
+        # Reload student into a fresh architecture and verify weights match
+        student_fresh = create_tiny_transformer(dtype).to(device) if dummy else load_transformer(args.pretrained_model_name_or_path, dtype).to(device)
+
+        # Sanity: fresh init must differ from the trained student (optimizer changed weights)
+        any_differ = any(
+            not torch.equal(p1.data, p2.data)
+            for (_, p1), (_, p2) in zip(student.named_parameters(), student_fresh.named_parameters())
+        )
+        assert any_differ, "Fresh student should differ from trained student after optimizer step"
+        print_pass("Fresh student differs from trained student (optimizer step took effect)")
+
+        # Now load checkpoint and verify it reproduces the trained weights exactly
+        student_fresh.load_state_dict(torch.load(student_save_path, map_location=device, weights_only=True))
+        for (n1, p1), (n2, p2) in zip(student.named_parameters(), student_fresh.named_parameters()):
+            assert torch.equal(p1.data, p2.data), f"Student mismatch in {n1}"
+        print_pass("Student checkpoint round-trip: parameters match")
 
         results.append(("Checkpoint round-trip", True))
     finally:
