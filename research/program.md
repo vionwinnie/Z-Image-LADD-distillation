@@ -110,7 +110,7 @@ peak_vram_mb:       72300.0
 [Eval step 500] KID = 0.123456 ± 0.005678
 ```
 
-**Early stopping**: Training has built-in health checks every 50 steps (after warmup). If disc metrics fail 3 consecutive checks (collapsed, diverging, or stuck), training aborts early and skips KID evaluation entirely. Log these as `discard` and move on — you just saved 10+ minutes on a bad config.
+**Early stopping**: Disabled (the health-check logic is broken at batch_size=1). Every run takes the full step budget (~15 min). Budget your experiments accordingly.
 
 **At the end**, the bash script prints a `--- RESULTS ---` block summarizing all metrics. Extract key info:
 
@@ -156,50 +156,68 @@ LOOP FOREVER:
 4. git commit: `git add research/experiment.py && git commit -m "<description>"`
 5. Run the experiment: `python research/experiment.py > research/run.log 2>&1` (redirect everything — do NOT use tee or let output flood your context)
 6. Read out the results: `grep "early_stopped:\|KID = \|peak_vram_mb:" research/run.log`
-7. If early_stopped is True: log as `discard` with kid_mean=0.0 and move on immediately. You just saved 10+ minutes.
-8. If the grep output is empty, the run crashed. Run `tail -n 50 research/run.log` to read the Python stack trace and attempt a fix. If you can't get things to work after more than a few attempts, give up.
+7. If the grep output is empty or KID is missing, the run crashed. Run `tail -n 50 research/run.log` to read the Python stack trace and attempt a fix. If you can't get things to work after more than a few attempts, give up.
 9. Record the results in the tsv (NOTE: do not commit the results.tsv file, leave it untracked by git)
 10. If kid_mean improved (lower), you "advance" the branch, keeping the git commit
 11. If kid_mean is equal or worse, you `git reset --hard HEAD~1` back to where you started
 
 The idea is that you are a completely autonomous researcher trying things out. If they work, keep. If they don't, discard. And you're advancing the branch so that you can iterate. If you feel like you're getting stuck in some way, you can rewind but you should probably do this very very sparingly (if ever).
 
-**Timeout**: Good experiments take ~15 minutes (10 min training + 5 min eval). Bad experiments with early stopping finish in ~2-3 minutes (training aborts, eval is skipped). If a run exceeds 25 minutes, kill it and treat it as a failure (discard and revert).
+**Timeout**: Every run takes ~15 minutes (10 min training + 5 min eval). If a run exceeds 25 minutes, kill it and treat it as a failure (discard and revert).
 
 **Crashes**: If a run crashes (OOM, or a bug, or etc.), use your judgment: If it's something dumb and easy to fix (e.g. a typo, a missing import), fix it and re-run. If the idea itself is fundamentally broken, just skip it, log "crash" as the status in the tsv, and move on.
 
 **NEVER STOP**: Once the experiment loop has begun (after the initial setup), do NOT pause to ask the human if you should continue. Do NOT ask "should I keep going?" or "is this a good stopping point?". The human might be asleep, or gone from a computer and expects you to continue working *indefinitely* until you are manually stopped. You are autonomous. If you run out of ideas, think harder — re-read the LADD paper references in the code, re-read PROGRESS.md for clues, try combining previous near-misses, try more radical changes. The loop runs until the human interrupts you, period.
 
-As an example use case, a user might leave you running while they sleep. Good experiments take ~15 min, early-stopped bad experiments take ~3 min. With a mix, expect ~6-8 experiments/hour, for a total of about 50-65 over the duration of the average human sleep. The user then wakes up to experimental results, all completed by you while they slept.
+As an example use case, a user might leave you running while they sleep. Every experiment takes ~15 min, so expect ~4 experiments/hour, for a total of about 30-32 over the duration of the average human sleep. Each experiment slot is precious — prioritize high-information runs. The user then wakes up to experimental results, all completed by you while they slept.
 
 ## What to explore
 
-These are the knobs in the tunable section of `experiment.py`, roughly in priority order. Current best values are marked. Unexplored dimensions are the biggest opportunities.
+These are the knobs in the tunable section of `experiment.py`, roughly in priority order. Current best values are marked. Unexplored dimensions are the biggest opportunities. With ~30 runs overnight, be selective — every slot should be high-information.
 
 ### Priority 1: Noise schedule (UNEXPLORED — start here)
-- `RENOISE_M`: {0.0, 0.5, **1.0**, 1.5} — logit-normal mean. Controls which noise levels the discriminator sees. Only default tested.
-- `RENOISE_S`: {0.5, **1.0**, 1.5} — logit-normal std. Controls spread of noise sampling. Only default tested.
-- The LADD paper specifically tuned these. They directly shape the training signal.
 
-### Priority 2: Student timesteps (UNEXPLORED — product decision)
-- `STUDENT_TIMESTEPS`: {[1.0, 0.5], **[1.0, 0.75, 0.5, 0.25]**, [1.0, 0.8, 0.6, 0.4, 0.2]}
-- 2-step = 2x faster inference. 5-step = potentially better quality. We've only tried 4-step.
+After the student generates an image, it gets **re-noised** to a random noise level `t_hat` before the teacher/discriminator see it. This is the core LADD trick. The noise level is sampled from a logit-normal distribution:
 
-### Priority 3: Training dynamics (partially explored)
+```
+u ~ Normal(RENOISE_M, RENOISE_S²)
+t_hat = sigmoid(u)              # mapped to (0, 1), clamped to [0.001, 0.999]
+x_renoised = (1 - t_hat) * student_output + t_hat * noise
+```
+
+**`RENOISE_M` (mean, default 1.0)** — shifts where most noise levels land:
+- `M=-1.0` → sigmoid ≈ 0.27 → low noise, discriminator sees mostly clean images. Strong signal but potentially unstable.
+- `M=0.0` → sigmoid = 0.50 → balanced mix of signal and noise.
+- `M=1.0` (current) → sigmoid ≈ 0.73 → biased toward high noise. Conservative — real and fake look similar.
+- `M=1.5` → sigmoid ≈ 0.82 → very high noise. Discriminator sees near-pure noise.
+
+**`RENOISE_S` (std, default 1.0)** — controls the spread of sampled noise levels:
+- `S=0.5` → tight, most samples cluster near the mean
+- `S=1.0` (current) → moderate spread
+- `S=1.5` → wide, covers a broad range of noise levels
+
+The current default (M=1.0) is conservative. The LADD paper found tuning these was important — the optimal point balances giving the discriminator meaningful real/fake differences while keeping training stable.
+
+**Suggested runs:**
+- `RENOISE_M` ∈ {0.0, 0.5, 1.5} with S=1.0 — find the right noise level bias
+- `RENOISE_S` ∈ {0.5, 1.5} with best M — tune the spread
+
+### Priority 2: Training dynamics (partially explored)
 - `GEN_UPDATE_INTERVAL`: {1, 2, **3**, 5, 10} — tested 1, 3, 5. Winner is 3. Try 2 and 4 to confirm.
 - `LR_WARMUP_STEPS`: {0, **50**, 100, 200} — only 50 tested
 - `WARMUP_SCHEDULE_STEPS`: {0, **50**, 100} — only 50 tested
 
-### Priority 4: Discriminator architecture (UNEXPLORED)
+### Priority 3: Discriminator architecture (UNEXPLORED)
 - `DISC_HIDDEN_DIM`: {128, **256**, 512} — only 256 tested
 - `DISC_LAYER_INDICES`: {**[5,10,15,20,25,29]**, [10,20,29], [3,7,11,15,19,23,27,29]} — only default tested
 
-### Priority 5: Learning rates (mostly explored)
+### Priority 4: Learning rates (mostly explored)
 - `STUDENT_LR`: {1e-6, **5e-6**, 1e-5, 2e-5} — well explored, 5e-6 wins
 - `DISC_LR`: {**5e-5**, 1e-4, 2e-4} — well explored, 5e-5 wins (10x ratio)
 - Only revisit if a noise schedule or architecture change shifts the optimal LR
 
-### Low priority (probably fine at defaults)
+### Not tunable
+- `STUDENT_TIMESTEPS`: fixed at [1.0, 0.75, 0.5, 0.25] — do not change
 - `TEXT_DROP_RATIO`: 0.1 — standard CFG dropout, unlikely to matter much
 - `DISC_COND_DIM`: 256 — tied to hidden dim, change only if hidden dim changes
 
