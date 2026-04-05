@@ -737,7 +737,8 @@ def main():
 
                 if is_gen_step:
                     # Student needs gradients
-                    student_out, _ = accelerator.unwrap_model(student)(
+                    # Forward through wrapped module (required for FSDP all-gather)
+                    student_out, _ = student(
                         student_input_list,
                         student_t,
                         prompt_embeds,
@@ -747,7 +748,7 @@ def main():
                     student_pred = torch.stack(student_out, dim=0).squeeze(2)  # (B, C, H, W)
                 else:
                     with torch.no_grad():
-                        student_out, _ = accelerator.unwrap_model(student)(
+                        student_out, _ = student(
                             student_input_list,
                             student_t,
                             prompt_embeds,
@@ -866,7 +867,7 @@ def main():
                     # Capture student grad norm before clipping/zero_grad
                     _student_grad_norm = sum(
                         p.grad.float().norm().item()
-                        for p in accelerator.unwrap_model(student).parameters()
+                        for p in student.parameters()
                         if p.grad is not None
                     )
                     if accelerator.sync_gradients:
@@ -899,19 +900,21 @@ def main():
                     logs["grad_norm/student"] = _student_grad_norm
 
                 # Student weight change tracking — log delta from initial weights
-                # to confirm weights are actually changing during training
-                student_unwrapped = accelerator.unwrap_model(student)
-                if not hasattr(main, '_initial_weights'):
-                    main._initial_weights = {}
-                for _track_name, _track_param in student_unwrapped.named_parameters():
-                    if any(k in _track_name for k in ["layers.0.attention.to_q.weight",
-                                                       "layers.15.attention.to_q.weight",
-                                                       "layers.29.attention.to_q.weight"]):
-                        _cur = _track_param.data.float()
-                        if _track_name not in main._initial_weights:
-                            main._initial_weights[_track_name] = _cur.clone()
-                        _delta = (_cur - main._initial_weights[_track_name]).norm().item()
-                        logs[f"weight_delta/{_track_name.replace('.', '_')}"] = _delta
+                # to confirm weights are actually changing during training.
+                # Disabled under FSDP: unwrap_model returns sharded params.
+                if str(accelerator.distributed_type) != "DistributedType.FSDP":
+                    student_unwrapped = accelerator.unwrap_model(student)
+                    if not hasattr(main, '_initial_weights'):
+                        main._initial_weights = {}
+                    for _track_name, _track_param in student_unwrapped.named_parameters():
+                        if any(k in _track_name for k in ["layers.0.attention.to_q.weight",
+                                                           "layers.15.attention.to_q.weight",
+                                                           "layers.29.attention.to_q.weight"]):
+                            _cur = _track_param.data.float()
+                            if _track_name not in main._initial_weights:
+                                main._initial_weights[_track_name] = _cur.clone()
+                            _delta = (_cur - main._initial_weights[_track_name]).norm().item()
+                            logs[f"weight_delta/{_track_name.replace('.', '_')}"] = _delta
 
                 # GPU memory
                 if torch.cuda.is_available():
@@ -969,15 +972,16 @@ def main():
 
             # Checkpointing
             if not args.skip_save and global_step % args.checkpointing_steps == 0:
-                if accelerator.is_main_process:
-                    save_path = os.path.join(args.output_dir, f"checkpoint-{global_step}")
-                    accelerator.save_state(save_path)
+                save_path = os.path.join(args.output_dir, f"checkpoint-{global_step}")
+                accelerator.save_state(save_path)
 
-                    # Also save student weights separately for easy loading
+                # Save student weights separately for easy loading.
+                # Use get_state_dict for FSDP compatibility (gathers full state).
+                state_dict = accelerator.get_state_dict(student)
+                if accelerator.is_main_process:
                     student_save_dir = os.path.join(save_path, "student_transformer")
                     os.makedirs(student_save_dir, exist_ok=True)
-                    unwrapped_student = accelerator.unwrap_model(student)
-                    torch.save(unwrapped_student.state_dict(), os.path.join(student_save_dir, "pytorch_model.bin"))
+                    torch.save(state_dict, os.path.join(student_save_dir, "pytorch_model.bin"))
 
                     # Limit total checkpoints
                     if args.checkpoints_total_limit is not None:
@@ -989,6 +993,7 @@ def main():
                             shutil.rmtree(os.path.join(args.output_dir, dirs.pop(0)))
 
                     logger.info(f"Saved checkpoint at step {global_step}")
+                del state_dict
 
             # Validation (async subprocess: images + KID)
             if global_step % args.validation_steps == 0:
@@ -1020,27 +1025,29 @@ def main():
 
     # Final save
     accelerator.wait_for_everyone()
-    if accelerator.is_main_process:
-        save_path = os.path.join(args.output_dir, f"checkpoint-{global_step}")
-        if not args.skip_save:
-            # Full save: accelerator state + student weights
-            accelerator.save_state(save_path)
-            unwrapped_student = accelerator.unwrap_model(student)
-            torch.save(
-                unwrapped_student.state_dict(),
-                os.path.join(save_path, "student_transformer", "pytorch_model.bin"),
-            )
-        else:
-            # Lightweight save: student weights only (safetensors, ~12GB)
-            # Skips optimizer states (~24GB+) and accelerator state
+    save_path = os.path.join(args.output_dir, f"checkpoint-{global_step}")
+    if not args.skip_save:
+        # Full save: accelerator state + student weights
+        accelerator.save_state(save_path)
+        state_dict = accelerator.get_state_dict(student)
+        if accelerator.is_main_process:
+            student_dir = os.path.join(save_path, "student_transformer")
+            os.makedirs(student_dir, exist_ok=True)
+            torch.save(state_dict, os.path.join(student_dir, "pytorch_model.bin"))
+        del state_dict
+    else:
+        # Lightweight save: student weights only (safetensors, ~12GB)
+        state_dict = accelerator.get_state_dict(student)
+        if accelerator.is_main_process:
             from safetensors.torch import save_file
             student_dir = os.path.join(save_path, "student_transformer")
             os.makedirs(student_dir, exist_ok=True)
-            unwrapped_student = accelerator.unwrap_model(student)
             save_file(
-                {k: v.contiguous().cpu() for k, v in unwrapped_student.state_dict().items()},
+                {k: v.contiguous().cpu() for k, v in state_dict.items()},
                 os.path.join(student_dir, "model.safetensors"),
             )
+        del state_dict
+    if accelerator.is_main_process:
         logger.info(f"Training complete. Checkpoint at {save_path}")
 
     accelerator.end_training()
