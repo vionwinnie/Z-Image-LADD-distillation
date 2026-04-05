@@ -1,6 +1,8 @@
 # Cloud Setup & Handoff Guide
 
-## Quick Start (RunPod / Any Cloud GPU)
+Base image: `runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04`
+
+## Quick Start
 
 ### 1. Clone and Setup Environment
 
@@ -8,13 +10,28 @@
 git clone git@github.com:vionwinnie/Z-Image-LADD-distillation.git
 cd Z-Image-LADD-distillation
 
-# Install uv if not present
+# Install uv
 curl -LsSf https://astral.sh/uv/install.sh | sh
+source $HOME/.local/bin/env
 
-# Create venv and install all dependencies
-uv venv
-uv pip install -e ".[training]"
+# Create venv inheriting system torch+CUDA
+uv venv --python python3.11 --system-site-packages
 source .venv/bin/activate
+
+# Install project dependencies (torch already in system site-packages)
+uv pip install \
+    accelerate>=1.0.0 \
+    transformers>=4.40.0 \
+    diffusers>=0.30.0 \
+    safetensors>=0.4.0 \
+    bitsandbytes>=0.43.0 \
+    wandb>=0.16.0 \
+    torch-fidelity>=0.4.0 \
+    torchmetrics>=1.0.0 \
+    scipy>=1.10.0 \
+    omegaconf>=2.3.0 \
+    loguru \
+    tqdm
 ```
 
 ### 2. Download Model Weights
@@ -94,41 +111,72 @@ This validates:
 - Loss computation (hinge loss, finite values)
 - Checkpoint save/load round-trip
 
-### 5. Full Training (8x A100)
+### 5. Single GPU Development (1x A100 80GB)
 
+Requires precomputed embeddings to free ~3GB for the text encoder:
 ```bash
-# Launch on 8 GPUs
-bash training/train_ladd.sh
+# Precompute embeddings (one-time, ~3s for debug split)
+python scripts/precompute_embeddings.py \
+    --model_path models/Z-Image \
+    --metadata data/debug/metadata.json \
+    --output_dir data/debug/embeddings
+
+# Run training with 8-bit Adam + precomputed embeddings
+PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True \
+accelerate launch --num_processes=1 training/train_ladd.py \
+    --pretrained_model_name_or_path=models/Z-Image \
+    --train_data_meta=data/debug/metadata.json \
+    --embeddings_dir=data/debug/embeddings \
+    --output_dir=research/output \
+    --cpu_offload_optimizer --skip_save \
+    --image_sample_size=512 \
+    --learning_rate=5e-6 --learning_rate_disc=5e-5 \
+    --gen_update_interval=3 \
+    --mixed_precision=bf16 --gradient_checkpointing --allow_tf32 \
+    --report_to=wandb --tracker_project_name=ladd
 ```
 
-Or manually:
+### 6. Full Training (8x A100 80GB)
+
+No precomputed embeddings needed — text encoder fits in FSDP memory budget.
+No 8-bit Adam needed — FSDP shards optimizer states across GPUs.
+
 ```bash
 accelerate launch \
-  --num_processes=8 \
-  --mixed_precision=bf16 \
-  training/train_ladd.py \
-  --pretrained_model_name_or_path=models/Z-Image \
-  --train_data_meta=data/train/metadata.json \
-  --train_batch_size=1 \
-  --gradient_accumulation_steps=4 \
-  --max_train_steps=20000 \
-  --learning_rate=2e-05 \
-  --learning_rate_disc=1e-04 \
-  --lr_scheduler=constant_with_warmup \
-  --lr_warmup_steps=500 \
-  --checkpointing_steps=1000 \
-  --gradient_checkpointing \
-  --mixed_precision=bf16 \
-  --image_sample_size=1024 \
-  --seed=42 \
-  --output_dir=output_ladd \
-  --report_to=tensorboard
+    --multi_gpu \
+    --num_processes=8 \
+    --mixed_precision=bf16 \
+    training/train_ladd.py \
+    --pretrained_model_name_or_path=models/Z-Image \
+    --train_data_meta=data/train/metadata.json \
+    --output_dir=output/ladd \
+    --train_batch_size=4 \
+    --gradient_accumulation_steps=4 \
+    --max_train_steps=20000 \
+    --learning_rate=5e-6 \
+    --learning_rate_disc=5e-5 \
+    --lr_scheduler=constant_with_warmup \
+    --lr_warmup_steps=500 \
+    --gen_update_interval=3 \
+    --mixed_precision=bf16 \
+    --gradient_checkpointing \
+    --allow_tf32 \
+    --seed=42 \
+    --checkpointing_steps=1000 \
+    --validation_steps=2000 \
+    --image_sample_size=512 \
+    --report_to=wandb \
+    --tracker_project_name=ladd
 ```
 
-Monitor training:
-```bash
-tensorboard --logdir=output_ladd/logs
-```
+Hyperparameters validated via 8-experiment sweep on single GPU (see PROGRESS.md):
+- `learning_rate=5e-6` (student) — lower is better, 5e-6 > 1e-5 > 2e-5
+- `learning_rate_disc=5e-5` — 10x ratio to student LR (matches LADD paper)
+- `gen_update_interval=3` — update student every 3rd disc step
+
+Expected: ~30 hours, FID should reach <100 by 10K steps.
+
+Monitor: `wandb` dashboard at https://wandb.ai/yeun-yeungs/ladd
 
 ### 6. Inference
 
