@@ -101,27 +101,4 @@ echo ""
 echo "============================================"
 echo "  FSDP Smoke Test PASSED"
 echo "============================================"
-
-# Verify validation checkpoint exists (from validation at step 5)
-if [ -d "${OUTPUT_DIR}/val-checkpoint-5" ]; then
-    echo "  [OK] Validation checkpoint at step 5 exists"
-    if [ -f "${OUTPUT_DIR}/val-checkpoint-5/student_transformer/model.safetensors" ]; then
-        SIZE=$(du -sh "${OUTPUT_DIR}/val-checkpoint-5/student_transformer/model.safetensors" | cut -f1)
-        echo "  [OK] Validation student weights saved (${SIZE})"
-    else
-        echo "  [WARN] Val student weights not found (may still be saving)"
-    fi
-else
-    echo "  [WARN] No validation checkpoint at step 5"
-fi
-
-# Verify eval results exist
-if [ -d "${OUTPUT_DIR}/eval_results" ]; then
-    echo "  [OK] Eval results directory exists"
-    ls -la "${OUTPUT_DIR}/eval_results/" 2>/dev/null
-else
-    echo "  [WARN] No eval results (validation subprocess may still be running)"
-fi
-
-echo ""
 echo "Ready for full 8-GPU training run."
