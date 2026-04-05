@@ -173,8 +173,8 @@ def parse_args():
     parser.add_argument("--dataloader_num_workers", type=int, default=4)
     parser.add_argument("--logging_dir", type=str, default="logs")
     parser.add_argument("--report_to", type=str, default="wandb",
-                        choices=["tensorboard", "wandb", "all"],
-                        help="Logging backend. Use 'wandb' for Weights & Biases.")
+                        choices=["tensorboard", "wandb", "all", "none"],
+                        help="Logging backend. Use 'none' to disable.")
     parser.add_argument("--tracker_project_name", type=str, default="ladd")
     parser.add_argument("--wandb_run_name", type=str, default=None,
                         help="W&B run name. Auto-generated if not set.")
@@ -189,27 +189,27 @@ def parse_args():
     parser.add_argument("--skip_save", action="store_true",
                         help="Skip checkpoint saving (for quick experiment runs).")
 
-    # Validation
-    parser.add_argument("--validation_prompts", nargs="+", type=str,
-                        default=["A beautiful sunset over the ocean",
-                                 "A cat sitting on a windowsill"])
-    parser.add_argument("--validation_steps", type=int, default=1000)
+    # Validation (async subprocess: generates images, computes KID, logs to wandb)
+    parser.add_argument("--validation_steps", type=int, default=1000,
+                        help="Run validation every N steps. Set very high to disable.")
     parser.add_argument("--num_inference_steps", type=int, default=4,
-                        help="Number of steps for validation sampling.")
-
-    # Async evaluation (FID + CLIP score)
-    parser.add_argument("--eval_steps", type=int, default=500,
-                        help="Run expensive eval (FID/CLIP) every N steps.")
-    parser.add_argument("--eval_num_images", type=int, default=2048,
-                        help="Number of images to generate for FID/CLIP eval.")
+                        help="Number of denoising steps for validation image generation.")
+    parser.add_argument("--eval_num_images", type=int, default=1000,
+                        help="Number of images to generate for KID eval.")
     parser.add_argument("--val_data_meta", type=str, default="data/val/metadata.json",
-                        help="Path to validation set JSON for eval metrics.")
-    parser.add_argument("--fid_reference_stats", type=str, default=None,
-                        help="Path to pre-computed FID reference .npz file.")
+                        help="Path to validation set JSON.")
+    parser.add_argument("--teacher_image_dir", type=str, default="data/val/teacher_images",
+                        help="Directory with pre-generated teacher reference images for KID.")
     parser.add_argument("--eval_device", type=str, default=None,
                         help="GPU for async eval subprocess (e.g. 'cuda:7'). Auto-detected if None.")
-    parser.add_argument("--skip_expensive_eval", action="store_true",
-                        help="Disable FID/CLIP eval (useful for debugging).")
+
+    # Early stopping (for research loop — abort bad configs fast)
+    parser.add_argument("--early_stop", action="store_true",
+                        help="Enable early stopping on discriminator health check failure.")
+    parser.add_argument("--early_stop_check_interval", type=int, default=50,
+                        help="Check disc health every N steps.")
+    parser.add_argument("--early_stop_patience", type=int, default=3,
+                        help="Abort after N consecutive failed health checks.")
 
     # Noise scheduler
     parser.add_argument("--train_sampling_steps", type=int, default=1000)
@@ -224,93 +224,49 @@ def parse_args():
 
 
 # ---------------------------------------------------------------------------
-# Validation
+# Validation (async subprocess: image logging + KID)
 # ---------------------------------------------------------------------------
 
-def log_validation(
-    student, vae, text_encoder, tokenizer, scheduler,
-    args, accelerator, weight_dtype, global_step,
-):
-    """Generate sample images and log to disk + wandb."""
-    try:
-        with torch.no_grad(), torch.cuda.amp.autocast(dtype=weight_dtype):
-            logger.info("Running validation...")
-
-            from zimage.pipeline import generate, calculate_shift as pipeline_calc_shift
-
-            unwrapped = accelerator.unwrap_model(student)
-
-            if args.seed is not None:
-                generator = torch.Generator(device=accelerator.device).manual_seed(
-                    args.seed + accelerator.process_index
-                )
-            else:
-                generator = None
-
-            wandb_images = []
-            for i, prompt_text in enumerate(args.validation_prompts):
-                images = generate(
-                    transformer=unwrapped,
-                    vae=vae,
-                    text_encoder=text_encoder,
-                    tokenizer=tokenizer,
-                    scheduler=scheduler,
-                    prompt=prompt_text,
-                    height=args.image_sample_size,
-                    width=args.image_sample_size,
-                    num_inference_steps=args.num_inference_steps,
-                    guidance_scale=0,
-                    generator=generator,
-                )
-                save_dir = os.path.join(args.output_dir, "samples")
-                os.makedirs(save_dir, exist_ok=True)
-                for j, img in enumerate(images):
-                    save_path = os.path.join(
-                        save_dir,
-                        f"step{global_step:06d}_rank{accelerator.process_index}_prompt{i}_img{j}.jpg",
-                    )
-                    img.save(save_path)
-                    if wandb is not None:
-                        wandb_images.append(
-                            wandb.Image(img, caption=f"[step {global_step}] {prompt_text[:80]}")
-                        )
-
-            # Log images to wandb
-            if wandb_images and accelerator.is_main_process:
-                for tracker in accelerator.trackers:
-                    if tracker.name == "wandb":
-                        tracker.log({"validation/samples": wandb_images}, step=global_step)
-
-            del unwrapped
-            gc.collect()
-            torch.cuda.empty_cache()
-    except Exception as e:
-        logger.error(f"Validation error on rank {accelerator.process_index}: {e}")
-        gc.collect()
-        torch.cuda.empty_cache()
+_val_process = None  # Track running validation subprocess
 
 
-# ---------------------------------------------------------------------------
-# Async eval subprocess
-# ---------------------------------------------------------------------------
+def _launch_validation(student_model, teacher_model, discriminator_model, vae_model,
+                       args, global_step, accelerator):
+    """Save lightweight student weights and spawn validation subprocess.
 
-_eval_process = None  # Track running eval subprocess
+    The subprocess generates student + teacher images on val prompts,
+    logs side-by-side comparisons to wandb, and computes KID.
 
-
-def _launch_eval_subprocess(checkpoint_path, args, global_step, accelerator):
-    """Spawn a background process to compute FID + CLIP score."""
-    global _eval_process
+    Multi-GPU: runs on a separate GPU (non-blocking).
+    Single-GPU: offloads training models to CPU, runs eval as a blocking
+    subprocess, then reloads models back to GPU.
+    """
+    global _val_process
     import subprocess
+    from safetensors.torch import save_file
 
-    # Skip if previous eval is still running
-    if _eval_process is not None and _eval_process.poll() is None:
-        logger.info(f"Skipping eval at step {global_step}: previous eval still running (pid={_eval_process.pid})")
+    n_gpus = torch.cuda.device_count()
+    single_gpu = (n_gpus <= 1)
+
+    # Skip if previous validation is still running (multi-GPU only)
+    if not single_gpu and _val_process is not None and _val_process.poll() is None:
+        logger.info(f"Skipping validation at step {global_step}: previous still running (pid={_val_process.pid})")
         return
+
+    # Save lightweight student weights for the subprocess
+    val_ckpt_dir = os.path.join(args.output_dir, f"val-checkpoint-{global_step}")
+    student_dir = os.path.join(val_ckpt_dir, "student_transformer")
+    os.makedirs(student_dir, exist_ok=True)
+    unwrapped = accelerator.unwrap_model(student_model)
+    save_file(
+        {k: v.contiguous().cpu() for k, v in unwrapped.state_dict().items()},
+        os.path.join(student_dir, "model.safetensors"),
+    )
+    del unwrapped
 
     # Determine eval device
     eval_device = args.eval_device
     if eval_device is None:
-        n_gpus = torch.cuda.device_count()
         eval_device = f"cuda:{n_gpus - 1}" if n_gpus > 1 else "cuda:0"
 
     # Get wandb run ID if available
@@ -326,9 +282,10 @@ def _launch_eval_subprocess(checkpoint_path, args, global_step, accelerator):
 
     cmd = [
         sys.executable, "-m", "training.ladd_eval",
-        "--checkpoint", checkpoint_path,
+        "--checkpoint", val_ckpt_dir,
         "--model_dir", args.pretrained_model_name_or_path,
         "--val_data_meta", args.val_data_meta,
+        "--teacher_image_dir", args.teacher_image_dir,
         "--step", str(global_step),
         "--output_dir", args.output_dir,
         "--device", eval_device,
@@ -336,8 +293,6 @@ def _launch_eval_subprocess(checkpoint_path, args, global_step, accelerator):
         "--image_size", str(args.image_sample_size),
         "--eval_num_images", str(args.eval_num_images),
     ]
-    if args.fid_reference_stats:
-        cmd.extend(["--fid_reference_stats", args.fid_reference_stats])
     if wandb_run_id:
         cmd.extend(["--wandb_run_id", wandb_run_id])
     if wandb_project:
@@ -345,9 +300,45 @@ def _launch_eval_subprocess(checkpoint_path, args, global_step, accelerator):
     if wandb_entity:
         cmd.extend(["--wandb_entity", wandb_entity])
 
-    logger.info(f"Launching eval subprocess for step {global_step} on {eval_device}")
-    _eval_process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    logger.info(f"Eval subprocess started (pid={_eval_process.pid})")
+    # Ensure subprocess can find zimage and training modules
+    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    env = os.environ.copy()
+    src_dir = os.path.join(project_root, "src")
+    env["PYTHONPATH"] = f"{src_dir}:{project_root}:{env.get('PYTHONPATH', '')}"
+
+    if single_gpu:
+        # Single GPU: offload ALL training models to CPU, run eval blocking, reload
+        logger.info(f"Single-GPU validation at step {global_step}: offloading training models to CPU...")
+        gpu_models = [
+            ("student", student_model),
+            ("teacher", teacher_model),
+            ("discriminator", discriminator_model),
+            ("vae", vae_model),
+        ]
+        for name, model in gpu_models:
+            if model is not None:
+                model.to("cpu")
+        gc.collect()
+        torch.cuda.empty_cache()
+
+        logger.info(f"Launching blocking validation subprocess on {eval_device}")
+        proc = subprocess.run(cmd, capture_output=True, text=True, env=env)
+        if proc.returncode != 0:
+            logger.error(f"Validation subprocess failed:\n{proc.stdout}\n{proc.stderr}")
+        else:
+            logger.info(f"Validation complete for step {global_step}")
+
+        # Reload training models to GPU
+        device = accelerator.device
+        for name, model in gpu_models:
+            if model is not None:
+                model.to(device)
+        logger.info(f"Reloaded training models to {device}")
+    else:
+        # Multi-GPU: non-blocking subprocess on separate GPU
+        logger.info(f"Launching validation subprocess for step {global_step} on {eval_device}")
+        _val_process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=env)
+        logger.info(f"Validation subprocess started (pid={_val_process.pid})")
 
 
 # ---------------------------------------------------------------------------
@@ -408,7 +399,7 @@ def main():
     accelerator = Accelerator(
         gradient_accumulation_steps=args.gradient_accumulation_steps,
         mixed_precision=args.mixed_precision,
-        log_with=args.report_to,
+        log_with=args.report_to if args.report_to != "none" else None,
         project_config=accelerator_project_config,
     )
 
@@ -632,6 +623,9 @@ def main():
 
     global_step = 0
     first_epoch = 0
+    early_stop_failures = 0  # consecutive health check failures
+    early_stopped = False
+    last_disc_metrics = {}  # track most recent disc metrics for summary
 
     # Resume from checkpoint
     if args.resume_from_checkpoint:
@@ -931,8 +925,47 @@ def main():
                     lr_s=f"{logs['lr_student']:.2e}",
                 )
 
+                # Track disc metrics for summary and early stopping
+                last_disc_metrics = {
+                    k: v for k, v in logs.items()
+                    if k.startswith("disc/") or k in ("d_loss", "g_loss")
+                }
+
+                # Early stopping: check disc health every N steps
+                if (args.early_stop
+                        and global_step > args.lr_warmup_steps
+                        and global_step % args.early_stop_check_interval == 0):
+                    acc_real = logs.get("disc/accuracy_real", 0.5)
+                    acc_fake = logs.get("disc/accuracy_fake", 0.5)
+                    logit_gap = logs.get("disc/logit_gap", 1.0)
+
+                    failed = False
+                    if acc_real > 0.95 and acc_fake > 0.95:
+                        logger.warning(f"Step {global_step}: disc too strong (acc_real={acc_real:.2f}, acc_fake={acc_fake:.2f})")
+                        failed = True
+                    elif acc_real < 0.55 and acc_fake < 0.55:
+                        logger.warning(f"Step {global_step}: disc collapsed (acc_real={acc_real:.2f}, acc_fake={acc_fake:.2f})")
+                        failed = True
+                    elif logit_gap > 15:
+                        logger.warning(f"Step {global_step}: disc diverging (logit_gap={logit_gap:.2f})")
+                        failed = True
+                    elif logit_gap < 0.1:
+                        logger.warning(f"Step {global_step}: disc useless (logit_gap={logit_gap:.4f})")
+                        failed = True
+
+                    if failed:
+                        early_stop_failures += 1
+                        if early_stop_failures >= args.early_stop_patience:
+                            logger.error(f"Early stopping at step {global_step}: {early_stop_failures} consecutive health check failures")
+                            early_stopped = True
+                    else:
+                        early_stop_failures = 0
+
             progress_bar.update(1)
             global_step += 1
+
+            if early_stopped:
+                break
 
             # Checkpointing
             if not args.skip_save and global_step % args.checkpointing_steps == 0:
@@ -957,22 +990,33 @@ def main():
 
                     logger.info(f"Saved checkpoint at step {global_step}")
 
-                    # Launch async eval subprocess (FID + CLIP)
-                    if (
-                        not args.skip_expensive_eval
-                        and global_step % args.eval_steps == 0
-                    ):
-                        _launch_eval_subprocess(save_path, args, global_step, accelerator)
+            # Validation (async subprocess: images + KID)
+            if global_step % args.validation_steps == 0:
+                if accelerator.is_main_process:
+                    _launch_validation(
+                        student_model=student,
+                        teacher_model=teacher,
+                        discriminator_model=discriminator,
+                        vae_model=vae,
+                        args=args,
+                        global_step=global_step,
+                        accelerator=accelerator,
+                    )
 
-            # Validation
-            if global_step % args.validation_steps == 0 and args.validation_prompts:
-                log_validation(
-                    student, vae, text_encoder, tokenizer, noise_scheduler,
-                    args, accelerator, weight_dtype, global_step,
-                )
-
-        if global_step >= args.max_train_steps:
+        if global_step >= args.max_train_steps or early_stopped:
             break
+
+    # Print machine-readable training summary for research agent
+    if accelerator.is_main_process:
+        print("\n---")
+        print(f"training_steps:     {global_step}")
+        print(f"early_stopped:      {early_stopped}")
+        for k, v in sorted(last_disc_metrics.items()):
+            if isinstance(v, float):
+                print(f"{k}:  {v:.6f}")
+        if torch.cuda.is_available():
+            print(f"peak_vram_mb:       {torch.cuda.max_memory_allocated() / 1e6:.1f}")
+        print("---\n")
 
     # Final save
     accelerator.wait_for_everyone()

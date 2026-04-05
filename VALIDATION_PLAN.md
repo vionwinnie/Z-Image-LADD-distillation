@@ -5,186 +5,123 @@
 LADD training uses two tiers of evaluation metrics:
 
 1. **Per-step cheap metrics** (inline, zero cost) — discriminator health signals logged every training step.
-2. **Expensive image-quality metrics** (async subprocess, every 500 steps) — FID and CLIP score computed on a dedicated GPU without blocking training.
+2. **KID evaluation** (post-training or periodic) — Kernel Inception Distance computed between student and teacher images on the same prompts.
 
-The expensive metrics require a one-time **FID reference precomputation** step before training begins.
-
----
-
-## Pre-requisite: FID Reference Stats
-
-Before training with eval enabled, generate teacher reference images and extract Inception-v3 statistics. This is a **one-time cost**.
-
-### What it does
-
-1. Loads the teacher model (full Z-Image).
-2. Generates images for all 13,173 val prompts at 50 inference steps.
-3. Passes all images through Inception-v3, extracts 2048-d features.
-4. Saves mean vector (mu), covariance matrix (sigma), and sample count to a `.npz` file.
-
-### How to run
-
-```bash
-# Val split (used during training every --eval_steps):
-python scripts/precompute_fid_reference.py \
-    --model_dir <path-to-pretrained-Z-Image> \
-    --split val \
-    --device cuda:0 \
-    --num_inference_steps 50 \
-    --image_size 512 \
-    --batch_size 16 \
-    --teacache_thresh 0.5 \
-    --seed 42
-
-# Test split (used for final held-out evaluation):
-python scripts/precompute_fid_reference.py \
-    --model_dir <path-to-pretrained-Z-Image> \
-    --split test \
-    --device cuda:0 \
-    --num_inference_steps 50 \
-    --image_size 512 \
-    --batch_size 16 \
-    --teacache_thresh 0.5 \
-    --seed 42
-```
-
-### TeaCache acceleration
-
-The script uses [TeaCache](https://github.com/ali-vilab/TeaCache) to skip redundant
-transformer evaluations during denoising. At each step the first layer's AdaLN
-modulation is used as a cheap proxy to estimate whether the output will change
-significantly; if not, the previous step's residual is reused.
-
-`--teacache_thresh` controls the speed/quality tradeoff (0 = disabled):
-
-| Threshold | Per-image time | Speedup | Quality |
-|-----------|---------------|---------|---------|
-| 0.0       | 4.0 s         | 1.0x    | Baseline |
-| 0.3       | 1.2 s         | 3.4x    | Near-baseline |
-| **0.5**   | **0.9 s**     | **4.5x** | **Good (recommended for FID reference)** |
-| 0.8       | 0.7 s         | 5.4x    | Acceptable |
-
-### Expected runtime
-
-With TeaCache 0.5 and batch_size=16 on a single A100-80GB:
-
-- ~13,173 images at ~0.82s/image = **~3 hours per split**.
-- Inception feature extraction adds ~10 minutes.
-- Total: **~3.5 hours per split, ~7 hours for both val and test**.
-
-### Resume support
-
-The script checks for existing images in the output directory and skips already-generated ones. If it crashes midway, just re-run the same command.
-
-To skip generation entirely and only recompute stats from existing images:
-
-```bash
-python scripts/precompute_fid_reference.py \
-    --model_dir <path-to-pretrained-Z-Image> \
-    --split val \
-    --skip_generation \
-    --image_dir data/val/teacher_images
-```
-
-### Output
-
-Per split (`val` or `test`):
-
-- `data/{split}/teacher_images/` — 13,173 PNG images (named `00000.png` to `13172.png`)
-- `data/{split}/fid_reference_stats.npz` — NumPy archive with keys `mu` (2048,), `sigma` (2048, 2048), `num_samples` (scalar)
-
-### Dependencies
-
-```bash
-pip install "torchmetrics[image]>=1.0.0" open-clip-torch torchvision
-```
-
-Or install the training extras:
-
-```bash
-pip install -e ".[training]"
-```
+**Why KID over FID:** FID requires thousands of samples (5K+) for a stable covariance estimate over 2048-d Inception features. With 1000 val prompts, FID has high variance. KID is an unbiased estimator using kernel MMD — reliable even at small sample sizes.
 
 ---
 
-## Training with Eval Enabled
+## Data Splits
 
-Once `fid_reference_stats.npz` exists, pass it to the training script:
+Resplit from original 13K val/test to balanced 1K each (stratified by subject/style/camera). Leftovers added to train.
+
+| Split | Prompts | Purpose |
+|-------|---------|---------|
+| Train | 524,915 | Training data |
+| Val | 1,000 | KID eval during/after training |
+| Test | 1,000 | Final held-out evaluation |
+| Debug | 98 | Single-GPU quick experiments |
+
+---
+
+## KID Evaluation
+
+### How it works
+
+1. Generate N images from student checkpoint on val prompts.
+2. Generate N teacher reference images on the same prompts (cached after first run).
+3. Pass both image directories to `torch-fidelity` with `kid=True`.
+4. Reports `kid_mean ± kid_std` (lower is better; 0 = identical distributions).
+
+### Running evaluation
+
+```bash
+# After training:
+python research/evaluate.py --checkpoint research/output/checkpoint-2000
+
+# With cached teacher images:
+python research/evaluate.py \
+    --checkpoint research/output/checkpoint-2000 \
+    --teacher_image_dir data/val/teacher_images
+
+# Fewer images for quick check:
+python research/evaluate.py \
+    --checkpoint research/output/checkpoint-2000 \
+    --num_images 50
+```
+
+### KID parameters
+
+- `kid_subset_size=100` (or num_images if smaller) — samples per subset
+- `kid_subsets=100` — number of bootstrap subsets for mean/std
+- Polynomial kernel (degree 3) — default from torch-fidelity
+
+### Expected runtime (single A100)
+
+| Component | 50 images | 1000 images |
+|-----------|-----------|-------------|
+| Student generation | ~24s | ~8 min |
+| Teacher generation (first time only) | ~24s | ~8 min |
+| KID computation (Inception + kernel) | ~5s | ~30s |
+| **Total (first run)** | **~50s** | **~17 min** |
+| **Total (cached teacher)** | **~30s** | **~9 min** |
+
+On 8-GPU cluster, generation can be parallelized (~1 min for 1000 images).
+
+---
+
+## Training with Periodic Eval
+
+For cluster training, KID eval can run as an async subprocess:
 
 ```bash
 python -m training.train_ladd \
     --pretrained_model_name_or_path <model_dir> \
     --train_data_meta data/train/metadata.json \
     --val_data_meta data/val/metadata.json \
-    --fid_reference_stats data/val/fid_reference_stats.npz \
-    --eval_steps 500 \
-    --eval_num_images 2048 \
+    --eval_steps 2000 \
+    --eval_num_images 1000 \
     ...
 ```
 
-### New CLI arguments
-
 | Argument | Default | Description |
 |----------|---------|-------------|
-| `--eval_steps` | 500 | Run FID/CLIP eval every N steps |
+| `--eval_steps` | 500 | Run KID eval every N steps |
 | `--eval_num_images` | 2048 | Number of val images to generate per eval |
-| `--val_data_meta` | `data/val/metadata.json` | Path to val split |
-| `--fid_reference_stats` | None | Path to `.npz` from precompute step |
+| `--val_data_meta` | `data/val/metadata.json` | Path to val split (1000 prompts) |
 | `--eval_device` | auto (last GPU) | GPU for eval subprocess |
-| `--skip_expensive_eval` | false | Disable FID/CLIP entirely |
-
-### How async eval works
-
-1. Training saves a checkpoint every `--checkpointing_steps`.
-2. At steps divisible by `--eval_steps`, a background subprocess is spawned.
-3. The subprocess loads the student from the checkpoint on `--eval_device`.
-4. It generates `--eval_num_images` images from a fixed val subset (seed 42).
-5. Computes FID against the reference stats and CLIP score.
-6. Logs `eval/fid` and `eval/clip_score` to the same wandb run.
-7. Saves results to `<output_dir>/eval_results/step_NNNNNN.json`.
-
-If a previous eval is still running when the next one triggers, it is skipped.
+| `--skip_expensive_eval` | false | Disable KID eval entirely |
 
 ---
 
-## Metrics Reference
-
-### Per-step (inline)
+## Per-Step Metrics Reference (inline, free)
 
 | Metric | What to watch for |
 |--------|-------------------|
-| `disc/accuracy_real` | Should be >50%. If 100% sustained, D dominates — student gets no gradient signal |
-| `disc/accuracy_fake` | Should be >50%. If it drops below 50%, D is losing |
-| `disc/logit_gap` | Should be positive. Collapsing toward 0 = D can't distinguish real/fake |
-| `disc/layer_{idx}_real` | Per-layer mean logit for real samples |
-| `disc/layer_{idx}_fake` | Per-layer mean logit for fake samples. Compare with real to see which layers student has matched |
-
-### Every 500 steps (async)
-
-| Metric | What to watch for |
-|--------|-------------------|
-| `eval/fid` | Lower is better. Measures distance from teacher distribution. Should trend down over training |
-| `eval/clip_score` | Higher is better. Measures text-image alignment. Should stay stable or improve |
+| `disc/accuracy_real` | Should be >50%. If 100% sustained, D dominates |
+| `disc/accuracy_fake` | Should be >50%. If <50%, D is losing |
+| `disc/logit_gap` | Should be positive. Collapsing to 0 = D can't distinguish |
 
 ---
 
 ## File Map
 
 ```
+research/
+  evaluate.py                         # KID eval (student vs teacher images)
+
 training/
-  ladd_eval.py                        # Eval module (cheap metrics + expensive FID/CLIP)
-  train_ladd.py                       # Training loop (imports ladd_eval, launches subprocess)
+  ladd_eval.py                        # Image generation + metrics helpers
+  train_ladd.py                       # Training loop (launches eval subprocess)
 
 scripts/
-  precompute_fid_reference.py         # One-time teacher reference generation
+  resplit_data.py                     # Resplit val/test to 1K balanced samples
 
 data/val/
-  metadata.json                       # 13,173 val prompts (stratified split)
-  fid_reference_stats.npz             # [TO GENERATE] Inception stats from teacher images
-  teacher_images/                     # [TO GENERATE] Teacher-generated reference images
+  metadata.json                       # 1,000 val prompts (stratified)
+  teacher_images/                     # [CACHED] Teacher reference images
 
 data/test/
-  metadata.json                       # 13,173 test prompts (stratified split)
-  fid_reference_stats.npz             # [TO GENERATE] Inception stats from teacher images
-  teacher_images/                     # [TO GENERATE] Teacher-generated reference images
+  metadata.json                       # 1,000 test prompts (stratified)
+  teacher_images/                     # [CACHED] Teacher reference images
 ```
