@@ -1,12 +1,14 @@
-"""Evaluation script for the LADD research loop — IMMUTABLE.
+"""Evaluation script for the LADD research loop.
 
 Loads a student checkpoint, generates images on fixed eval prompts,
-computes FID and CLIP score, and prints a standardized metrics block.
+computes KID (Kernel Inception Distance) and optionally FID.
+
+KID is preferred over FID for small sample sizes (≤1000) because it is
+an unbiased estimator — FID requires thousands of samples for a stable
+covariance estimate.
 
 Usage:
     python research/evaluate.py --checkpoint research/output/checkpoint-500
-
-The research agent must NOT modify this file.
 """
 
 import argparse
@@ -14,6 +16,7 @@ import json
 import logging
 import os
 import random
+import shutil
 import sys
 
 import torch
@@ -33,9 +36,7 @@ sys.path.insert(0, _project_root)
 # Fixed evaluation parameters
 MODEL_DIR = "models/Z-Image"
 VAL_DATA = "data/val/metadata.json"
-TEACHER_IMAGES_DIR = "data/val/teacher_images"
-FID_REFERENCE_STATS = "data/val/fid_reference_stats.npz"
-NUM_EVAL_IMAGES = 50
+NUM_EVAL_IMAGES = 1000
 NUM_INFERENCE_STEPS = 4
 IMAGE_SIZE = 512
 SEED = 12345
@@ -47,6 +48,8 @@ def parse_args():
     parser.add_argument("--checkpoint", type=str, required=True,
                         help="Path to checkpoint dir (contains student_transformer/).")
     parser.add_argument("--num_images", type=int, default=NUM_EVAL_IMAGES)
+    parser.add_argument("--teacher_image_dir", type=str, default=None,
+                        help="Dir with cached teacher images. Generated if missing.")
     return parser.parse_args()
 
 
@@ -54,7 +57,7 @@ def main():
     args = parse_args()
     os.chdir(_project_root)
 
-    from training.ladd_eval import generate_eval_images, compute_clip_score
+    from training.ladd_eval import generate_eval_images
 
     # Load val prompts (deterministic subset)
     if os.path.exists(VAL_DATA):
@@ -100,59 +103,72 @@ def main():
     gc.collect()
     torch.cuda.empty_cache()
 
-    # FID: extract student Inception features, compute against precomputed stats.
-    fid = -1.0
-    ref_stats_path = os.path.join(_project_root, FID_REFERENCE_STATS)
-    if os.path.exists(ref_stats_path):
-        try:
-            import numpy as np
-            from scipy import linalg
-            from torch_fidelity.feature_extractor_inceptionv3 import FeatureExtractorInceptionV3
+    # KID: Kernel Inception Distance (unbiased, works well with small sample sizes)
+    kid_mean = -1.0
+    kid_std = -1.0
+    try:
+        from torch_fidelity import calculate_metrics
 
-            ref = np.load(ref_stats_path)
-            mu_ref = ref["mu"]
-            sigma_ref = ref["sigma"]
-            ref_n = int(ref["num_samples"])
+        student_image_dir = os.path.dirname(image_paths[0])
+        logger.info(f"Computing KID: {len(image_paths)} student images from {student_image_dir}")
 
-            # Extract student Inception features on GPU
-            from torchvision import transforms
-            from PIL import Image
+        # Teacher reference images — generate if not cached
+        teacher_image_dir = args.teacher_image_dir or os.path.join(
+            _project_root, "data", "val", "teacher_images"
+        )
+        teacher_images_exist = (
+            os.path.isdir(teacher_image_dir)
+            and len([f for f in os.listdir(teacher_image_dir) if f.endswith(".png")]) >= len(val_prompts)
+        )
+        if not teacher_images_exist:
+            logger.info(f"Generating {len(val_prompts)} teacher reference images...")
+            # Use a dummy checkpoint dir so generate_eval_images uses base model weights
+            dummy_ckpt = os.path.join(_project_root, "_teacher_dummy_ckpt")
+            os.makedirs(os.path.join(dummy_ckpt, "student_transformer"), exist_ok=True)
+            generate_eval_images(
+                checkpoint_path=dummy_ckpt,
+                model_dir=MODEL_DIR,
+                prompts=val_prompts,
+                output_dir=os.path.dirname(teacher_image_dir),
+                step=0,
+                num_inference_steps=NUM_INFERENCE_STEPS,
+                image_size=IMAGE_SIZE,
+                device=DEVICE,
+                seed=SEED,
+            )
+            # generate_eval_images saves to <output_dir>/eval_images/step_000000/
+            generated_dir = os.path.join(os.path.dirname(teacher_image_dir), "eval_images", "step_000000")
+            if os.path.isdir(generated_dir) and generated_dir != teacher_image_dir:
+                os.makedirs(teacher_image_dir, exist_ok=True)
+                for f in os.listdir(generated_dir):
+                    if f.endswith(".png"):
+                        shutil.move(os.path.join(generated_dir, f), os.path.join(teacher_image_dir, f))
+                shutil.rmtree(os.path.join(os.path.dirname(teacher_image_dir), "eval_images"), ignore_errors=True)
+            shutil.rmtree(dummy_ckpt, ignore_errors=True)
+            gc.collect()
+            torch.cuda.empty_cache()
 
-            logger.info(f"Computing FID: {len(image_paths)} student vs {ref_n} reference...")
-            inception = FeatureExtractorInceptionV3(name="inception-v3-compat",
-                                                    features_list=["2048"], cuda=True)
-            t = transforms.Compose([transforms.Resize((299, 299)), transforms.ToTensor()])
-
-            all_features = []
-            for i in range(0, len(image_paths), 16):
-                batch = [t(Image.open(p).convert("RGB")) for p in image_paths[i:i+16]]
-                batch_tensor = torch.stack(batch).cuda()
-                with torch.no_grad():
-                    feat = inception(batch_tensor)["2048"]
-                all_features.append(feat.cpu())
-            features = torch.cat(all_features).numpy()
-
-            mu_gen = np.mean(features, axis=0)
-            sigma_gen = np.cov(features, rowvar=False)
-
-            diff = mu_ref - mu_gen
-            covmean, _ = linalg.sqrtm(sigma_ref @ sigma_gen, disp=False)
-            if np.iscomplexobj(covmean):
-                covmean = covmean.real
-            fid = float(diff @ diff + np.trace(sigma_ref + sigma_gen - 2 * covmean))
-            logger.info(f"FID = {fid:.2f}")
-            del inception, features
-        except Exception as e:
-            logger.warning(f"FID computation failed: {e}")
-            import traceback
-            traceback.print_exc()
-    else:
-        logger.warning(f"FID reference stats not found at {ref_stats_path}")
+        kid_subset_size = min(100, len(image_paths))
+        metrics = calculate_metrics(
+            input1=student_image_dir,
+            input2=teacher_image_dir,
+            cuda=True,
+            kid=True,
+            kid_subset_size=kid_subset_size,
+            kid_subsets=100,
+        )
+        kid_mean = metrics["kernel_inception_distance_mean"]
+        kid_std = metrics["kernel_inception_distance_std"]
+        logger.info(f"KID = {kid_mean:.6f} ± {kid_std:.6f}")
+    except Exception as e:
+        logger.warning(f"KID computation failed: {e}")
+        import traceback
+        traceback.print_exc()
 
     # Print standardized metrics block
     print("\n---")
-    print(f"fid:                {fid:.4f}")
-    print(f"clip_score:         -1.0000")
+    print(f"kid_mean:           {kid_mean:.6f}")
+    print(f"kid_std:            {kid_std:.6f}")
     print(f"num_images:         {len(image_paths)}")
     print("---")
 

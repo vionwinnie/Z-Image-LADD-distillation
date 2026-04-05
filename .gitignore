@@ -226,6 +226,15 @@ wandb/
 data/*/embeddings/
 data/*/embeddings_*/
 
+# Teacher reference images (large, regenerate with evaluate.py)
+data/*/teacher_images/
+
+# Backup metadata files
+data/*/*.bak
+
+# Claude memory
+.claude_memory/
+
 # Scratch files
 data/sharded_embeddings_plan.md
 data/embedding-shard-instruction.md

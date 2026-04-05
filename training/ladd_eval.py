@@ -2,15 +2,18 @@
 
 Two tiers:
   1. Cheap per-step metrics computed inline from discriminator logits.
-  2. Expensive image-quality metrics (FID, CLIP score) run as an async
-     subprocess on a dedicated GPU after a checkpoint is saved.
+  2. Expensive image-quality metrics (KID) run as an async subprocess
+     on a dedicated GPU after a checkpoint is saved.
+
+KID (Kernel Inception Distance) is used instead of FID because it is
+an unbiased estimator that works well with small sample sizes (≤1000).
 
 Usage as subprocess (launched by train_ladd.py):
     python -m training.ladd_eval \
         --checkpoint output/ladd/checkpoint-1000 \
         --model_dir /path/to/pretrained \
         --val_data_meta data/val/metadata.json \
-        --fid_reference_stats data/val/fid_reference_stats.npz \
+        --teacher_image_dir data/val/teacher_images \
         --step 1000 \
         --output_dir output/ladd \
         --device cuda:7 \
@@ -25,7 +28,6 @@ import logging
 import os
 import sys
 
-import numpy as np
 import torch
 
 logger = logging.getLogger(__name__)
@@ -184,85 +186,38 @@ def generate_eval_images(
     return image_paths
 
 
-def compute_fid(image_paths: list[str], reference_stats_path: str, device: str = "cuda") -> float:
-    """Compute FID between generated images and pre-computed reference statistics."""
-    from torchmetrics.image.fid import FrechetInceptionDistance
-    from torchvision import transforms
-    from PIL import Image
+def compute_kid(
+    student_image_dir: str,
+    teacher_image_dir: str,
+    num_images: int,
+) -> dict:
+    """Compute KID between student and teacher image directories.
 
-    fid = FrechetInceptionDistance(feature=2048, normalize=True).to(device)
+    Uses torch-fidelity with polynomial kernel MMD. Returns dict with
+    kid_mean and kid_std.
+    """
+    from torch_fidelity import calculate_metrics
 
-    # Load pre-computed reference stats (mu, sigma from Inception features)
-    ref = np.load(reference_stats_path)
-    ref_mu = torch.from_numpy(ref["mu"]).to(device)
-    ref_sigma = torch.from_numpy(ref["sigma"]).to(device)
-
-    # Inject reference stats directly into the metric
-    # torchmetrics FID stores: real_features_sum, real_features_cov_sum, real_features_num_samples
-    # We set them from pre-computed values
-    n_ref = int(ref["num_samples"])
-    fid.real_features_sum = ref_mu * n_ref
-    fid.real_features_cov_sum = ref_sigma * (n_ref - 1) + n_ref * torch.outer(ref_mu, ref_mu)
-    fid.real_features_num_samples = torch.tensor(n_ref, device=device)
-
-    # Process generated images
-    transform = transforms.Compose([
-        transforms.Resize((299, 299)),
-        transforms.ToTensor(),
-    ])
-
-    batch_size = 32
-    for start in range(0, len(image_paths), batch_size):
-        batch_paths = image_paths[start : start + batch_size]
-        imgs = torch.stack([transform(Image.open(p).convert("RGB")) for p in batch_paths])
-        fid.update(imgs.to(device), real=False)
-
-    score = fid.compute().item()
-    del fid
-    torch.cuda.empty_cache()
-    return score
-
-
-def compute_clip_score(
-    image_paths: list[str],
-    prompts: list[str],
-    device: str = "cuda",
-) -> float:
-    """Compute mean CLIP score between generated images and their prompts."""
-    from transformers import CLIPProcessor, CLIPModel
-    from PIL import Image
-
-    model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32").to(device)
-    processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
-    model.eval()
-
-    scores = []
-    batch_size = 16
-    for start in range(0, len(image_paths), batch_size):
-        batch_paths = image_paths[start:start + batch_size]
-        batch_prompts = prompts[start:start + batch_size]
-        images = [Image.open(p).convert("RGB") for p in batch_paths]
-
-        inputs = processor(text=batch_prompts, images=images, return_tensors="pt",
-                           padding=True, truncation=True).to(device)
-        with torch.no_grad():
-            outputs = model(**inputs)
-        # Cosine similarity between image and text embeddings, scaled to 0-100
-        img_emb = outputs.image_embeds / outputs.image_embeds.norm(dim=-1, keepdim=True)
-        txt_emb = outputs.text_embeds / outputs.text_embeds.norm(dim=-1, keepdim=True)
-        sim = (img_emb * txt_emb).sum(dim=-1) * 100.0
-        scores.extend(sim.cpu().tolist())
-
-    del model, processor
-    torch.cuda.empty_cache()
-    return sum(scores) / len(scores)
+    kid_subset_size = min(100, num_images)
+    metrics = calculate_metrics(
+        input1=student_image_dir,
+        input2=teacher_image_dir,
+        cuda=True,
+        kid=True,
+        kid_subset_size=kid_subset_size,
+        kid_subsets=100,
+    )
+    return {
+        "kid_mean": metrics["kernel_inception_distance_mean"],
+        "kid_std": metrics["kernel_inception_distance_std"],
+    }
 
 
 def run_eval(
     checkpoint_path: str,
     model_dir: str,
     val_prompts: list[str],
-    reference_stats_path: str,
+    teacher_image_dir: str,
     output_dir: str,
     step: int,
     device: str = "cuda",
@@ -270,7 +225,9 @@ def run_eval(
     image_size: int = 512,
     seed: int = 42,
 ) -> dict:
-    """Full evaluation: generate images, compute FID and CLIP score."""
+    """Full evaluation: generate student images, compute KID against teacher images."""
+    import gc
+
     logger.info(f"[Eval step {step}] Generating {len(val_prompts)} images...")
     image_paths = generate_eval_images(
         checkpoint_path=checkpoint_path,
@@ -284,20 +241,21 @@ def run_eval(
         seed=seed,
     )
 
-    results = {"step": step}
+    # Free GPU before KID computation (Inception model needs memory)
+    gc.collect()
+    torch.cuda.empty_cache()
 
-    # FID
-    if reference_stats_path and os.path.exists(reference_stats_path):
-        logger.info(f"[Eval step {step}] Computing FID...")
-        results["fid"] = compute_fid(image_paths, reference_stats_path, device)
-        logger.info(f"[Eval step {step}] FID = {results['fid']:.2f}")
+    student_image_dir = os.path.dirname(image_paths[0])
+    results = {"step": step, "num_images": len(image_paths), "student_image_dir": student_image_dir}
+
+    # KID
+    if os.path.isdir(teacher_image_dir):
+        logger.info(f"[Eval step {step}] Computing KID...")
+        kid_results = compute_kid(student_image_dir, teacher_image_dir, len(image_paths))
+        results.update(kid_results)
+        logger.info(f"[Eval step {step}] KID = {results['kid_mean']:.6f} ± {results['kid_std']:.6f}")
     else:
-        logger.warning("FID reference stats not found, skipping FID.")
-
-    # CLIP score
-    logger.info(f"[Eval step {step}] Computing CLIP score...")
-    results["clip_score"] = compute_clip_score(image_paths, val_prompts, device)
-    logger.info(f"[Eval step {step}] CLIP score = {results['clip_score']:.2f}")
+        logger.warning(f"Teacher image dir not found: {teacher_image_dir}, skipping KID.")
 
     # Save results JSON
     results_dir = os.path.join(output_dir, "eval_results")
@@ -325,13 +283,14 @@ def main():
     parser.add_argument("--checkpoint", type=str, required=True)
     parser.add_argument("--model_dir", type=str, required=True)
     parser.add_argument("--val_data_meta", type=str, required=True)
-    parser.add_argument("--fid_reference_stats", type=str, default=None)
+    parser.add_argument("--teacher_image_dir", type=str, required=True,
+                        help="Directory with pre-generated teacher reference images.")
     parser.add_argument("--step", type=int, required=True)
     parser.add_argument("--output_dir", type=str, required=True)
     parser.add_argument("--device", type=str, default="cuda")
     parser.add_argument("--num_inference_steps", type=int, default=4)
     parser.add_argument("--image_size", type=int, default=512)
-    parser.add_argument("--eval_num_images", type=int, default=2048)
+    parser.add_argument("--eval_num_images", type=int, default=1000)
     parser.add_argument("--seed", type=int, default=42)
     # wandb
     parser.add_argument("--wandb_run_id", type=str, default=None)
@@ -358,7 +317,7 @@ def main():
         checkpoint_path=args.checkpoint,
         model_dir=args.model_dir,
         val_prompts=val_prompts,
-        reference_stats_path=args.fid_reference_stats,
+        teacher_image_dir=args.teacher_image_dir,
         output_dir=args.output_dir,
         step=args.step,
         device=args.device,
@@ -371,6 +330,8 @@ def main():
     if args.wandb_run_id:
         try:
             import wandb
+            from PIL import Image
+
             wandb.init(
                 id=args.wandb_run_id,
                 project=args.wandb_project,
@@ -378,14 +339,38 @@ def main():
                 resume="allow",
             )
             log_dict = {}
-            if "fid" in results:
-                log_dict["eval/fid"] = results["fid"]
-            if "clip_score" in results:
-                log_dict["eval/clip_score"] = results["clip_score"]
+            if "kid_mean" in results:
+                log_dict["eval/kid_mean"] = results["kid_mean"]
+                log_dict["eval/kid_std"] = results["kid_std"]
+
+            # Log side-by-side student vs teacher images (first N samples)
+            student_image_dir = results.get("student_image_dir")
+            if student_image_dir and os.path.isdir(args.teacher_image_dir):
+                num_log = min(8, results.get("num_images", 0))
+                table = wandb.Table(columns=["step", "prompt", "student", "teacher"])
+                for i in range(num_log):
+                    student_path = os.path.join(student_image_dir, f"{i:05d}.png")
+                    teacher_path = os.path.join(args.teacher_image_dir, f"{i:05d}.png")
+                    prompt = val_prompts[i][:100] if i < len(val_prompts) else ""
+                    if os.path.exists(student_path) and os.path.exists(teacher_path):
+                        table.add_data(
+                            args.step,
+                            prompt,
+                            wandb.Image(Image.open(student_path)),
+                            wandb.Image(Image.open(teacher_path)),
+                        )
+                log_dict["eval/samples"] = table
+
             wandb.log(log_dict, step=args.step)
             wandb.finish()
         except Exception as e:
             logger.error(f"Failed to log to wandb: {e}")
+
+    # Clean up validation checkpoint (lightweight, not needed after eval)
+    if os.path.basename(args.checkpoint).startswith("val-checkpoint-"):
+        import shutil
+        shutil.rmtree(args.checkpoint, ignore_errors=True)
+        logger.info(f"Cleaned up {args.checkpoint}")
 
     logger.info(f"Eval complete for step {args.step}")
 
