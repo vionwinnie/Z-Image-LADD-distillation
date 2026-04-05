@@ -495,15 +495,32 @@ No OOM at bs=12. **Recommended: batch_size=8** for teacher latent precompute.
 | Val | Teacher images (CFG=5) | 416/1000 | partial | data/val/teacher_images/ | Interrupted |
 | Val | Teacher latents | 0 | - | data/val/teacher_latents/ | Not started |
 
+### Hyperparameter Re-tuning (v2 corrected pipeline, 500 steps)
+
+All runs: debug split (98 prompts), 512px, bs=1, single A100 80GB.
+KID computed against 416 teacher images (CFG=5, corrected scheduler).
+
+| Exp | Config | KID | vs baseline | Notes |
+|-----|--------|-----|-------------|-------|
+| baseline | slr=5e-6 dlr=5e-5 GI=8 M=0.5 | 0.0637 | — | previous best from broken pipeline |
+| exp1 | dlr=1e-5 (was 5e-5) | 0.0624 | -2% | slightly better |
+| **exp2** | **GI=3 (was 8)** | **0.0589** | **-7.5%** | **best so far** |
+| exp3 | slr=2e-5 (was 5e-6) | 0.0792 | +24% | worse — too aggressive |
+| exp4 | GI=3 + dlr=1e-5 | pending | | combination test |
+
+**Key finding:** GI=8 was optimal for the broken pipeline (noise-vs-noise "real").
+With proper teacher latents, GI=3 is better — the student needs more frequent
+updates to learn from the now-meaningful adversarial signal. Higher student LR
+(2e-5) hurts, likely causing instability.
+
 ## Next Steps
 
-1. Re-tune hyperparameters with corrected pipeline (disc LR, GI, student LR)
-2. Complete val teacher image regeneration (for KID eval)
-3. Precompute val teacher latents (for val-time training metrics)
-4. Precompute train split teacher latents (~2.5 GB for 10K prompts)
-5. Launch longer run (2000+ steps) once hyperparameters stabilized
-6. Update `train_ladd.sh` with validated hyperparameters
-7. Launch 8-GPU production run
+1. Complete exp4 (GI=3 + dlr=1e-5 combination)
+2. If exp4 improves, run longer (2000 steps) to verify scaling
+3. Complete val teacher image regeneration (for KID eval)
+4. Precompute val + train teacher latents
+5. Update `train_ladd.sh` with validated hyperparameters
+6. Launch 8-GPU production run
 
 ## Dependencies Installed
 
