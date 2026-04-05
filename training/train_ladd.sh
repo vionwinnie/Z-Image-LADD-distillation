@@ -20,20 +20,18 @@ export TOKENIZERS_PARALLELISM=false
 
 # --- Configuration ---
 MODEL_PATH="${MODEL_PATH:-models/Z-Image}"
-DATA_META="${DATA_META:-data/train/metadata.json}"
+DATA_META="${DATA_META:-data/train/metadata_subsample.json}"
 OUTPUT_DIR="${OUTPUT_DIR:-output/ladd}"
 NUM_GPUS="${NUM_GPUS:-8}"
 
 accelerate launch \
-    --multi_gpu \
-    --num_processes=${NUM_GPUS} \
-    --mixed_precision=bf16 \
+    --config_file training/fsdp_config.yaml \
     training/train_ladd.py \
     --pretrained_model_name_or_path="${MODEL_PATH}" \
     --train_data_meta="${DATA_META}" \
     --output_dir="${OUTPUT_DIR}" \
     --train_batch_size=4 \
-    --gradient_accumulation_steps=4 \
+    --gradient_accumulation_steps=2 \
     --max_train_steps=20000 \
     --learning_rate=5e-6 \
     --learning_rate_disc=5e-5 \
@@ -44,7 +42,7 @@ accelerate launch \
     --allow_tf32 \
     --seed=42 \
     --dataloader_num_workers=4 \
-    --checkpointing_steps=1000 \
+    --checkpointing_steps=2000 \
     --checkpoints_total_limit=3 \
     --validation_steps=2000 \
     --num_inference_steps=4 \
