@@ -115,19 +115,23 @@ memory optimization (e.g., offloading text encoder during gen steps).
 ## Current Working Configuration
 
 ```bash
-# 256px, single A100 80GB, 8-bit Adam
+# 512px, single A100 80GB, 8-bit Adam, precomputed embeddings
 PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True \
 accelerate launch --num_processes=1 training/train_ladd.py \
     --pretrained_model_name_or_path=models/Z-Image \
     --train_data_meta=data/debug/metadata.json \
+    --embeddings_dir=data/debug/embeddings \
     --output_dir=research/output \
-    --cpu_offload_optimizer \
-    --image_sample_size=256 \
+    --cpu_offload_optimizer --skip_save \
+    --image_sample_size=512 \
     --mixed_precision=bf16 --gradient_checkpointing --allow_tf32 \
-    --learning_rate=1e-5 --learning_rate_disc=1e-4 \
-    --gen_update_interval=5 \
+    --learning_rate=5e-6 --learning_rate_disc=5e-5 \
+    --gen_update_interval=3 \
     --report_to=wandb --tracker_project_name=ladd
 ```
+
+Key: `--embeddings_dir` skips the ~3GB text encoder, enabling 512px on a single GPU.
+`--skip_save` saves only student weights as safetensors (~12GB), not full optimizer state.
 
 ## Validated (baseline-256px-delta-v2)
 
@@ -165,13 +169,63 @@ Key findings:
 - gi=3 is the sweet spot — more frequent gen updates than default (5) but not every step (1)
 - FID improved 336 -> 319 (5.2% improvement from baseline)
 
+## Scale-up Validation (2000 steps, best config)
+
+FID with best config over training steps:
+
+| Steps | FID | Notes |
+|-------|-----|-------|
+| 500 | 318.55 | sweep winner |
+| 2000 | 313.19 | still improving |
+
+FID is dropping — confirms the student **can learn**. However FID 313 is still very high
+(good distilled models target FID < 30). Visual inspection of 2000-step outputs shows
+coarse structure (spatial composition learned) but significant noise artifacts.
+
+This is expected for:
+- Only 2000 steps (LADD paper uses 50K-200K)
+- 98 prompts (tiny dataset)
+- batch_size=1 (very noisy gradients)
+
+## Precomputed Embeddings
+
+Text encoder embeddings precomputed offline to save ~3GB GPU memory during training.
+This was the key optimization that unlocked 512px training on a single A100 80GB.
+
+| Split | Prompts | Time | Size | Path |
+|-------|---------|------|------|------|
+| Debug | 98 | 3s | 106 MB | data/debug/embeddings/ |
+| Debug (10) | 10 | 0.6s | 7 MB | data/debug/embeddings_10/ |
+| Val | 13K | 6 min | 8.6 GB | data/val/embeddings/ |
+| Train | 500K | ~2 hours | ~330 GB | not yet computed |
+
+## FID Evaluation
+
+- Reference stats precomputed from 13K teacher images: `data/val/fid_reference_stats.npz` (33 MB)
+- Student Inception features extracted via `torch-fidelity` (GPU-native, fast)
+- FID computed against reference (mu, sigma) using scipy `sqrtm`
+- `torchmetrics.FrechetInceptionDistance` abandoned — runs on CPU, takes 10+ minutes for 50 images
+
+## Current Phase: Overfit Test
+
+Running 10 prompts x 2000 steps at 512px with aggressive settings:
+- student_lr=1e-4 (20x higher than sweep winner)
+- disc_lr=1e-3 (20x higher)
+- gen_update_interval=1 (gen update every step)
+- text_drop_ratio=0.0 (no CFG dropout)
+- Each prompt seen ~200 times
+
+**Goal**: Determine if the student can produce recognizable images when given
+maximum learning pressure on a tiny dataset. If yes, the training signal works
+and we just need more compute. If no, there's a fundamental issue.
+
 ## Next Steps
 
-- Run longer training (2000-5000 steps) with winning config to see if FID continues to drop
-- Scale to full training set (500K prompts) — need to precompute embeddings (~2 hours)
+- Evaluate overfit test results (visual inspection + FID)
+- If overfitting works: scale to full training set (500K prompts, precompute embeddings ~2 hours)
 - Scale to 8 GPUs with FSDP for production 20K-step run
-- Add CLIP score evaluation (needs model download fix)
+- Implement gradient accumulation for effective batch size > 1
 
 ## Dependencies Installed
 
-omegaconf, deepspeed, mpi4py, wandb, bitsandbytes, torch-fidelity, torchmetrics
+omegaconf, deepspeed, mpi4py, wandb, bitsandbytes, torch-fidelity, torchmetrics, scipy
