@@ -38,7 +38,7 @@ DISC_LR = 5e-5
 LR_WARMUP_STEPS = 50
 
 # LADD dynamics
-GEN_UPDATE_INTERVAL = 4           # D steps per G step
+GEN_UPDATE_INTERVAL = 6           # D steps per G step
 WARMUP_SCHEDULE_STEPS = 50        # timestep warmup
 STUDENT_TIMESTEPS = [1.0, 0.75, 0.5, 0.25]
 
