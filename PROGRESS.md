@@ -199,6 +199,17 @@ This was the key optimization that unlocked 512px training on a single A100 80GB
 | Val | 13K | 6 min | 8.6 GB | data/val/embeddings/ |
 | Train | 500K | ~2 hours | ~330 GB | not yet computed |
 
+### Single GPU vs Cluster: precompute or not?
+
+**Single GPU (current)**: Precomputed embeddings are essential. The text encoder
+takes ~3GB which is the difference between OOM and fitting at 512px. Worth the
+precompute time and disk cost.
+
+**8-GPU cluster with FSDP**: Precomputed embeddings are NOT needed. Each GPU has
+~47GB used / 80GB total, leaving ~33GB headroom. The text encoder (3GB) fits
+easily. Running it live adds ~30ms per step (~2-3% overhead on a 1-2s step).
+Not worth 2 hours precompute + 330GB disk for 2-3% speedup.
+
 ## FID Evaluation
 
 - Reference stats precomputed from 13K teacher images: `data/val/fid_reference_stats.npz` (33 MB)
