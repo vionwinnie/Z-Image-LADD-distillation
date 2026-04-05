@@ -344,6 +344,112 @@ STUDENT_TIMESTEPS = [1.0, 0.75, 0.5, 0.25]
 - Whether GI=8 shifts optimal LRs or noise schedule
 - Interaction effects (e.g. re-tuning M with GI=8)
 
+## Teacher Image Quality Debug (2026-04-05)
+
+Validation teacher images looked blurry. Root cause investigation:
+
+### Bug 1: Scheduler linspace off-by-one
+
+Our custom `FlowMatchEulerDiscreteScheduler.set_timesteps()` used:
+```python
+timesteps = np.linspace(sigma_max_t, sigma_min_t, num_inference_steps + 1)[:-1]
+```
+Diffusers uses:
+```python
+timesteps = np.linspace(sigma_max_t, sigma_min_t, num_inference_steps)
+```
+
+**Impact:** With 50 steps, our scheduler's smallest sigma was 0.109 (11% noise remaining).
+Diffusers reaches sigma=0.0 (fully denoised). The student was being evaluated against
+blurry teacher images that still had residual noise.
+
+**Fix:** Removed `+ 1` and `[:-1]` in `src/zimage/scheduler.py`. Verified timesteps and
+sigmas now match diffusers exactly (`torch.allclose` = True).
+
+### Bug 2: Teacher images generated without CFG
+
+`precompute_fid_reference.py` generated teacher images with `guidance_scale=0`.
+The official Z-Image usage example uses `guidance_scale=4`. The non-distilled teacher
+model requires CFG for sharp, well-composed images — without it, outputs are
+unconditional-like and lack detail.
+
+Additionally, `precompute_fid_reference.py` defaults to `--teacache_thresh=0.5`,
+which skips ~75% of transformer layer computations for speed. This may further
+degrade quality.
+
+**Impact on KID:** All KID measurements to date compared student images against
+blurry teacher references. Absolute KID values are unreliable. Relative ordering
+between experiments should still hold (same reference for all), but the baseline
+quality bar was set too low.
+
+**CFG sweep result:** CFG=5.0 selected after visual comparison on wandb.
+Teacher images regenerated with corrected scheduler + CFG=5 + TeaCache disabled.
+W&B: `debug-teacher-cfg-sweep` (run mg6h6a9f)
+
+### Bug 3: Student input is pure noise regardless of timestep
+
+The student at timestep t should receive `x_t = (1-t)*teacher_x0 + t*ε`, not
+pure noise. At t=1.0 this is pure noise (correct), but at t=0.75/0.5/0.25 the
+student needs to see partial teacher structure to learn the remaining denoising.
+
+Without this fix, the student at t=0.25 sees pure noise but is told "you're
+almost done" — it has no signal about what to reconstruct.
+
+### Bug 4: No velocity-to-latent conversion
+
+The student predicts velocity v (flow matching formulation), but the code
+used raw velocity as the denoised prediction. The correct conversion is:
+`x̂_0 = x_t - t * v`
+
+### Bug 5: "Real" discriminator samples are random noise
+
+The LADD paper (Section 3.2) says the "real" distribution for the discriminator
+should be teacher-generated images with CFG. Our code used `add_noise(noise1,
+noise2, t_hat)` — random noise mixed with random noise, providing no meaningful
+"real" signal for the discriminator.
+
+**Fix:** `add_noise(teacher_x0, noise, t_hat)` where teacher_x0 is precomputed
+offline with CFG=5, 50 steps. This requires a new precompute step:
+`data/precompute_teacher_latents.py` saves raw latents (before VAE decode)
+as .pt files (~262KB each).
+
+### Corrected Training Flow (all 5 bugs fixed)
+
+```
+OFFLINE:
+  teacher_x0 = teacher.generate(prompt, cfg=5, steps=50, output_type="latent")
+
+ONLINE per step:
+  1. x_t = (1-t) * teacher_x0 + t * ε           ← student input (Bug 3)
+  2. v = student(x_t, t, prompt)                  ← velocity prediction
+  3. x̂_0 = x_t - t * v                           ← denoised latent (Bug 4)
+  4. fake_noisy = (1-t̂) * x̂_0 + t̂ * ε₁           ← re-noise for disc
+  5. real_noisy = (1-t̂) * teacher_x0 + t̂ * ε₂     ← real path (Bug 5)
+  6. teacher(fake_noisy) → features → disc → "fake"
+  7. teacher(real_noisy) → features → disc → "real"
+```
+
+### Files Changed
+
+- `src/zimage/scheduler.py` — linspace fix (Bug 1)
+- `training/train_ladd.py` — student input, velocity conversion, real path (Bugs 3-5)
+- `training/ladd_utils.py` — TextDataset loads teacher latents
+- `data/precompute_teacher_latents.py` (new) — generates teacher latents with CFG
+- `data/regenerate_teacher_images.py` (new) — regenerates teacher images with CFG
+- `scripts/smoke_test_train.py` — scheduler + CFG checks (Steps 11-12)
+- `scripts/smoke_test_proposed.py` (new) — 9 tests validating corrected flow
+
+### Impact on Previous Results
+
+All KID measurements were against blurry teacher references (broken scheduler +
+no CFG + TeaCache). The training loop had wrong student inputs, no velocity
+conversion, and meaningless "real" samples. **All previous numeric results are
+invalid.** Relative ordering between hyperparameter configs may still hold since
+all used the same broken setup, but absolute quality was severely limited.
+
+The best hyperparameters from the sweep (GI=8, M=0.5, S=1.0, slr=5e-6,
+dlr=5e-5) are being re-validated with the corrected pipeline.
+
 ## Next Steps
 
 1. Continue autoresearch sweep: disc architecture, LR re-tuning with new GI
