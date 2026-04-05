@@ -32,13 +32,13 @@ GRADIENT_ACCUMULATION_STEPS = 1
 
 # Learning rates
 STUDENT_LR = 5e-6
-DISC_LR = 2e-4
+DISC_LR = 5e-5
 
 # LR schedule
 LR_WARMUP_STEPS = 50
 
 # LADD dynamics
-GEN_UPDATE_INTERVAL = 5           # D steps per G step
+GEN_UPDATE_INTERVAL = 1           # D steps per G step
 WARMUP_SCHEDULE_STEPS = 50        # timestep warmup
 STUDENT_TIMESTEPS = [1.0, 0.75, 0.5, 0.25]
 
