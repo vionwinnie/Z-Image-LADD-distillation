@@ -68,11 +68,9 @@ def main():
     args = parse_args()
 
     # Set device
-    if args.world_size > 1:
-        device = torch.device(f"cuda:{args.rank}")
-    else:
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    torch.cuda.set_device(device)
+    device = torch.device(f"cuda:{args.rank}" if torch.cuda.is_available() else "cpu")
+    if torch.cuda.is_available():
+        torch.cuda.set_device(device)
 
     # Load metadata and shard across GPUs
     with open(args.data_meta) as f:
