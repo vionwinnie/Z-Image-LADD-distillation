@@ -24,14 +24,14 @@ IMAGE_SIZE = 512
 SEED = 42
 
 # Training budget (fixed for comparability — do not change)
-MAX_TRAIN_STEPS = 2000
+MAX_TRAIN_STEPS = 500
 TRAIN_BATCH_SIZE = 1
 GRADIENT_ACCUMULATION_STEPS = 1
 
 # === TUNABLE HYPERPARAMETERS START ===
 
 # Learning rates
-STUDENT_LR = 5e-6
+STUDENT_LR = 1e-5
 DISC_LR = 1e-4
 
 # LR schedule
