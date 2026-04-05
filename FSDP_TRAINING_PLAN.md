@@ -284,10 +284,20 @@ These validate basic correctness on any machine with 1 GPU:
    Confirms losses are finite, discriminator is active, forward/backward work.
    (512px OOMs on 1 GPU — expected, confirms FSDP is needed.)
 
-### Step 2: Two-GPU FSDP verification (on multi-GPU node)
+### Step 2: Two-GPU verification (on multi-GPU node)
 
-**Run this before the full 8-GPU training.** This is the critical test that validates
-FSDP wrapping, sharded checkpointing, and multi-GPU gradient sync at full 512px resolution.
+**Run both of these before the full 8-GPU run.**
+
+#### 2a. Precompute (2 GPUs, 8 images)
+
+```bash
+bash scripts/smoke_test_precompute.sh
+```
+
+Validates multi-GPU sharding, batched generation, `.pt` file saving, and resume.
+Checks: 8 latents saved with shape `[16, 64, 64]`, finite values, resume skips existing.
+
+#### 2b. FSDP training (2 GPUs, 10 steps)
 
 ```bash
 bash scripts/smoke_test_fsdp.sh
@@ -329,8 +339,9 @@ If this passes, the 8-GPU full run is safe to launch.
 7. ~~Subsample created: 10K prompts~~
 8. ~~Precompute smoke test: 4 latents, shapes correct, resume works~~
 9. ~~Single-GPU training: 10 steps at 256px, losses finite~~
-10. **2-GPU FSDP smoke test**: `bash scripts/smoke_test_fsdp.sh` — **run on multi-GPU node**
+10. **2-GPU precompute smoke test**: `bash scripts/smoke_test_precompute.sh` — **run on multi-GPU node**
+11. **2-GPU FSDP training smoke test**: `bash scripts/smoke_test_fsdp.sh` — **run on multi-GPU node**
 
 **Phase 4: Full run (on 8x A100 node)**
-11. `bash scripts/precompute_launch.sh` (~4h)
-12. `bash training/train_ladd.sh` (~2h)
+12. `bash scripts/precompute_launch.sh` (~4h)
+13. `bash training/train_ladd.sh` (~2h)
