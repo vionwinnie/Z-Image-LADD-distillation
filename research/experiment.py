@@ -47,9 +47,9 @@ RENOISE_M = 0.5                   # logit-normal mean
 RENOISE_S = 1.0                   # logit-normal std
 
 # Discriminator architecture
-DISC_HIDDEN_DIM = 128
-DISC_COND_DIM = 128
-DISC_LAYER_INDICES = [5, 10, 15, 20, 25, 29]
+DISC_HIDDEN_DIM = 256
+DISC_COND_DIM = 256
+DISC_LAYER_INDICES = [10, 20, 29]
 
 # Text
 TEXT_DROP_RATIO = 0.1
@@ -88,6 +88,7 @@ set -e
 cd {project_root}
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 
+mkdir -p {OUTPUT_DIR}
 RUN_LOG="{OUTPUT_DIR}/run.log"
 
 echo "============================================================"
