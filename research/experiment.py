@@ -72,16 +72,28 @@ def main():
     disc_layers_str = " ".join(str(l) for l in DISC_LAYER_INDICES)
     wandb_name = f"exp-lr{STUDENT_LR}-dlr{DISC_LR}-gi{GEN_UPDATE_INTERVAL}"
 
-    # The checkpoint lands at research/output/checkpoint-{MAX_TRAIN_STEPS}/student_transformer/
-    checkpoint_dir = f"{OUTPUT_DIR}/checkpoint-{MAX_TRAIN_STEPS}"
+    # Inline validation uses train_ladd.py's built-in _launch_validation at the
+    # final step. On single GPU this offloads training models to CPU, runs eval
+    # as a blocking subprocess, computes KID against cached teacher images, and
+    # logs to wandb. No separate evaluate.py needed.
+    #
+    # Two validation checkpoints:
+    #   - Midpoint (MAX_TRAIN_STEPS // 2): early KID signal — if KID is not
+    #     improving, the agent can note this for future reference
+    #   - Final step (MAX_TRAIN_STEPS): the metric that matters for keep/discard
+    val_interval = MAX_TRAIN_STEPS  # validate at final step only by default
 
     script = f"""#!/bin/bash
 set -e
 cd {project_root}
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 
+RUN_LOG="{OUTPUT_DIR}/run.log"
+
 echo "============================================================"
-echo "  STEP 1: Training ({MAX_TRAIN_STEPS} steps, {IMAGE_SIZE}px)"
+echo "  Training + Evaluation ({MAX_TRAIN_STEPS} steps, {IMAGE_SIZE}px)"
+echo "  Inline validation at step {MAX_TRAIN_STEPS} (KID)"
+echo "  Early stopping enabled (disc health every 50 steps)"
 echo "============================================================"
 
 accelerate launch --num_processes=1 \\
@@ -104,9 +116,12 @@ accelerate launch --num_processes=1 \\
     --skip_save \\
     --seed={SEED} \\
     --checkpointing_steps={MAX_TRAIN_STEPS} \\
-    --validation_steps=999999 \\
+    --validation_steps={val_interval} \\
     --num_inference_steps=4 \\
     --image_sample_size={IMAGE_SIZE} \\
+    --eval_num_images=50 \\
+    --val_data_meta=data/val/metadata.json \\
+    --teacher_image_dir=data/val/teacher_images \\
     --gen_update_interval={GEN_UPDATE_INTERVAL} \\
     --disc_hidden_dim={DISC_HIDDEN_DIM} \\
     --disc_cond_dim={DISC_COND_DIM} \\
@@ -117,19 +132,25 @@ accelerate launch --num_processes=1 \\
     --renoise_s={RENOISE_S} \\
     --text_drop_ratio={TEXT_DROP_RATIO} \\
     --dataloader_num_workers=0 \\
+    --early_stop \\
+    --early_stop_check_interval=50 \\
+    --early_stop_patience=3 \\
     --report_to=wandb \\
     --tracker_project_name=ladd \\
-    --wandb_run_name={wandb_name}
+    --wandb_run_name={wandb_name} \\
+    2>&1 | tee "$RUN_LOG"
 
 echo ""
-echo "============================================================"
-echo "  STEP 2: Evaluating"
-echo "============================================================"
-
-python3 research/evaluate.py --checkpoint {checkpoint_dir}
-
+echo "Experiment complete. Summary:"
 echo ""
-echo "Experiment complete."
+
+# Extract key metrics from the log for the agent to grep
+echo "--- RESULTS ---"
+# Training summary (disc metrics, early stopping)
+grep "^training_steps:\\|^early_stopped:\\|^disc/\\|^d_loss:\\|^g_loss:\\|^peak_vram_mb:" "$RUN_LOG" | tail -20
+# KID from inline validation (logged by ladd_eval subprocess)
+grep "KID = " "$RUN_LOG" | tail -1 || echo "kid: not computed (early stopped or failed)"
+echo "--- END ---"
 """
 
     # Write and exec the bash script (replaces this Python process entirely)
