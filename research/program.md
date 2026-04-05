@@ -22,10 +22,11 @@ Once you get confirmation, kick off the calibration runs, then the experimentati
 
 ## Calibration runs (do these first)
 
-Previous experiments measured FID, not KID. We need KID baselines before we can compare new results. Run these 3 configs **before** starting the experiment loop. Do NOT change `MAX_TRAIN_STEPS` for any of these — use whatever value is currently set in `experiment.py`. Log results to `results.tsv` as `keep` (these are reference points, not new experiments). Do not discard or reset after these runs.
+Previous experiments measured FID, not KID. We need KID baselines before we can compare new results. Run these 3 configs **before** starting the experiment loop. Log results to `results.tsv` as `keep` (these are reference points, not new experiments). Do not discard or reset after these runs.
 
-**Run 1 — Original baseline** (recover KID for the config that scored FID 336.31):
+**Run 1 — Original baseline** (500 steps, recover KID for the config that scored FID 336.31):
 ```python
+MAX_TRAIN_STEPS = 500
 STUDENT_LR = 1e-5
 DISC_LR = 1e-4
 GEN_UPDATE_INTERVAL = 5
@@ -33,21 +34,11 @@ LR_WARMUP_STEPS = 50
 WARMUP_SCHEDULE_STEPS = 50
 # all other tunable params at defaults
 ```
-Log as: `baseline-recal: slr=1e-5 dlr=1e-4 gi=5 (was FID 336.31)`
+Log as: `baseline-recal: slr=1e-5 dlr=1e-4 gi=5 500steps (was FID 336.31)`
 
-**Run 2 — First improvement** (recover KID for the config that scored FID 332.52):
+**Run 2 — Current best at 500 steps** (recover KID for the config that scored FID 313.19):
 ```python
-STUDENT_LR = 5e-6
-DISC_LR = 1e-4
-GEN_UPDATE_INTERVAL = 5
-LR_WARMUP_STEPS = 50
-WARMUP_SCHEDULE_STEPS = 50
-# all other tunable params at defaults
-```
-Log as: `recal: slr=5e-6 dlr=1e-4 gi=5 (was FID 332.52)`
-
-**Run 3 — Current best** (recover KID for the config that scored FID 313.19 at 2000 steps):
-```python
+MAX_TRAIN_STEPS = 500
 STUDENT_LR = 5e-6
 DISC_LR = 5e-5
 GEN_UPDATE_INTERVAL = 3
@@ -55,9 +46,21 @@ LR_WARMUP_STEPS = 50
 WARMUP_SCHEDULE_STEPS = 50
 # all other tunable params at defaults
 ```
-Log as: `recal-best: slr=5e-6 dlr=5e-5 gi=3 (was FID 313.19)`
+Log as: `recal-best-500: slr=5e-6 dlr=5e-5 gi=3 500steps (was FID 313.19)`
 
-After these 3 runs, the best KID among them becomes your baseline to beat. Reset `experiment.py` to the config from Run 3 (current best), commit, and begin the experiment loop.
+**Run 3 — Current best at 2000 steps** (same config, longer training):
+```python
+MAX_TRAIN_STEPS = 2000
+STUDENT_LR = 5e-6
+DISC_LR = 5e-5
+GEN_UPDATE_INTERVAL = 3
+LR_WARMUP_STEPS = 50
+WARMUP_SCHEDULE_STEPS = 50
+# all other tunable params at defaults
+```
+Log as: `recal-best-2000: slr=5e-6 dlr=5e-5 gi=3 2000steps (was FID 313.19)`
+
+After these 3 runs, the best KID among them becomes your baseline to beat. Reset `experiment.py` to the best config, commit, and begin the experiment loop.
 
 ## Experimentation
 
