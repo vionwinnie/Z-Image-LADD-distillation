@@ -18,20 +18,19 @@ source $HOME/.local/bin/env
 uv venv --python python3.11 --system-site-packages
 source .venv/bin/activate
 
-# Install project dependencies (torch already in system site-packages)
+# Install dependencies not in the base image
+# Pre-installed by RunPod: torch, torchvision, torchaudio, numpy, Pillow, tqdm
 uv pip install \
-    accelerate>=1.0.0 \
-    transformers>=4.40.0 \
-    diffusers>=0.30.0 \
-    safetensors>=0.4.0 \
-    bitsandbytes>=0.43.0 \
-    wandb>=0.16.0 \
-    torch-fidelity>=0.4.0 \
-    torchmetrics>=1.0.0 \
-    scipy>=1.10.0 \
-    omegaconf>=2.3.0 \
-    loguru \
-    tqdm
+    accelerate \
+    transformers \
+    diffusers \
+    safetensors \
+    bitsandbytes \
+    wandb \
+    torch-fidelity \
+    scipy \
+    omegaconf \
+    loguru
 ```
 
 ### 2. Download Model Weights
