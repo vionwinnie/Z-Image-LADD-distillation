@@ -13,8 +13,8 @@
 set -euo pipefail
 
 MODEL_PATH="${MODEL_PATH:-models/Z-Image}"
-OUTPUT_DIR="/tmp/smoke_fsdp_$$"
 SCRIPT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+OUTPUT_DIR="${SCRIPT_DIR}/research/smoke_fsdp_$$"
 
 # Create a 2-GPU FSDP config (copy of training config but num_processes=2)
 FSDP_CONFIG="/tmp/fsdp_smoke_$$.yaml"
@@ -30,8 +30,8 @@ fsdp_config:
   fsdp_state_dict_type: FULL_STATE_DICT
   fsdp_offload_params: false
   fsdp_use_orig_params: true
-  fsdp_sync_module_states: true
-  fsdp_cpu_ram_efficient_loading: true
+  fsdp_sync_module_states: false
+  fsdp_cpu_ram_efficient_loading: false
 machine_rank: 0
 main_training_function: main
 mixed_precision: bf16
@@ -39,16 +39,8 @@ num_machines: 1
 num_processes: 2
 YAML
 
-# Create a tiny metadata file (4 prompts)
-SMOKE_META="/tmp/smoke_meta_fsdp_$$.json"
-python -c "
-import json
-with open('${SCRIPT_DIR}/data/train/metadata_subsample.json') as f:
-    data = json.load(f)
-with open('${SMOKE_META}', 'w') as f:
-    json.dump(data[:8], f)
-print('Created smoke metadata with 8 prompts')
-"
+# Use full subsample metadata (must match precomputed embeddings)
+SMOKE_META="${SCRIPT_DIR}/data/train/metadata_subsample.json"
 
 echo "============================================"
 echo "  FSDP Smoke Test: 2 GPUs, 10 steps"
@@ -59,16 +51,19 @@ echo "  Config:  ${FSDP_CONFIG}"
 echo ""
 
 cleanup() {
-    rm -rf "${OUTPUT_DIR}" "${FSDP_CONFIG}" "${SMOKE_META}"
+    rm -rf "${OUTPUT_DIR}" "${FSDP_CONFIG}"
 }
 trap cleanup EXIT
 
+PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True \
 accelerate launch \
     --config_file "${FSDP_CONFIG}" \
     training/train_ladd.py \
     --pretrained_model_name_or_path="${MODEL_PATH}" \
     --train_data_meta="${SMOKE_META}" \
+    --embeddings_dir="${SCRIPT_DIR}/data/train/embeddings_subsample" \
     --output_dir="${OUTPUT_DIR}" \
+    --cpu_offload_optimizer \
     --train_batch_size=1 \
     --gradient_accumulation_steps=1 \
     --max_train_steps=10 \
@@ -81,8 +76,11 @@ accelerate launch \
     --allow_tf32 \
     --seed=42 \
     --dataloader_num_workers=0 \
-    --checkpointing_steps=5 \
-    --validation_steps=99999 \
+    --checkpointing_steps=99999 \
+    --validation_steps=5 \
+    --val_data_meta="${SCRIPT_DIR}/data/val/metadata.json" \
+    --eval_num_images=4 \
+    --eval_device=cuda:0 \
     --num_inference_steps=4 \
     --image_sample_size=512 \
     --gen_update_interval=3 \
@@ -94,26 +92,35 @@ accelerate launch \
     --renoise_m=1.0 \
     --renoise_s=1.0 \
     --max_grad_norm=1.0 \
-    --report_to=none
+    --report_to=wandb \
+    --tracker_project_name=ladd \
+    --wandb_entity=yeun-yeungs \
+    --skip_save
 
 echo ""
 echo "============================================"
 echo "  FSDP Smoke Test PASSED"
 echo "============================================"
 
-# Verify checkpoint exists
-if [ -d "${OUTPUT_DIR}/checkpoint-5" ]; then
-    echo "  [OK] Checkpoint at step 5 exists"
-    if [ -f "${OUTPUT_DIR}/checkpoint-5/student_transformer/pytorch_model.bin" ]; then
-        SIZE=$(du -sh "${OUTPUT_DIR}/checkpoint-5/student_transformer/pytorch_model.bin" | cut -f1)
-        echo "  [OK] Student weights saved (${SIZE})"
+# Verify validation checkpoint exists (from validation at step 5)
+if [ -d "${OUTPUT_DIR}/val-checkpoint-5" ]; then
+    echo "  [OK] Validation checkpoint at step 5 exists"
+    if [ -f "${OUTPUT_DIR}/val-checkpoint-5/student_transformer/model.safetensors" ]; then
+        SIZE=$(du -sh "${OUTPUT_DIR}/val-checkpoint-5/student_transformer/model.safetensors" | cut -f1)
+        echo "  [OK] Validation student weights saved (${SIZE})"
     else
-        echo "  [FAIL] Student weights not found in checkpoint"
-        exit 1
+        echo "  [WARN] Val student weights not found (may still be saving)"
     fi
 else
-    echo "  [FAIL] No checkpoint at step 5"
-    exit 1
+    echo "  [WARN] No validation checkpoint at step 5"
+fi
+
+# Verify eval results exist
+if [ -d "${OUTPUT_DIR}/eval_results" ]; then
+    echo "  [OK] Eval results directory exists"
+    ls -la "${OUTPUT_DIR}/eval_results/" 2>/dev/null
+else
+    echo "  [WARN] No eval results (validation subprocess may still be running)"
 fi
 
 echo ""

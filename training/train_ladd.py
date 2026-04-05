@@ -235,7 +235,7 @@ _val_process = None  # Track running validation subprocess
 
 
 def _launch_validation(student_model, teacher_model, discriminator_model, vae_model,
-                       args, global_step, accelerator):
+                       args, global_step, accelerator, precomputed_state_dict=None):
     """Save lightweight student weights and spawn validation subprocess.
 
     The subprocess generates student + teacher images on val prompts,
@@ -244,6 +244,10 @@ def _launch_validation(student_model, teacher_model, discriminator_model, vae_mo
     Multi-GPU: runs on a separate GPU (non-blocking).
     Single-GPU: offloads training models to CPU, runs eval as a blocking
     subprocess, then reloads models back to GPU.
+
+    Args:
+        precomputed_state_dict: If provided, reuse this state dict instead of
+            calling get_state_dict again (saves ~10min FSDP gather).
     """
     global _val_process
     import subprocess
@@ -252,21 +256,33 @@ def _launch_validation(student_model, teacher_model, discriminator_model, vae_mo
     n_gpus = torch.cuda.device_count()
     single_gpu = (n_gpus <= 1)
 
+    # Reuse precomputed state dict if available, otherwise gather
+    if precomputed_state_dict is not None:
+        state_dict = precomputed_state_dict
+    else:
+        # get_state_dict is a collective op under FSDP — ALL ranks must call it.
+        state_dict = accelerator.get_state_dict(student_model)
+
+    # Only rank 0 does file I/O and subprocess launch
+    if not accelerator.is_main_process:
+        return
+
     # Skip if previous validation is still running (multi-GPU only)
     if not single_gpu and _val_process is not None and _val_process.poll() is None:
         logger.info(f"Skipping validation at step {global_step}: previous still running (pid={_val_process.pid})")
+        del state_dict
         return
 
     # Save lightweight student weights for the subprocess
     val_ckpt_dir = os.path.join(args.output_dir, f"val-checkpoint-{global_step}")
     student_dir = os.path.join(val_ckpt_dir, "student_transformer")
     os.makedirs(student_dir, exist_ok=True)
-    unwrapped = accelerator.unwrap_model(student_model)
-    save_file(
-        {k: v.contiguous().cpu() for k, v in unwrapped.state_dict().items()},
-        os.path.join(student_dir, "model.safetensors"),
-    )
-    del unwrapped
+    if state_dict is not None:
+        save_file(
+            {k: v.contiguous().cpu() for k, v in state_dict.items()},
+            os.path.join(student_dir, "model.safetensors"),
+        )
+    del state_dict
 
     # Determine eval device
     eval_device = args.eval_device
@@ -1022,34 +1038,39 @@ def main():
             if early_stopped:
                 break
 
-            # Checkpointing
-            if not args.skip_save and global_step % args.checkpointing_steps == 0:
-                save_path = os.path.join(args.output_dir, f"checkpoint-{global_step}")
-                accelerator.save_state(save_path)
+            # Checkpointing + Validation
+            # Both need get_state_dict (expensive FSDP gather), so combine into one call.
+            need_checkpoint = not args.skip_save and global_step % args.checkpointing_steps == 0
+            need_validation = global_step % args.validation_steps == 0
+            is_fsdp = str(accelerator.distributed_type) == "DistributedType.FSDP"
 
-                # Save student weights separately for easy loading.
-                # Use get_state_dict for FSDP compatibility (gathers full state).
+            if need_checkpoint or need_validation:
+                # Single get_state_dict call (collective op, all ranks participate)
                 state_dict = accelerator.get_state_dict(student)
-                if accelerator.is_main_process:
-                    student_save_dir = os.path.join(save_path, "student_transformer")
-                    os.makedirs(student_save_dir, exist_ok=True)
-                    torch.save(state_dict, os.path.join(student_save_dir, "pytorch_model.bin"))
 
-                    # Limit total checkpoints
-                    if args.checkpoints_total_limit is not None:
-                        dirs = sorted(
-                            [d for d in os.listdir(args.output_dir) if d.startswith("checkpoint")],
-                            key=lambda x: int(x.split("-")[1]),
+                if need_checkpoint:
+                    save_path = os.path.join(args.output_dir, f"checkpoint-{global_step}")
+                    # accelerator.save_state() is incompatible with 8-bit Adam + FSDP
+                    if not is_fsdp:
+                        accelerator.save_state(save_path)
+                    if accelerator.is_main_process and state_dict is not None:
+                        from safetensors.torch import save_file as _save_file
+                        student_save_dir = os.path.join(save_path, "student_transformer")
+                        os.makedirs(student_save_dir, exist_ok=True)
+                        _save_file(
+                            {k: v.contiguous().cpu() for k, v in state_dict.items()},
+                            os.path.join(student_save_dir, "model.safetensors"),
                         )
-                        while len(dirs) > args.checkpoints_total_limit:
-                            shutil.rmtree(os.path.join(args.output_dir, dirs.pop(0)))
+                        if args.checkpoints_total_limit is not None:
+                            dirs = sorted(
+                                [d for d in os.listdir(args.output_dir) if d.startswith("checkpoint")],
+                                key=lambda x: int(x.split("-")[1]),
+                            )
+                            while len(dirs) > args.checkpoints_total_limit:
+                                shutil.rmtree(os.path.join(args.output_dir, dirs.pop(0)))
+                        logger.info(f"Saved checkpoint at step {global_step}")
 
-                    logger.info(f"Saved checkpoint at step {global_step}")
-                del state_dict
-
-            # Validation (async subprocess: images + KID)
-            if global_step % args.validation_steps == 0:
-                if accelerator.is_main_process:
+                if need_validation:
                     _launch_validation(
                         student_model=student,
                         teacher_model=teacher,
@@ -1058,7 +1079,10 @@ def main():
                         args=args,
                         global_step=global_step,
                         accelerator=accelerator,
+                        precomputed_state_dict=state_dict,
                     )
+
+                del state_dict
 
         if global_step >= args.max_train_steps or early_stopped:
             break
@@ -1078,14 +1102,26 @@ def main():
     # Final save
     accelerator.wait_for_everyone()
     save_path = os.path.join(args.output_dir, f"checkpoint-{global_step}")
-    if not args.skip_save:
+    is_fsdp = str(accelerator.distributed_type) == "DistributedType.FSDP"
+    if args.skip_save and is_fsdp:
+        # Under FSDP with --skip_save, skip final checkpoint entirely
+        # (get_state_dict is expensive and mid-training checkpoints suffice)
+        if accelerator.is_main_process:
+            logger.info(f"Skipping final save (--skip_save + FSDP). Last checkpoint has the weights.")
+    elif not args.skip_save:
         # Full save: accelerator state + student weights
-        accelerator.save_state(save_path)
+        # Skip accelerator.save_state under FSDP (8-bit Adam incompatible)
+        if not is_fsdp:
+            accelerator.save_state(save_path)
         state_dict = accelerator.get_state_dict(student)
         if accelerator.is_main_process:
+            from safetensors.torch import save_file as _save_file_final
             student_dir = os.path.join(save_path, "student_transformer")
             os.makedirs(student_dir, exist_ok=True)
-            torch.save(state_dict, os.path.join(student_dir, "pytorch_model.bin"))
+            _save_file_final(
+                {k: v.contiguous().cpu() for k, v in state_dict.items()},
+                os.path.join(student_dir, "model.safetensors"),
+            )
         del state_dict
     else:
         # Lightweight save: student weights only (safetensors, ~12GB)
