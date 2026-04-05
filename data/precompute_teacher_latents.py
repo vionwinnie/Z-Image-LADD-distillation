@@ -68,7 +68,8 @@ def main():
     args = parse_args()
 
     # Set device
-    device = torch.device(f"cuda:{args.rank}" if torch.cuda.is_available() else "cpu")
+    # When launched with CUDA_VISIBLE_DEVICES=$rank, only 1 GPU is visible as device 0
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     if torch.cuda.is_available():
         torch.cuda.set_device(device)
 
