@@ -149,7 +149,11 @@ grep "^training_steps:\\|^early_stopped:\\|^disc/\\|^d_loss:\\|^g_loss:\\|^peak_
 # KID from eval results JSON (inline validation saves to this file)
 EVAL_JSON="{OUTPUT_DIR}/eval_results/step_{MAX_TRAIN_STEPS:06d}.json"
 if [ -f "$EVAL_JSON" ]; then
-    python3 -c "import json; d=json.load(open('$EVAL_JSON')); print(f'[Eval step {MAX_TRAIN_STEPS}] KID = {{d[\"kid_mean\"]:.6f}} ± {{d[\"kid_std\"]:.6f}}')"
+    python3 << PYEOF
+import json
+d = json.load(open("$EVAL_JSON"))
+print("KID = %.6f +/- %.6f" % (d["kid_mean"], d["kid_std"]))
+PYEOF
 else
     echo "kid: not computed (early stopped or failed)"
 fi
