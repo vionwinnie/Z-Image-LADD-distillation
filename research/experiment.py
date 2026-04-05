@@ -43,7 +43,7 @@ WARMUP_SCHEDULE_STEPS = 50        # timestep warmup
 STUDENT_TIMESTEPS = [1.0, 0.75, 0.5, 0.25]
 
 # Noise schedule
-RENOISE_M = 1.0                   # logit-normal mean
+RENOISE_M = 0.0                   # logit-normal mean
 RENOISE_S = 1.0                   # logit-normal std
 
 # Discriminator architecture
