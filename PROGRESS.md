@@ -216,15 +216,46 @@ Running 10 prompts x 2000 steps at 512px with aggressive settings:
 - Each prompt seen ~200 times
 
 **Goal**: Determine if the student can produce recognizable images when given
-maximum learning pressure on a tiny dataset. If yes, the training signal works
-and we just need more compute. If no, there's a fundamental issue.
+maximum learning pressure on a tiny dataset.
+
+### Overfit Test 1: Aggressive LR (FAILED)
+
+- student_lr=1e-4, disc_lr=1e-3, gi=1, 10 prompts, 2000 steps, 512px
+- Each prompt seen ~200 times
+- **Result: pure noise.** The 20x higher LR caused divergence.
+- W&B: `overfit-10prompts-512px-lr1e-4-gi1`
+
+**Lesson learned**: High LR + GAN = unstable. The discriminator at 1e-3 likely
+overwhelmed the student, or the student weights diverged from aggressive updates.
+This is consistent with our sweep finding that lower LRs are better.
+
+### Overfit Test 2: Winning LR (running)
+
+- student_lr=5e-6, disc_lr=5e-5, gi=1, 10 prompts, 2000 steps, 512px
+- Same 200 repetitions per prompt, but with proven stable LR
+- **Goal**: Can the student produce clean/sharp images at the right LR?
+  If yes → architecture works, scale up confidently.
+  If still blurry → investigate 4-step denoising setup before scaling.
+
+## Readiness Assessment for Full Training
+
+**Ready:**
+- Pipeline works end-to-end
+- Hyperparameters validated (sweep found 5.2% FID improvement)
+- FID trending down with more steps (336 → 319 → 313)
+- Text conditioning works (compositions follow prompts)
+
+**Not ready:**
+- No sharp images produced yet at any step count
+- FID improvement rate is slow (7% over 4x compute)
+- Need overfit test 2 result to confirm architecture can converge
 
 ## Next Steps
 
-- Evaluate overfit test results (visual inspection + FID)
-- If overfitting works: scale to full training set (500K prompts, precompute embeddings ~2 hours)
-- Scale to 8 GPUs with FSDP for production 20K-step run
-- Implement gradient accumulation for effective batch size > 1
+- Evaluate overfit test 2 (winning LR, 10 prompts)
+- If sharp: precompute train embeddings (500K, ~2 hours), launch 8-GPU run
+- If still blurry: investigate 4-step denoising, try more student timesteps,
+  or increase num_inference_steps to 8
 
 ## Dependencies Installed
 
