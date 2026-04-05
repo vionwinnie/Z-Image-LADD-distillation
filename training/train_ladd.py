@@ -322,11 +322,51 @@ def _launch_validation(student_model, teacher_model, discriminator_model, vae_mo
         torch.cuda.empty_cache()
 
         logger.info(f"Launching blocking validation subprocess on {eval_device}")
-        proc = subprocess.run(cmd, capture_output=True, text=True, env=env)
+        proc = subprocess.run(cmd, text=True, env=env)
         if proc.returncode != 0:
-            logger.error(f"Validation subprocess failed:\n{proc.stdout}\n{proc.stderr}")
+            logger.error(f"Validation subprocess failed (exit code {proc.returncode})")
         else:
             logger.info(f"Validation complete for step {global_step}")
+
+        # Log eval results + images to wandb from the parent process
+        # (subprocess can't resume the parent's wandb run while it's open)
+        eval_json = os.path.join(args.output_dir, "eval_results", f"step_{global_step:06d}.json")
+        if os.path.exists(eval_json):
+            import json as _json
+            with open(eval_json) as _f:
+                eval_data = _json.load(_f)
+            log_dict = {}
+            if "kid_mean" in eval_data:
+                log_dict["eval/kid_mean"] = eval_data["kid_mean"]
+                log_dict["eval/kid_std"] = eval_data["kid_std"]
+            # Log side-by-side student vs teacher images
+            student_dir = eval_data.get("student_image_dir", "")
+            teacher_dir = args.teacher_image_dir or ""
+            if student_dir and os.path.isdir(student_dir) and os.path.isdir(teacher_dir):
+                try:
+                    import wandb
+                    from PIL import Image
+                    # Load val prompts for captions
+                    val_prompts = []
+                    if args.val_data_meta and os.path.exists(args.val_data_meta):
+                        with open(args.val_data_meta) as _vf:
+                            val_prompts = [r["text"] for r in _json.load(_vf)]
+                    num_log = min(50, eval_data.get("num_images", 0))
+                    table = wandb.Table(columns=["step", "prompt", "student", "teacher"])
+                    for i in range(num_log):
+                        s_path = os.path.join(student_dir, f"{i:05d}.png")
+                        t_path = os.path.join(teacher_dir, f"{i:05d}.png")
+                        prompt = val_prompts[i][:100] if i < len(val_prompts) else ""
+                        if os.path.exists(s_path) and os.path.exists(t_path):
+                            table.add_data(
+                                global_step, prompt,
+                                wandb.Image(Image.open(s_path)),
+                                wandb.Image(Image.open(t_path)),
+                            )
+                    log_dict["eval/samples"] = table
+                except Exception as e:
+                    logger.warning(f"Failed to build wandb image table: {e}")
+            accelerator.log(log_dict, step=global_step)
 
         # Reload training models to GPU
         device = accelerator.device

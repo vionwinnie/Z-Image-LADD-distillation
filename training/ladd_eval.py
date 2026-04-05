@@ -326,45 +326,8 @@ def main():
         seed=args.seed,
     )
 
-    # Log to wandb if configured
-    if args.wandb_run_id:
-        try:
-            import wandb
-            from PIL import Image
-
-            wandb.init(
-                id=args.wandb_run_id,
-                project=args.wandb_project,
-                entity=args.wandb_entity,
-                resume="allow",
-            )
-            log_dict = {}
-            if "kid_mean" in results:
-                log_dict["eval/kid_mean"] = results["kid_mean"]
-                log_dict["eval/kid_std"] = results["kid_std"]
-
-            # Log side-by-side student vs teacher images (first N samples)
-            student_image_dir = results.get("student_image_dir")
-            if student_image_dir and os.path.isdir(args.teacher_image_dir):
-                num_log = min(8, results.get("num_images", 0))
-                table = wandb.Table(columns=["step", "prompt", "student", "teacher"])
-                for i in range(num_log):
-                    student_path = os.path.join(student_image_dir, f"{i:05d}.png")
-                    teacher_path = os.path.join(args.teacher_image_dir, f"{i:05d}.png")
-                    prompt = val_prompts[i][:100] if i < len(val_prompts) else ""
-                    if os.path.exists(student_path) and os.path.exists(teacher_path):
-                        table.add_data(
-                            args.step,
-                            prompt,
-                            wandb.Image(Image.open(student_path)),
-                            wandb.Image(Image.open(teacher_path)),
-                        )
-                log_dict["eval/samples"] = table
-
-            wandb.log(log_dict, step=args.step)
-            wandb.finish()
-        except Exception as e:
-            logger.error(f"Failed to log to wandb: {e}")
+    # NOTE: wandb logging moved to parent process (train_ladd.py) because
+    # subprocess can't resume parent's wandb run while it's still open.
 
     # Clean up validation checkpoint (lightweight, not needed after eval)
     if os.path.basename(args.checkpoint).startswith("val-checkpoint-"):
