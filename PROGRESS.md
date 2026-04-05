@@ -275,13 +275,83 @@ over more diverse data.
 - 20K optimizer steps → 10x more training
 - FSDP shards memory → no need for 8-bit Adam or precomputed embeddings
 
+## KID Hyperparameter Sweep (autoresearch/apr5, 2026-04-05)
+
+Switched from FID to KID (unbiased for small samples). All runs on single A100 80GB,
+debug split (98 prompts), bs=1, 512px. Early stopping disabled (broken at bs=1).
+Inline validation generates 1000 images for KID computation.
+
+### Calibration Runs (establishing KID baselines)
+
+| Config | Steps | KID | Notes |
+|--------|-------|-----|-------|
+| slr=1e-5 dlr=1e-4 gi=5 | 500 | 0.008502 | original baseline (was FID 336.31) |
+| slr=5e-6 dlr=5e-5 gi=3 | 500 | 0.008037 | previous best (was FID 313.19) |
+| slr=5e-6 dlr=5e-5 gi=3 | 2000 | 0.007229 | longer training helps modestly |
+
+### Noise Schedule Exploration
+
+| RENOISE_M | RENOISE_S | KID | Status |
+|-----------|-----------|-----|--------|
+| 1.0 (default) | 1.0 | 0.008037 | baseline |
+| 0.0 | 1.0 | 0.005505 | better — lower noise bias helps |
+| **0.5** | 1.0 | **0.004605** | **best M** |
+| -0.5 | 1.0 | 0.005084 | worse, disc_acc_fake=0 |
+| 0.5 | 0.5 | 0.005644 | tighter spread worse |
+| 0.5 | 1.5 | 0.005590 | wider spread worse |
+
+**Finding**: M=0.5 (sigmoid ≈ 0.62, moderate noise) is optimal. The default M=1.0
+was too conservative (high noise makes real/fake hard to distinguish). S=1.0 is
+the sweet spot — neither tighter nor wider spread helped.
+
+### GEN_UPDATE_INTERVAL Exploration
+
+| GI | KID | Status |
+|----|-----|--------|
+| 2 | 0.011020 | much worse (too frequent gen updates) |
+| 3 | 0.008037 | previous best |
+| 4 | 0.002409 | good |
+| 6 | 0.002015 | better |
+| **8** | **0.000869** | **best — 89% better than original baseline** |
+| 10 | 0.012895 | too few gen steps, disc too powerful |
+
+**Finding**: GI=8 is a major win. The discriminator needs many more steps per gen
+update than we thought. GI=3 was far from optimal. The sweet spot is 8 — at 10
+the discriminator becomes too powerful and overwhelms the student.
+
+### Simplification Wins
+
+- `LR_WARMUP_STEPS = 0` (was 50): removing warmup had no negative effect
+- `WARMUP_SCHEDULE_STEPS = 0` (was 50): removing timestep warmup also fine
+
+### Current Best Config (KID = 0.000869)
+
+```python
+STUDENT_LR = 5e-6
+DISC_LR = 5e-5
+GEN_UPDATE_INTERVAL = 8
+RENOISE_M = 0.5
+RENOISE_S = 1.0
+LR_WARMUP_STEPS = 0
+WARMUP_SCHEDULE_STEPS = 0
+DISC_HIDDEN_DIM = 256
+DISC_LAYER_INDICES = [5, 10, 15, 20, 25, 29]
+STUDENT_TIMESTEPS = [1.0, 0.75, 0.5, 0.25]
+```
+
+### Still Unexplored
+- Discriminator architecture: DISC_HIDDEN_DIM (128, 512), DISC_LAYER_INDICES
+- Whether GI=8 shifts optimal LRs or noise schedule
+- Interaction effects (e.g. re-tuning M with GI=8)
+
 ## Next Steps
 
-1. Update `train_ladd.sh` with validated hyperparameters
-2. Precompute train embeddings if needed (not needed on cluster — text encoder fits)
-3. Launch 8-GPU production run: `make train-cluster`
-4. Monitor W&B for FID, disc metrics, and visual samples
-5. Expected: ~30 hours, FID should reach <100 by 10K steps
+1. Continue autoresearch sweep: disc architecture, LR re-tuning with new GI
+2. Validate best config at 2000 steps
+3. Update `train_ladd.sh` with validated hyperparameters
+4. Precompute train embeddings if needed (not needed on cluster — text encoder fits)
+5. Launch 8-GPU production run: `make train-cluster`
+6. Monitor W&B for KID, disc metrics, and visual samples
 
 ## Dependencies Installed
 
