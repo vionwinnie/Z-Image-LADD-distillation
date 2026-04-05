@@ -976,17 +976,28 @@ def main():
 
     # Final save
     accelerator.wait_for_everyone()
-    if accelerator.is_main_process and not args.skip_save:
+    if accelerator.is_main_process:
         save_path = os.path.join(args.output_dir, f"checkpoint-{global_step}")
-        accelerator.save_state(save_path)
-        unwrapped_student = accelerator.unwrap_model(student)
-        torch.save(
-            unwrapped_student.state_dict(),
-            os.path.join(save_path, "student_transformer", "pytorch_model.bin"),
-        )
-        logger.info(f"Training complete. Final checkpoint at step {global_step}")
-    elif args.skip_save:
-        logger.info(f"Training complete at step {global_step}. Checkpoint saving skipped (--skip_save).")
+        if not args.skip_save:
+            # Full save: accelerator state + student weights
+            accelerator.save_state(save_path)
+            unwrapped_student = accelerator.unwrap_model(student)
+            torch.save(
+                unwrapped_student.state_dict(),
+                os.path.join(save_path, "student_transformer", "pytorch_model.bin"),
+            )
+        else:
+            # Lightweight save: student weights only (safetensors, ~12GB)
+            # Skips optimizer states (~24GB+) and accelerator state
+            from safetensors.torch import save_file
+            student_dir = os.path.join(save_path, "student_transformer")
+            os.makedirs(student_dir, exist_ok=True)
+            unwrapped_student = accelerator.unwrap_model(student)
+            save_file(
+                {k: v.contiguous().cpu() for k, v in unwrapped_student.state_dict().items()},
+                os.path.join(student_dir, "model.safetensors"),
+            )
+        logger.info(f"Training complete. Checkpoint at {save_path}")
 
     accelerator.end_training()
 

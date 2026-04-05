@@ -2,8 +2,7 @@
 """LADD experiment runner — the ONLY file the research agent modifies.
 
 Hyperparameters are constants at the top. This script generates a bash script
-that runs train_ladd.py, extracts the checkpoint, and evaluates — then execs it.
-The Python process is fully replaced, so no GPU memory is wasted.
+that trains, then evaluates — then execs it so no Python parent holds GPU memory.
 
 Usage:
     python research/experiment.py
@@ -11,7 +10,6 @@ Usage:
 
 import os
 import shutil
-import sys
 import tempfile
 
 # ---------------------------------------------------------------------------
@@ -21,6 +19,7 @@ import tempfile
 # Model & data (fixed for comparability — do not change)
 MODEL_PATH = "models/Z-Image"
 TRAIN_DATA = "data/debug/metadata.json"
+EMBEDDINGS_DIR = "data/debug/embeddings"
 IMAGE_SIZE = 512
 SEED = 42
 
@@ -57,37 +56,39 @@ TEXT_DROP_RATIO = 0.1
 
 # === TUNABLE HYPERPARAMETERS END ===
 
-# Infrastructure (fixed)
+# Infrastructure (fixed — do not change)
 OUTPUT_DIR = "research/output"
-CHECKPOINT_DIR = "research/checkpoint"
 
 
 def main():
     project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
     # Clean previous output
-    for d in [os.path.join(project_root, OUTPUT_DIR),
-              os.path.join(project_root, CHECKPOINT_DIR)]:
-        if os.path.exists(d):
-            shutil.rmtree(d)
+    out_path = os.path.join(project_root, OUTPUT_DIR)
+    if os.path.exists(out_path):
+        shutil.rmtree(out_path)
 
     timesteps_str = " ".join(str(t) for t in STUDENT_TIMESTEPS)
     disc_layers_str = " ".join(str(l) for l in DISC_LAYER_INDICES)
     wandb_name = f"exp-lr{STUDENT_LR}-dlr{DISC_LR}-gi{GEN_UPDATE_INTERVAL}"
 
+    # The checkpoint lands at research/output/checkpoint-{MAX_TRAIN_STEPS}/student_transformer/
+    checkpoint_dir = f"{OUTPUT_DIR}/checkpoint-{MAX_TRAIN_STEPS}"
+
     script = f"""#!/bin/bash
 set -e
 cd {project_root}
+export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 
 echo "============================================================"
-echo "  STEP 1: Training"
+echo "  STEP 1: Training ({MAX_TRAIN_STEPS} steps, {IMAGE_SIZE}px)"
 echo "============================================================"
 
-accelerate launch --num_processes=1 --use_deepspeed \\
-    --deepspeed_config_file=training/ds_student_config.json \\
+accelerate launch --num_processes=1 \\
     training/train_ladd.py \\
     --pretrained_model_name_or_path={MODEL_PATH} \\
     --train_data_meta={TRAIN_DATA} \\
+    --embeddings_dir={EMBEDDINGS_DIR} \\
     --output_dir={OUTPUT_DIR} \\
     --train_batch_size={TRAIN_BATCH_SIZE} \\
     --gradient_accumulation_steps={GRADIENT_ACCUMULATION_STEPS} \\
@@ -100,6 +101,7 @@ accelerate launch --num_processes=1 --use_deepspeed \\
     --gradient_checkpointing \\
     --allow_tf32 \\
     --cpu_offload_optimizer \\
+    --skip_save \\
     --seed={SEED} \\
     --checkpointing_steps={MAX_TRAIN_STEPS} \\
     --validation_steps=999999 \\
@@ -121,32 +123,10 @@ accelerate launch --num_processes=1 --use_deepspeed \\
 
 echo ""
 echo "============================================================"
-echo "  STEP 2: Extracting checkpoint"
+echo "  STEP 2: Evaluating"
 echo "============================================================"
 
-python3 -c "
-import os, torch
-from safetensors.torch import save_file
-dirs = sorted([d for d in os.listdir('{OUTPUT_DIR}') if d.startswith('checkpoint-')],
-    key=lambda x: int(x.split('-')[1]))
-ds = os.path.join('{OUTPUT_DIR}', dirs[-1], 'pytorch_model', 'mp_rank_00_model_states.pt')
-sd = torch.load(ds, map_location='cpu', weights_only=False)['module']
-os.makedirs('{CHECKPOINT_DIR}/student_transformer', exist_ok=True)
-save_file({{k: v.contiguous() for k, v in sd.items()}},
-    '{CHECKPOINT_DIR}/student_transformer/model.safetensors')
-print(f'Extracted {{len(sd)}} keys')
-"
-
-# Clean up large DeepSpeed output
-rm -rf {OUTPUT_DIR}
-echo "Cleaned up {OUTPUT_DIR}"
-
-echo ""
-echo "============================================================"
-echo "  STEP 3: Evaluating"
-echo "============================================================"
-
-python3 research/evaluate.py
+python3 research/evaluate.py --checkpoint {checkpoint_dir}
 
 echo ""
 echo "Experiment complete."
@@ -157,8 +137,6 @@ echo "Experiment complete."
     with os.fdopen(fd, "w") as f:
         f.write(script)
     os.chmod(script_path, 0o755)
-
-    # exec replaces this process — no forked Python holding GPU memory
     os.execv("/bin/bash", ["/bin/bash", script_path])
 
 

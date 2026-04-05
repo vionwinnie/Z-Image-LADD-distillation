@@ -229,28 +229,33 @@ def compute_clip_score(
     device: str = "cuda",
 ) -> float:
     """Compute mean CLIP score between generated images and their prompts."""
-    from torchmetrics.multimodal.clip_score import CLIPScore
-    from torchvision import transforms
+    from transformers import CLIPProcessor, CLIPModel
     from PIL import Image
 
-    clip_metric = CLIPScore(model_name_or_path="openai/clip-vit-base-patch32").to(device)
+    model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32").to(device)
+    processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
+    model.eval()
 
-    transform = transforms.Compose([
-        transforms.Resize((224, 224)),
-        transforms.ToTensor(),
-    ])
-
-    batch_size = 32
+    scores = []
+    batch_size = 16
     for start in range(0, len(image_paths), batch_size):
-        batch_paths = image_paths[start : start + batch_size]
-        batch_prompts = prompts[start : start + batch_size]
-        imgs = torch.stack([transform(Image.open(p).convert("RGB")) for p in batch_paths])
-        clip_metric.update(imgs.to(device), batch_prompts)
+        batch_paths = image_paths[start:start + batch_size]
+        batch_prompts = prompts[start:start + batch_size]
+        images = [Image.open(p).convert("RGB") for p in batch_paths]
 
-    score = clip_metric.compute().item()
-    del clip_metric
+        inputs = processor(text=batch_prompts, images=images, return_tensors="pt",
+                           padding=True, truncation=True).to(device)
+        with torch.no_grad():
+            outputs = model(**inputs)
+        # Cosine similarity between image and text embeddings, scaled to 0-100
+        img_emb = outputs.image_embeds / outputs.image_embeds.norm(dim=-1, keepdim=True)
+        txt_emb = outputs.text_embeds / outputs.text_embeds.norm(dim=-1, keepdim=True)
+        sim = (img_emb * txt_emb).sum(dim=-1) * 100.0
+        scores.extend(sim.cpu().tolist())
+
+    del model, processor
     torch.cuda.empty_cache()
-    return score
+    return sum(scores) / len(scores)
 
 
 def run_eval(

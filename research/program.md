@@ -36,18 +36,21 @@ Run this loop forever until interrupted by the human:
    - `cat research/experiment.py` (current config)
 
 2. PROPOSE a change:
-   - Edit research/experiment.py with ONE hypothesis
+   - Edit research/experiment.py with ONE hypothesis (tunable section only)
    - Write a clear commit message explaining what and why
    - `git add research/experiment.py && git commit -m "<description>"`
 
 3. RUN the experiment:
    - `python research/experiment.py 2>&1 | tee research/run.log`
+   - This trains for MAX_TRAIN_STEPS, saves student weights (safetensors),
+     then runs evaluate.py automatically
    - If it crashes, read the last 50 lines, attempt a fix, re-run ONCE
    - If it crashes again, log as "crash" and move on
 
-4. EVALUATE:
-   - `python research/evaluate.py --checkpoint research/checkpoint 2>&1 | tee research/eval.log`
-   - Extract: fid, clip_score, disc_accuracy_real, disc_accuracy_fake, logit_gap
+4. PARSE results:
+   - Extract the metrics block from the output (between --- markers):
+     fid, clip_score
+   - Also check wandb for disc_accuracy_real, disc_accuracy_fake, logit_gap
 
 5. LOG results:
    - Append a row to research/results.tsv
@@ -105,11 +108,20 @@ An experiment is **automatically discarded** regardless of FID if:
 - Simpler is better: if removing a feature gives equal FID, keep the simpler version.
 - The first experiment should always be the BASELINE (default hyperparameters).
 
+## Infrastructure Notes
+
+- Training uses **8-bit Adam** (`--cpu_offload_optimizer`) to fit on a single A100 80GB
+- **Precomputed embeddings** (`--embeddings_dir`) skip the text encoder at training time
+- `--skip_save` saves only student weights as safetensors (~12GB), not full optimizer state
+- Checkpoint lands at `research/output/checkpoint-{MAX_TRAIN_STEPS}/student_transformer/`
+- `experiment.py` uses `os.execv` to replace the Python process with bash, avoiding
+  GPU memory leaks from the parent process
+
 ## Time Budget
 
 Each experiment runs for a fixed number of training steps defined by
 `MAX_TRAIN_STEPS` in `experiment.py`. The default is 500 steps, which takes
-approximately 25 minutes on a single A100 80GB with DeepSpeed ZeRO-2.
+approximately 10 minutes training + 5 minutes evaluation on a single A100 80GB.
 
 Do not change `MAX_TRAIN_STEPS` unless explicitly told to by the human.
 Comparable experiments require identical compute budgets.
