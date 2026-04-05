@@ -115,6 +115,10 @@ def parse_args():
     parser.add_argument("--embeddings_dir", type=str, default=None,
                         help="Path to precomputed embeddings (from precompute_embeddings.py). "
                              "Skips text encoder loading to save ~3GB GPU memory.")
+    parser.add_argument("--teacher_latents_dir", type=str, default=None,
+                        help="Path to precomputed teacher latents (.pt files). "
+                             "Generated offline with CFG=5 via data/precompute_teacher_latents.py. "
+                             "Required for correct LADD training.")
     parser.add_argument("--max_sequence_length", type=int, default=512,
                         help="Maximum token length for text encoder.")
 
@@ -322,11 +326,51 @@ def _launch_validation(student_model, teacher_model, discriminator_model, vae_mo
         torch.cuda.empty_cache()
 
         logger.info(f"Launching blocking validation subprocess on {eval_device}")
-        proc = subprocess.run(cmd, capture_output=True, text=True, env=env)
+        proc = subprocess.run(cmd, text=True, env=env)
         if proc.returncode != 0:
-            logger.error(f"Validation subprocess failed:\n{proc.stdout}\n{proc.stderr}")
+            logger.error(f"Validation subprocess failed (exit code {proc.returncode})")
         else:
             logger.info(f"Validation complete for step {global_step}")
+
+        # Log eval results + images to wandb from the parent process
+        # (subprocess can't resume the parent's wandb run while it's open)
+        eval_json = os.path.join(args.output_dir, "eval_results", f"step_{global_step:06d}.json")
+        if os.path.exists(eval_json):
+            import json as _json
+            with open(eval_json) as _f:
+                eval_data = _json.load(_f)
+            log_dict = {}
+            if "kid_mean" in eval_data:
+                log_dict["eval/kid_mean"] = eval_data["kid_mean"]
+                log_dict["eval/kid_std"] = eval_data["kid_std"]
+            # Log side-by-side student vs teacher images
+            student_dir = eval_data.get("student_image_dir", "")
+            teacher_dir = args.teacher_image_dir or ""
+            if student_dir and os.path.isdir(student_dir) and os.path.isdir(teacher_dir):
+                try:
+                    import wandb
+                    from PIL import Image
+                    # Load val prompts for captions
+                    val_prompts = []
+                    if args.val_data_meta and os.path.exists(args.val_data_meta):
+                        with open(args.val_data_meta) as _vf:
+                            val_prompts = [r["text"] for r in _json.load(_vf)]
+                    num_log = min(50, eval_data.get("num_images", 0))
+                    table = wandb.Table(columns=["step", "prompt", "student", "teacher"])
+                    for i in range(num_log):
+                        s_path = os.path.join(student_dir, f"{i:05d}.png")
+                        t_path = os.path.join(teacher_dir, f"{i:05d}.png")
+                        prompt = val_prompts[i][:100] if i < len(val_prompts) else ""
+                        if os.path.exists(s_path) and os.path.exists(t_path):
+                            table.add_data(
+                                global_step, prompt,
+                                wandb.Image(Image.open(s_path)),
+                                wandb.Image(Image.open(t_path)),
+                            )
+                    log_dict["eval/samples"] = table
+                except Exception as e:
+                    logger.warning(f"Failed to build wandb image table: {e}")
+            accelerator.log(log_dict, step=global_step)
 
         # Reload training models to GPU
         device = accelerator.device
@@ -544,12 +588,15 @@ def main():
 
     # Dataset and dataloader
     train_dataset = TextDataset(args.train_data_meta, text_drop_ratio=args.text_drop_ratio,
-                                embeddings_dir=args.embeddings_dir)
+                                embeddings_dir=args.embeddings_dir,
+                                teacher_latents_dir=args.teacher_latents_dir)
 
     def collate_fn(examples):
         batch = {"text": [ex["text"] for ex in examples]}
         if "embedding" in examples[0]:
             batch["embeddings"] = [ex["embedding"] for ex in examples]
+        if "teacher_latent" in examples[0]:
+            batch["teacher_latents"] = torch.stack([ex["teacher_latent"] for ex in examples])
         return batch
 
     batch_sampler_gen = torch.Generator().manual_seed(args.seed if args.seed else 0)
@@ -715,24 +762,27 @@ def main():
                     generator=torch_rng,
                 )  # (B,) values in {1.0, 0.75, 0.5, 0.25}
 
-                # 3. Generate noise and compute noisy input
+                # 3. Create student input from teacher latent + noise
                 latent_shape = (bsz, in_channels, height_latent, width_latent)
                 noise = torch.randn(
                     latent_shape, device=accelerator.device,
                     generator=torch_rng, dtype=weight_dtype,
                 )
-                # For flow matching: x_t at student_t
-                # When student_t=1.0, x_t = noise (pure noise)
-                # x0 is unknown (we only have text), so student starts from noise
-                # The student predicts x0 from noisy input
 
-                # Create the noisy input: x_t = (1 - sigma) * x0 + sigma * noise
-                # Since we don't have x0, we start from pure noise and let student denoise
-                # student_t serves as the timestep for the transformer
-                # The student input IS the noise (the student generates from scratch)
-                student_input_list = list(noise.unsqueeze(2).unbind(dim=0))  # list of (C, 1, H, W)
+                # Load precomputed teacher latent (clean x_0, generated with CFG)
+                if "teacher_latents" in batch:
+                    teacher_x0 = batch["teacher_latents"].to(accelerator.device, dtype=weight_dtype)
+                else:
+                    teacher_x0 = torch.randn_like(noise)
 
-                # 4. Student forward -> denoised prediction
+                # Student input at correct noise level:
+                # x_t = (1 - t) * teacher_x0 + t * noise
+                # At t=1.0: pure noise. At t=0.25: mostly teacher_x0.
+                t_bc = student_t.view(-1, 1, 1, 1)
+                x_t = ((1.0 - t_bc) * teacher_x0 + t_bc * noise).to(weight_dtype)
+                student_input_list = list(x_t.unsqueeze(2).unbind(dim=0))
+
+                # 4. Student forward -> velocity -> denoised latent
                 is_gen_step = (global_step % args.gen_update_interval == 0)
 
                 if is_gen_step:
@@ -744,8 +794,7 @@ def main():
                         prompt_embeds,
                         return_hidden_states=False,
                     )
-                    # student_out is list of (C, 1, H, W) tensors
-                    student_pred = torch.stack(student_out, dim=0).squeeze(2)  # (B, C, H, W)
+                    student_velocity = torch.stack(student_out, dim=0).squeeze(2)
                 else:
                     with torch.no_grad():
                         student_out, _ = student(
@@ -754,23 +803,25 @@ def main():
                             prompt_embeds,
                             return_hidden_states=False,
                         )
-                        student_pred = torch.stack(student_out, dim=0).squeeze(2).detach()
+                        student_velocity = torch.stack(student_out, dim=0).squeeze(2).detach()
 
-                # 5. Re-noise student output for teacher discrimination
+                # Convert velocity to denoised latent: x̂_0 = x_t - t * v
+                student_pred = x_t - t_bc * student_velocity
+
+                # 5. Re-noise both sides for teacher discrimination
                 t_hat = logit_normal_sample(
                     bsz, m=args.renoise_m, s=args.renoise_s,
                     device=accelerator.device, generator=torch_rng,
                 )  # (B,) in [0.001, 0.999]
 
+                # Fake path: re-noise student's denoised prediction
                 renoise = torch.randn_like(student_pred)
                 student_renoised = add_noise(student_pred.detach().float(), renoise.float(), t_hat.float())
                 student_renoised = student_renoised.to(weight_dtype)
 
-                # Also create "real" noisy input at the same t_hat from noise (teacher sees noise as "real data")
-                # In LADD, "real" = teacher sees fresh noise at t_hat (consistent distribution)
+                # Real path: re-noise teacher's clean latent
                 real_noise = torch.randn_like(student_pred)
-                real_noise_2 = torch.randn_like(student_pred)
-                real_noisy = add_noise(real_noise.float(), real_noise_2.float(), t_hat.float())
+                real_noisy = add_noise(teacher_x0.float(), real_noise.float(), t_hat.float())
                 real_noisy = real_noisy.to(weight_dtype)
 
                 # 6. Teacher forward on student-renoised (fake) and real noisy input
@@ -833,13 +884,14 @@ def main():
                 # ---- Student (generator) update (every gen_update_interval steps) ----
                 _student_grad_norm = 0.0
                 if is_gen_step:
-                    # Recompute fake logits with student grad path.
+                    # Recompute x̂_0 with gradient path (student_velocity has grad).
                     # The teacher forward runs WITHOUT torch.no_grad() so that
                     # gradients flow through the teacher's operations back to
                     # the student (the teacher's weights are frozen via
                     # requires_grad_(False), but the computation graph is kept).
+                    student_pred_grad = x_t - t_bc * student_velocity  # x̂_0 with grad
                     student_renoised_grad = add_noise(
-                        student_pred.float(), renoise.float(), t_hat.float()
+                        student_pred_grad.float(), renoise.float(), t_hat.float()
                     ).to(weight_dtype)
                     fake_input_grad = list(student_renoised_grad.unsqueeze(2).unbind(dim=0))
 
