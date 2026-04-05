@@ -35,11 +35,11 @@ STUDENT_LR = 5e-6
 DISC_LR = 5e-5
 
 # LR schedule
-LR_WARMUP_STEPS = 50
+LR_WARMUP_STEPS = 0
 
 # LADD dynamics
 GEN_UPDATE_INTERVAL = 8           # D steps per G step
-WARMUP_SCHEDULE_STEPS = 50        # timestep warmup
+WARMUP_SCHEDULE_STEPS = 0         # timestep warmup
 STUDENT_TIMESTEPS = [1.0, 0.75, 0.5, 0.25]
 
 # Noise schedule
