@@ -450,14 +450,42 @@ all used the same broken setup, but absolute quality was severely limited.
 The best hyperparameters from the sweep (GI=8, M=0.5, S=1.0, slr=5e-6,
 dlr=5e-5) are being re-validated with the corrected pipeline.
 
+### First Corrected Run (v2, 500 steps)
+
+Config: slr=5e-6, dlr=5e-5, GI=8, M=0.5, S=1.0, debug split (98 prompts),
+512px, single A100 80GB, precomputed teacher latents (CFG=5, 50 steps).
+
+- W&B training: https://wandb.ai/yeun-yeungs/ladd/runs/au7vsbzy
+- W&B eval: https://wandb.ai/yeun-yeungs/ladd/runs/idj1oc8i
+- 500 steps completed, peak VRAM 68.4 GB
+- Final d_loss=0.0, g_loss=1.75
+
+**Observation:** d_loss collapses to 0 — discriminator perfectly classifies
+real vs fake. With proper teacher latents as "real", the adversarial signal
+is much stronger than before (noise-vs-noise was trivial). The hyperparameters
+tuned against the broken pipeline likely need re-tuning:
+- GI=8 may be too many disc steps now (disc too strong)
+- disc_lr=5e-5 may need to be lower
+- student_lr=5e-6 may need to be higher to keep up
+
+### Precomputed Data
+
+| Split | Type | Count | Size | Path | Status |
+|-------|------|-------|------|------|--------|
+| Debug | Teacher latents (.pt) | 98 | 25.8 MB | data/debug/teacher_latents/ | Done |
+| Debug | Embeddings | 98 | 106 MB | data/debug/embeddings/ | Done |
+| Val | Teacher images (CFG=5) | 130/1000 | partial | data/val/teacher_images/ | Interrupted |
+| Val | Teacher latents | 0 | - | data/val/teacher_latents/ | Not started |
+
 ## Next Steps
 
-1. Continue autoresearch sweep: disc architecture, LR re-tuning with new GI
-2. Validate best config at 2000 steps
-3. Update `train_ladd.sh` with validated hyperparameters
-4. Precompute train embeddings if needed (not needed on cluster — text encoder fits)
-5. Launch 8-GPU production run: `make train-cluster`
-6. Monitor W&B for KID, disc metrics, and visual samples
+1. Re-tune hyperparameters with corrected pipeline (disc LR, GI, student LR)
+2. Complete val teacher image regeneration (for KID eval)
+3. Precompute val teacher latents (for val-time training metrics)
+4. Precompute train split teacher latents (~2.5 GB for 10K prompts)
+5. Launch longer run (2000+ steps) once hyperparameters stabilized
+6. Update `train_ladd.sh` with validated hyperparameters
+7. Launch 8-GPU production run
 
 ## Dependencies Installed
 
