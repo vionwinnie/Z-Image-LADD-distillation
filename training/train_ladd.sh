@@ -32,11 +32,11 @@ accelerate launch \
     --pretrained_model_name_or_path="${MODEL_PATH}" \
     --train_data_meta="${DATA_META}" \
     --output_dir="${OUTPUT_DIR}" \
-    --train_batch_size=1 \
+    --train_batch_size=4 \
     --gradient_accumulation_steps=4 \
     --max_train_steps=20000 \
-    --learning_rate=1e-5 \
-    --learning_rate_disc=1e-4 \
+    --learning_rate=5e-6 \
+    --learning_rate_disc=5e-5 \
     --lr_scheduler=constant_with_warmup \
     --lr_warmup_steps=500 \
     --mixed_precision=bf16 \
@@ -44,12 +44,12 @@ accelerate launch \
     --allow_tf32 \
     --seed=42 \
     --dataloader_num_workers=4 \
-    --checkpointing_steps=500 \
+    --checkpointing_steps=1000 \
     --checkpoints_total_limit=3 \
-    --validation_steps=1000 \
+    --validation_steps=2000 \
     --num_inference_steps=4 \
     --image_sample_size=512 \
-    --gen_update_interval=5 \
+    --gen_update_interval=3 \
     --disc_layer_indices 5 10 15 20 25 29 \
     --disc_hidden_dim=256 \
     --disc_cond_dim=256 \
