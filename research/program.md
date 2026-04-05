@@ -45,7 +45,7 @@ KID computed against 416 teacher images (CFG=5, corrected scheduler).
 | exp1 | dlr=1e-5 (was 5e-5) | 0.0624 | -2% |
 | **exp2** | **GI=3 (was 8)** | **0.0589** | **-7.5%** |
 | exp3 | slr=2e-5 (was 5e-6) | 0.0792 | +24% (worse) |
-| exp4 | GI=3 + dlr=1e-5 | running | combination |
+| exp4 | GI=3 + dlr=1e-5 | 0.0616 | -3.3% (dlr hurt with GI=3) |
 
 **Findings:**
 - GI=3 is significantly better than GI=8 with the corrected pipeline
