@@ -22,6 +22,20 @@ Welcome to the official repository for the Z-Image（造相）project!
 
 
 
+## 📂 LADD Distillation Docs
+
+See [`INSTRUCTION.md`](INSTRUCTION.md) for the project spec and [`DEBUG_CHECKLIST.md`](DEBUG_CHECKLIST.md) for smoke test verification. Additional documentation lives in [`docs/`](docs/):
+
+- [Analysis](docs/ANALYSIS.md) — Codebase analysis & LADD design decisions
+- [Execution Plan](docs/EXECUTION_PLAN.md) — Implementation roadmap
+- [Training Guide](docs/TRAINING_GUIDE.md) — LADD math, architecture & debugging
+- [FSDP Training Plan](docs/FSDP_TRAINING_PLAN.md) — Multi-GPU distributed training
+- [Setup](docs/SETUP.md) — Cloud environment setup (RunPod)
+- [Validation Plan](docs/VALIDATION_PLAN.md) — KID evaluation methodology
+- [Progress](docs/PROGRESS.md) — Training progress log
+
+---
+
 ## ✨ Z-Image
 
 Z-Image is a powerful and highly efficient image generation model family with **6B** parameters. Currently there are four variants:
