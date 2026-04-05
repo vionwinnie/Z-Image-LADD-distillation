@@ -1,2 +1,3 @@
 commit	fid	clip_score	disc_acc_real	disc_acc_fake	logit_gap	status	description
 fbdfbe2	336.31	-1.0	-1.0	-1.0	-1.0	keep	baseline: lr=1e-5, dlr=1e-4, gi=5, 500 steps 512px
+1ab297b	332.52	-1.0	-1.0	-1.0	-1.0	keep	student_lr=5e-6 (0.5x baseline), FID improved
