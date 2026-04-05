@@ -5,3 +5,4 @@ fbdfbe2	336.31	-1.0	-1.0	-1.0	-1.0	keep	baseline: lr=1e-5, dlr=1e-4, gi=5, 500 s
 ffb1675	330.67	-1.0	-1.0	-1.0	-1.0	keep	student_lr=5e-6 disc_lr=5e-5, new best FID
 $(git rev-parse --short HEAD)	332.59	-1.0	-1.0	-1.0	-1.0	discard	student_lr=5e-6 disc_lr=2e-4, worse than 5e-5
 4392e13	364.11	-1.0	-1.0	-1.0	-1.0	discard	gen_update_interval=1, much worse
+26ff93d	318.55	-1.0	-1.0	-1.0	-1.0	keep	gen_update_interval=3, new best FID
