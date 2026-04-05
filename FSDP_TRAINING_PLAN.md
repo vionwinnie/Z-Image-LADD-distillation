@@ -266,25 +266,71 @@ Changes from current:
 
 ## Verification
 
-1. **Precompute smoke test** (1 GPU, 10 images, batch_size=4): verify latent shapes and files saved correctly
-2. **Training smoke test** (2 GPUs, 10 steps): `NUM_GPUS=2` -- verify no OOM, losses are finite, checkpoint saves
-3. **Check FSDP wrapping**: `print(student)` after prepare -- should show FSDP wrapper around each ZImageTransformerBlock
-4. **Memory check**: `logs["gpu/memory_allocated_gb"]` should be ~24-26 GB per GPU
-5. **Gradient flow**: `grad_norm/student` should be non-zero on gen steps
-6. **Teacher x0 quality**: Decode a few precomputed latents through VAE, visually inspect
+### Step 1: Single-GPU smoke tests (done locally)
+
+These validate basic correctness on any machine with 1 GPU:
+
+1. **Create prompt subsample**: `python scripts/subsample_prompts.py --n 10000`
+2. **Precompute smoke test** (1 GPU, 4 images, batch_size=2):
+   ```bash
+   python data/precompute_teacher_latents.py \
+       --model_dir models/Z-Image \
+       --data_meta /tmp/smoke_meta.json \
+       --output_dir /tmp/smoke_latents \
+       --batch_size 2
+   ```
+   Verify: `.pt` files saved, shape `[16, 64, 64]`, re-run to confirm resume skips existing.
+3. **Single-GPU training** (1 GPU, 256px, cpu_offload, 10 steps):
+   Confirms losses are finite, discriminator is active, forward/backward work.
+   (512px OOMs on 1 GPU — expected, confirms FSDP is needed.)
+
+### Step 2: Two-GPU FSDP verification (on multi-GPU node)
+
+**Run this before the full 8-GPU training.** This is the critical test that validates
+FSDP wrapping, sharded checkpointing, and multi-GPU gradient sync at full 512px resolution.
+
+```bash
+bash scripts/smoke_test_fsdp.sh
+```
+
+This runs `train_ladd.py` with 2-GPU FSDP for 10 steps at 512px. Checks:
+
+1. **No OOM**: 2x A100 80GB should fit student (FSDP sharded) + teacher (replicated) + disc
+2. **Losses finite**: `d_loss` and `g_loss` printed in summary should be non-NaN, non-Inf
+3. **Checkpoint saved**: verifies `checkpoint-5/student_transformer/pytorch_model.bin` exists
+   with full (non-sharded) student weights via `accelerator.get_state_dict()`
+4. **FSDP active**: look for `DistributedType.FSDP` in accelerator state log line
+5. **Memory**: `peak_vram_mb` in summary should be ~25-30 GB per GPU (not 60GB+)
+6. **Gradient flow**: `grad_norm/student` should be non-zero on gen steps (steps 0, 3, 6, 9)
+
+If this passes, the 8-GPU full run is safe to launch.
+
+### Step 3: Full run checks (during 8-GPU training)
+
+7. **Memory check**: `logs["gpu/memory_allocated_gb"]` should be ~24-26 GB per GPU
+8. **Gradient flow**: `grad_norm/student` should be non-zero on gen steps
+9. **Teacher x0 quality**: Decode a few precomputed latents through VAE, visually inspect
 
 ---
 
 ## Implementation Order
 
-**Phase 1: FSDP training changes (do first)**
-1. Create `training/fsdp_config.yaml`
-2. Fix `train_ladd.py` FSDP issues (unwrap_model, checkpointing, weight tracking)
-3. Update `training/train_ladd.sh` launch command
-4. Smoke test training (2 GPUs, 10 steps)
+**Phase 1: FSDP training changes (done)**
+1. ~~Create `training/fsdp_config.yaml`~~
+2. ~~Fix `train_ladd.py` FSDP issues (unwrap_model, checkpointing, weight tracking)~~
+3. ~~Update `training/train_ladd.sh` launch command~~
 
-**Phase 2: Precompute improvements (do after FSDP works)**
-5. Modify `data/precompute_teacher_latents.py` for batched multi-GPU
-6. Create `scripts/precompute_launch.sh`
-7. Create subsample script for ~10K stratified prompts
-8. Smoke test precompute (1 GPU, 10 images)
+**Phase 2: Precompute improvements (done)**
+4. ~~Create `data/precompute_teacher_latents.py` for batched multi-GPU~~
+5. ~~Create `scripts/precompute_launch.sh`~~
+6. ~~Create `scripts/subsample_prompts.py` for ~10K stratified prompts~~
+
+**Phase 3: Smoke tests (done locally, pending multi-GPU)**
+7. ~~Subsample created: 10K prompts~~
+8. ~~Precompute smoke test: 4 latents, shapes correct, resume works~~
+9. ~~Single-GPU training: 10 steps at 256px, losses finite~~
+10. **2-GPU FSDP smoke test**: `bash scripts/smoke_test_fsdp.sh` — **run on multi-GPU node**
+
+**Phase 4: Full run (on 8x A100 node)**
+11. `bash scripts/precompute_launch.sh` (~4h)
+12. `bash training/train_ladd.sh` (~2h)
