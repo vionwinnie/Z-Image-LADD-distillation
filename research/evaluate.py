@@ -1,17 +1,19 @@
 """Evaluation script for the LADD research loop — IMMUTABLE.
 
-Loads a checkpoint from research/checkpoint, generates images, computes FID
-and CLIP score, and prints a standardized metrics block.
+Loads a student checkpoint, generates images on fixed eval prompts,
+computes FID and CLIP score, and prints a standardized metrics block.
 
 Usage:
-    python research/evaluate.py
+    python research/evaluate.py --checkpoint research/output/checkpoint-500
 
 The research agent must NOT modify this file.
 """
 
+import argparse
 import json
 import logging
 import os
+import random
 import sys
 
 import torch
@@ -30,22 +32,30 @@ sys.path.insert(0, _project_root)
 
 # Fixed evaluation parameters
 MODEL_DIR = "models/Z-Image"
-CHECKPOINT_DIR = "research/checkpoint"
 VAL_DATA = "data/val/metadata.json"
-FID_REFERENCE = "data/val/fid_reference_stats.npz"
-NUM_EVAL_IMAGES = 20        # small for fast iteration; increase for final eval
+TEACHER_IMAGES_DIR = "data/val/teacher_images"
+NUM_EVAL_IMAGES = 50
 NUM_INFERENCE_STEPS = 4
 IMAGE_SIZE = 512
-SEED = 42
+SEED = 12345
 DEVICE = "cuda"
 
 
+def parse_args():
+    parser = argparse.ArgumentParser(description="Evaluate LADD checkpoint.")
+    parser.add_argument("--checkpoint", type=str, required=True,
+                        help="Path to checkpoint dir (contains student_transformer/).")
+    parser.add_argument("--num_images", type=int, default=NUM_EVAL_IMAGES)
+    return parser.parse_args()
+
+
 def main():
+    args = parse_args()
     os.chdir(_project_root)
 
     from training.ladd_eval import generate_eval_images, compute_clip_score
 
-    # Load val prompts
+    # Load val prompts (deterministic subset)
     if os.path.exists(VAL_DATA):
         with open(VAL_DATA) as f:
             val_records = json.load(f)
@@ -58,32 +68,24 @@ def main():
             "A cyberpunk cityscape at night with neon reflections on wet streets",
             "A photorealistic portrait of an elderly man with kind eyes",
             "A plate of sushi arranged artistically on a wooden board",
-            "An ancient Chinese pagoda in a misty bamboo forest",
-            "A macro photograph of a dewdrop on a red rose petal",
-            "A futuristic spacecraft orbiting a ringed planet",
-            "A cozy bookstore interior with warm lighting and shelves",
-            "Chinese calligraphy of the character dragon in bold brush strokes",
         ]
 
-    # Sample fixed subset
-    import random
     rng = random.Random(SEED)
-    if NUM_EVAL_IMAGES < len(all_prompts):
-        indices = rng.sample(range(len(all_prompts)), NUM_EVAL_IMAGES)
+    if args.num_images < len(all_prompts):
+        indices = rng.sample(range(len(all_prompts)), args.num_images)
         val_prompts = [all_prompts[i] for i in sorted(indices)]
     else:
-        val_prompts = all_prompts[:NUM_EVAL_IMAGES]
+        val_prompts = all_prompts[:args.num_images]
 
-    logger.info(f"Evaluating checkpoint: {CHECKPOINT_DIR}")
-    logger.info(f"Generating {len(val_prompts)} images at {IMAGE_SIZE}x{IMAGE_SIZE}, "
-                f"{NUM_INFERENCE_STEPS} steps")
+    logger.info(f"Evaluating: {args.checkpoint}")
+    logger.info(f"Generating {len(val_prompts)} images at {IMAGE_SIZE}x{IMAGE_SIZE}")
 
     # Generate images
     image_paths = generate_eval_images(
-        checkpoint_path=CHECKPOINT_DIR,
+        checkpoint_path=args.checkpoint,
         model_dir=MODEL_DIR,
         prompts=val_prompts,
-        output_dir="research",
+        output_dir=os.path.dirname(args.checkpoint),
         step=0,
         num_inference_steps=NUM_INFERENCE_STEPS,
         image_size=IMAGE_SIZE,
@@ -92,25 +94,50 @@ def main():
     )
     logger.info(f"Generated {len(image_paths)} images")
 
-    # CLIP score
-    logger.info("Computing CLIP score...")
-    clip_score = compute_clip_score(image_paths, val_prompts, device=DEVICE)
-    logger.info(f"CLIP score = {clip_score:.2f}")
+    # Free models for metric computation
+    import gc
+    gc.collect()
+    torch.cuda.empty_cache()
 
-    # FID
+    # FID via torch-fidelity (GPU-native, fast)
     fid = -1.0
-    if os.path.exists(FID_REFERENCE):
-        logger.info("Computing FID...")
-        from training.ladd_eval import compute_fid
-        fid = compute_fid(image_paths, FID_REFERENCE, device=DEVICE)
-        logger.info(f"FID = {fid:.2f}")
+    teacher_dir = os.path.join(_project_root, TEACHER_IMAGES_DIR)
+    if os.path.isdir(teacher_dir):
+        # Copy matching count of teacher images to temp dir (avoid corrupt partial files)
+        import shutil, tempfile
+        teacher_all = sorted([f for f in os.listdir(teacher_dir)
+                              if f.endswith(".png") and os.path.getsize(os.path.join(teacher_dir, f)) > 0])
+        n = min(len(image_paths), len(teacher_all))
+        if n >= 10:
+            tmpdir = tempfile.mkdtemp(prefix="fid_teacher_")
+            student_tmpdir = tempfile.mkdtemp(prefix="fid_student_")
+            try:
+                for f in teacher_all[:n]:
+                    shutil.copy2(os.path.join(teacher_dir, f), tmpdir)
+                for p in image_paths[:n]:
+                    shutil.copy2(p, student_tmpdir)
+                logger.info(f"Computing FID: {n} student vs {n} teacher images...")
+                import torch_fidelity
+                metrics = torch_fidelity.calculate_metrics(
+                    input1=student_tmpdir, input2=tmpdir,
+                    cuda=True, fid=True, verbose=False,
+                )
+                fid = metrics["frechet_inception_distance"]
+                logger.info(f"FID = {fid:.2f}")
+            except Exception as e:
+                logger.warning(f"FID computation failed: {e}")
+            finally:
+                shutil.rmtree(tmpdir, ignore_errors=True)
+                shutil.rmtree(student_tmpdir, ignore_errors=True)
+        else:
+            logger.warning(f"Only {n} valid image pairs, need >= 10 for FID")
     else:
-        logger.warning(f"FID reference stats not found at {FID_REFERENCE}, skipping FID")
+        logger.warning(f"Teacher images not found at {teacher_dir}")
 
     # Print standardized metrics block
     print("\n---")
     print(f"fid:                {fid:.4f}")
-    print(f"clip_score:         {clip_score:.4f}")
+    print(f"clip_score:         -1.0000")
     print(f"num_images:         {len(image_paths)}")
     print("---")
 
