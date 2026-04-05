@@ -6,3 +6,4 @@ ffb1675	330.67	-1.0	-1.0	-1.0	-1.0	keep	student_lr=5e-6 disc_lr=5e-5, new best F
 9157afe	332.59	-1.0	-1.0	-1.0	-1.0	discard	student_lr=5e-6 disc_lr=2e-4, worse than 5e-5
 4392e13	364.11	-1.0	-1.0	-1.0	-1.0	discard	gen_update_interval=1, much worse
 26ff93d	318.55	-1.0	-1.0	-1.0	-1.0	keep	gen_update_interval=3, new best FID
+59a2f0a	313.19	-1.0	-1.0	-1.0	-1.0	keep	2000 steps with best config, FID improving
