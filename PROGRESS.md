@@ -506,17 +506,20 @@ KID computed against 416 teacher images (CFG=5, corrected scheduler).
 | exp1 | dlr=1e-5 (was 5e-5) | 0.0624 | -2% | slightly better |
 | **exp2** | **GI=3 (was 8)** | **0.0589** | **-7.5%** | **best so far** |
 | exp3 | slr=2e-5 (was 5e-6) | 0.0792 | +24% | worse — too aggressive |
-| exp4 | GI=3 + dlr=1e-5 | pending | | combination test |
+| exp4 | GI=3 + dlr=1e-5 | running | | combination of best two |
 
-**Key finding:** GI=8 was optimal for the broken pipeline (noise-vs-noise "real").
-With proper teacher latents, GI=3 is better — the student needs more frequent
-updates to learn from the now-meaningful adversarial signal. Higher student LR
-(2e-5) hurts, likely causing instability.
+**Key findings:**
+- GI=8 was optimal for the broken pipeline (noise-vs-noise "real"). With proper
+  teacher latents, **GI=3** is better — the student needs more frequent updates
+  to learn from the now-meaningful adversarial signal.
+- Lower disc LR (1e-5) gives a small improvement (-2%).
+- Higher student LR (2e-5) hurts — too aggressive for adversarial training.
+- d_loss=0 at bs=1 is expected (hinge loss saturates), not a sign of disc dominance.
 
 ## Next Steps
 
 1. Complete exp4 (GI=3 + dlr=1e-5 combination)
-2. If exp4 improves, run longer (2000 steps) to verify scaling
+2. Run best config at 2000 steps to verify scaling
 3. Complete val teacher image regeneration (for KID eval)
 4. Precompute val + train teacher latents
 5. Update `train_ladd.sh` with validated hyperparameters

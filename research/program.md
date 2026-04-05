@@ -32,11 +32,26 @@ KID numbers are invalid. New baseline with corrected pipeline:
 | 500   | 0.0637 ± 0.0053                    | 0.0            | slr=5e-6 dlr=5e-5 GI=8 M=0.5 |
 | 2000  | 0.0702 ± 0.0058                    | 0.0            | same |
 
-**Problem:** d_loss=0 means discriminator is too strong. KID worsens with more training.
-The hyperparameters from the old broken pipeline need re-tuning. Priority: weaken the
-discriminator (lower disc_lr, increase GI, or raise student_lr).
+**Note:** d_loss=0 at bs=1 is expected — hinge loss saturates when disc is confident
+on a single sample. Not a sign of disc dominance.
 
-The baseline to beat is **KID = 0.0637** (500 steps).
+### v2 Hyperparameter Re-tuning (500 steps each)
+
+KID computed against 416 teacher images (CFG=5, corrected scheduler).
+
+| Exp | Config | KID | vs baseline |
+|-----|--------|-----|-------------|
+| baseline | slr=5e-6 dlr=5e-5 GI=8 M=0.5 | 0.0637 | — |
+| exp1 | dlr=1e-5 (was 5e-5) | 0.0624 | -2% |
+| **exp2** | **GI=3 (was 8)** | **0.0589** | **-7.5%** |
+| exp3 | slr=2e-5 (was 5e-6) | 0.0792 | +24% (worse) |
+| exp4 | GI=3 + dlr=1e-5 | running | combination |
+
+**Findings:**
+- GI=3 is significantly better than GI=8 with the corrected pipeline
+- Lower disc LR (1e-5) helps slightly
+- Higher student LR (2e-5) hurts — too aggressive
+- The baseline to beat is now **KID = 0.0589** (exp2, GI=3)
 
 ## Experimentation
 
