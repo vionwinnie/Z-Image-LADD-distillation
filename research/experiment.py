@@ -31,7 +31,7 @@ GRADIENT_ACCUMULATION_STEPS = 1
 # === TUNABLE HYPERPARAMETERS START ===
 
 # Learning rates
-STUDENT_LR = 5e-6
+STUDENT_LR = 1e-5
 DISC_LR = 5e-5
 
 # LR schedule
@@ -47,8 +47,8 @@ RENOISE_M = 0.5                   # logit-normal mean
 RENOISE_S = 1.0                   # logit-normal std
 
 # Discriminator architecture
-DISC_HIDDEN_DIM = 512
-DISC_COND_DIM = 512
+DISC_HIDDEN_DIM = 256
+DISC_COND_DIM = 256
 DISC_LAYER_INDICES = [5, 10, 15, 20, 25, 29]
 
 # Text
