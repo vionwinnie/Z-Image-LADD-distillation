@@ -142,32 +142,54 @@ def generate_teacher_images(
     return image_paths
 
 
+class _ImageDirDataset(torch.utils.data.Dataset):
+    def __init__(self, image_dir, transform):
+        self.paths = sorted([
+            os.path.join(image_dir, f) for f in os.listdir(image_dir)
+            if f.endswith(".png") and os.path.getsize(os.path.join(image_dir, f)) > 0
+        ])
+        self.transform = transform
+
+    def __len__(self):
+        return len(self.paths)
+
+    def __getitem__(self, idx):
+        try:
+            return self.transform(Image.open(self.paths[idx]).convert("RGB"))
+        except Exception:
+            # Return a black image for corrupt files
+            return torch.zeros(3, 299, 299)
+
+
 def extract_inception_stats(
-    image_paths: list[str],
+    image_dir: str,
     device: str = "cuda",
-    batch_size: int = 32,
+    batch_size: int = 64,
+    num_workers: int = 8,
 ) -> tuple[np.ndarray, np.ndarray, int]:
     """Extract Inception-v3 features and compute (mu, sigma)."""
     from torchmetrics.image.fid import FrechetInceptionDistance
     from torchvision import transforms
-
-    logger.info(f"Extracting Inception features from {len(image_paths)} images...")
-    fid = FrechetInceptionDistance(feature=2048, normalize=True).to(device)
 
     transform = transforms.Compose([
         transforms.Resize((299, 299)),
         transforms.ToTensor(),
     ])
 
-    for start in range(0, len(image_paths), batch_size):
-        batch_paths = image_paths[start : start + batch_size]
-        imgs = torch.stack([transform(Image.open(p).convert("RGB")) for p in batch_paths])
-        fid.update(imgs.to(device), real=True)
+    dataset = _ImageDirDataset(image_dir, transform)
+    logger.info(f"Extracting Inception features from {len(dataset)} images (batch={batch_size}, workers={num_workers})...")
+    fid = FrechetInceptionDistance(feature=2048, normalize=True).to(device)
 
-        if (start // batch_size) % 25 == 0:
-            logger.info(f"  Processed {start + len(batch_paths)}/{len(image_paths)}")
+    loader = torch.utils.data.DataLoader(
+        dataset, batch_size=batch_size, num_workers=num_workers,
+        pin_memory=True, persistent_workers=True,
+    )
 
-    # Extract stored statistics
+    for i, imgs in enumerate(loader):
+        fid.update(imgs.to(device, non_blocking=True), real=True)
+        if i % 25 == 0:
+            logger.info(f"  Processed {min((i + 1) * batch_size, len(dataset))}/{len(dataset)}")
+
     n = fid.real_features_num_samples.item()
     mu = (fid.real_features_sum / n).cpu().numpy()
     sigma = ((fid.real_features_cov_sum - n * torch.outer(
@@ -236,7 +258,7 @@ def main():
         )
 
     # Extract Inception stats
-    mu, sigma, n = extract_inception_stats(image_paths, device=args.device)
+    mu, sigma, n = extract_inception_stats(image_dir, device=args.device)
 
     # Save
     os.makedirs(os.path.dirname(output) or ".", exist_ok=True)
