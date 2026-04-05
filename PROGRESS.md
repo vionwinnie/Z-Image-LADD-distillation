@@ -275,13 +275,267 @@ over more diverse data.
 - 20K optimizer steps → 10x more training
 - FSDP shards memory → no need for 8-bit Adam or precomputed embeddings
 
+## KID Hyperparameter Sweep (autoresearch/apr5, 2026-04-05)
+
+Switched from FID to KID (unbiased for small samples). All runs on single A100 80GB,
+debug split (98 prompts), bs=1, 512px. Early stopping disabled (broken at bs=1).
+Inline validation generates 1000 images for KID computation.
+
+### Calibration Runs (establishing KID baselines)
+
+| Config | Steps | KID | Notes |
+|--------|-------|-----|-------|
+| slr=1e-5 dlr=1e-4 gi=5 | 500 | 0.008502 | original baseline (was FID 336.31) |
+| slr=5e-6 dlr=5e-5 gi=3 | 500 | 0.008037 | previous best (was FID 313.19) |
+| slr=5e-6 dlr=5e-5 gi=3 | 2000 | 0.007229 | longer training helps modestly |
+
+### Noise Schedule Exploration
+
+| RENOISE_M | RENOISE_S | KID | Status |
+|-----------|-----------|-----|--------|
+| 1.0 (default) | 1.0 | 0.008037 | baseline |
+| 0.0 | 1.0 | 0.005505 | better — lower noise bias helps |
+| **0.5** | 1.0 | **0.004605** | **best M** |
+| -0.5 | 1.0 | 0.005084 | worse, disc_acc_fake=0 |
+| 0.5 | 0.5 | 0.005644 | tighter spread worse |
+| 0.5 | 1.5 | 0.005590 | wider spread worse |
+
+**Finding**: M=0.5 (sigmoid ≈ 0.62, moderate noise) is optimal. The default M=1.0
+was too conservative (high noise makes real/fake hard to distinguish). S=1.0 is
+the sweet spot — neither tighter nor wider spread helped.
+
+### GEN_UPDATE_INTERVAL Exploration
+
+| GI | KID | Status |
+|----|-----|--------|
+| 2 | 0.011020 | much worse (too frequent gen updates) |
+| 3 | 0.008037 | previous best |
+| 4 | 0.002409 | good |
+| 6 | 0.002015 | better |
+| **8** | **0.000869** | **best — 89% better than original baseline** |
+| 10 | 0.012895 | too few gen steps, disc too powerful |
+
+**Finding**: GI=8 is a major win. The discriminator needs many more steps per gen
+update than we thought. GI=3 was far from optimal. The sweet spot is 8 — at 10
+the discriminator becomes too powerful and overwhelms the student.
+
+### Simplification Wins
+
+- `LR_WARMUP_STEPS = 0` (was 50): removing warmup had no negative effect
+- `WARMUP_SCHEDULE_STEPS = 0` (was 50): removing timestep warmup also fine
+
+### Current Best Config (KID = 0.000869)
+
+```python
+STUDENT_LR = 5e-6
+DISC_LR = 5e-5
+GEN_UPDATE_INTERVAL = 8
+RENOISE_M = 0.5
+RENOISE_S = 1.0
+LR_WARMUP_STEPS = 0
+WARMUP_SCHEDULE_STEPS = 0
+DISC_HIDDEN_DIM = 256
+DISC_LAYER_INDICES = [5, 10, 15, 20, 25, 29]
+STUDENT_TIMESTEPS = [1.0, 0.75, 0.5, 0.25]
+```
+
+### Still Unexplored
+- Discriminator architecture: DISC_HIDDEN_DIM (128, 512), DISC_LAYER_INDICES
+- Whether GI=8 shifts optimal LRs or noise schedule
+- Interaction effects (e.g. re-tuning M with GI=8)
+
+## Teacher Image Quality Debug (2026-04-05)
+
+Validation teacher images looked blurry. Root cause investigation:
+
+### Bug 1: Scheduler linspace off-by-one
+
+Our custom `FlowMatchEulerDiscreteScheduler.set_timesteps()` used:
+```python
+timesteps = np.linspace(sigma_max_t, sigma_min_t, num_inference_steps + 1)[:-1]
+```
+Diffusers uses:
+```python
+timesteps = np.linspace(sigma_max_t, sigma_min_t, num_inference_steps)
+```
+
+**Impact:** With 50 steps, our scheduler's smallest sigma was 0.109 (11% noise remaining).
+Diffusers reaches sigma=0.0 (fully denoised). The student was being evaluated against
+blurry teacher images that still had residual noise.
+
+**Fix:** Removed `+ 1` and `[:-1]` in `src/zimage/scheduler.py`. Verified timesteps and
+sigmas now match diffusers exactly (`torch.allclose` = True).
+
+### Bug 2: Teacher images generated without CFG
+
+`precompute_fid_reference.py` generated teacher images with `guidance_scale=0`.
+The official Z-Image usage example uses `guidance_scale=4`. The non-distilled teacher
+model requires CFG for sharp, well-composed images — without it, outputs are
+unconditional-like and lack detail.
+
+Additionally, `precompute_fid_reference.py` defaults to `--teacache_thresh=0.5`,
+which skips ~75% of transformer layer computations for speed. This may further
+degrade quality.
+
+**Impact on KID:** All KID measurements to date compared student images against
+blurry teacher references. Absolute KID values are unreliable. Relative ordering
+between experiments should still hold (same reference for all), but the baseline
+quality bar was set too low.
+
+**CFG sweep result:** CFG=5.0 selected after visual comparison on wandb.
+Teacher images regenerated with corrected scheduler + CFG=5 + TeaCache disabled.
+W&B: `debug-teacher-cfg-sweep` (run mg6h6a9f)
+
+### Bug 3: Student input is pure noise regardless of timestep
+
+The student at timestep t should receive `x_t = (1-t)*teacher_x0 + t*ε`, not
+pure noise. At t=1.0 this is pure noise (correct), but at t=0.75/0.5/0.25 the
+student needs to see partial teacher structure to learn the remaining denoising.
+
+Without this fix, the student at t=0.25 sees pure noise but is told "you're
+almost done" — it has no signal about what to reconstruct.
+
+### Bug 4: No velocity-to-latent conversion
+
+The student predicts velocity v (flow matching formulation), but the code
+used raw velocity as the denoised prediction. The correct conversion is:
+`x̂_0 = x_t - t * v`
+
+### Bug 5: "Real" discriminator samples are random noise
+
+The LADD paper (Section 3.2) says the "real" distribution for the discriminator
+should be teacher-generated images with CFG. Our code used `add_noise(noise1,
+noise2, t_hat)` — random noise mixed with random noise, providing no meaningful
+"real" signal for the discriminator.
+
+**Fix:** `add_noise(teacher_x0, noise, t_hat)` where teacher_x0 is precomputed
+offline with CFG=5, 50 steps. This requires a new precompute step:
+`data/precompute_teacher_latents.py` saves raw latents (before VAE decode)
+as .pt files (~262KB each).
+
+### Corrected Training Flow (all 5 bugs fixed)
+
+```
+OFFLINE:
+  teacher_x0 = teacher.generate(prompt, cfg=5, steps=50, output_type="latent")
+
+ONLINE per step:
+  1. x_t = (1-t) * teacher_x0 + t * ε           ← student input (Bug 3)
+  2. v = student(x_t, t, prompt)                  ← velocity prediction
+  3. x̂_0 = x_t - t * v                           ← denoised latent (Bug 4)
+  4. fake_noisy = (1-t̂) * x̂_0 + t̂ * ε₁           ← re-noise for disc
+  5. real_noisy = (1-t̂) * teacher_x0 + t̂ * ε₂     ← real path (Bug 5)
+  6. teacher(fake_noisy) → features → disc → "fake"
+  7. teacher(real_noisy) → features → disc → "real"
+```
+
+### Files Changed
+
+- `src/zimage/scheduler.py` — linspace fix (Bug 1)
+- `training/train_ladd.py` — student input, velocity conversion, real path (Bugs 3-5)
+- `training/ladd_utils.py` — TextDataset loads teacher latents
+- `data/precompute_teacher_latents.py` (new) — generates teacher latents with CFG
+- `data/regenerate_teacher_images.py` (new) — regenerates teacher images with CFG
+- `scripts/smoke_test_train.py` — scheduler + CFG checks (Steps 11-12)
+- `scripts/smoke_test_proposed.py` (new) — 9 tests validating corrected flow
+
+### Impact on Previous Results
+
+All KID measurements were against blurry teacher references (broken scheduler +
+no CFG + TeaCache). The training loop had wrong student inputs, no velocity
+conversion, and meaningless "real" samples. **All previous numeric results are
+invalid.** Relative ordering between hyperparameter configs may still hold since
+all used the same broken setup, but absolute quality was severely limited.
+
+The best hyperparameters from the sweep (GI=8, M=0.5, S=1.0, slr=5e-6,
+dlr=5e-5) are being re-validated with the corrected pipeline.
+
+### First Corrected Run (v2, 500 steps)
+
+Config: slr=5e-6, dlr=5e-5, GI=8, M=0.5, S=1.0, debug split (98 prompts),
+512px, single A100 80GB, precomputed teacher latents (CFG=5, 50 steps).
+
+- W&B training: https://wandb.ai/yeun-yeungs/ladd/runs/au7vsbzy
+- W&B eval (500 steps): https://wandb.ai/yeun-yeungs/ladd/runs/idj1oc8i
+- W&B eval (2000 steps): https://wandb.ai/yeun-yeungs/ladd/runs/2389e6fo
+- W&B training (2000 steps): https://wandb.ai/yeun-yeungs/ladd/runs/j0n7eah3
+
+| Steps | KID (vs 416 teacher images, CFG=5) | d_loss (final) | peak VRAM |
+|-------|-------------------------------------|----------------|-----------|
+| 500   | 0.0637 ± 0.0053                    | 0.0            | 68.4 GB   |
+| 2000  | 0.0702 ± 0.0058                    | 0.0            | 68.4 GB   |
+
+**Observation:** KID worsens from 500→2000 steps. d_loss collapses to 0 —
+discriminator perfectly classifies real vs fake. With proper teacher latents
+as "real", the adversarial signal is much stronger than before (noise-vs-noise
+was trivial). The hyperparameters tuned against the broken pipeline need
+re-tuning:
+- GI=8 may be too many disc steps (disc too strong)
+- disc_lr=5e-5 may need to be lower
+- student_lr=5e-6 may need to be higher to keep up
+
+### Teacher Batch Inference Benchmark (A100 80GB, 512px, CFG=5, 50 steps)
+
+| bs | per_img_s | peak_GB |
+|----|-----------|---------|
+| 1  | 8.9       | 21.9    |
+| 4  | 7.5       | 25.2    |
+| 8  | 7.3       | 29.5    |
+| 12 | 7.3       | 29.5    |
+
+Peak VRAM plateaus at 29.5 GB (bs≥8). Per-image time flattens at bs=8.
+No OOM at bs=12. **Recommended: batch_size=8** for teacher latent precompute.
+
+### Precomputed Data
+
+| Split | Type | Count | Size | Path | Status |
+|-------|------|-------|------|------|--------|
+| Debug | Teacher latents (.pt) | 98 | 25.8 MB | data/debug/teacher_latents/ | Done |
+| Debug | Embeddings | 98 | 106 MB | data/debug/embeddings/ | Done |
+| Val | Teacher images (CFG=5) | 416/1000 | partial | data/val/teacher_images/ | Interrupted |
+| Val | Teacher latents | 0 | - | data/val/teacher_latents/ | Not started |
+
+### Hyperparameter Re-tuning (v2 corrected pipeline, 500 steps)
+
+All runs: debug split (98 prompts), 512px, bs=1, single A100 80GB.
+KID computed against 416 teacher images (CFG=5, corrected scheduler).
+
+| Exp | Config | KID | vs baseline | Notes |
+|-----|--------|-----|-------------|-------|
+| baseline | slr=5e-6 dlr=5e-5 GI=8 M=0.5 | 0.0637 | — | previous best from broken pipeline |
+| exp1 | dlr=1e-5 (was 5e-5) | 0.0624 | -2% | slightly better |
+| **exp2** | **GI=3 (was 8)** | **0.0589** | **-7.5%** | **best so far** |
+| exp3 | slr=2e-5 (was 5e-6) | 0.0792 | +24% | worse — too aggressive |
+| exp4 | GI=3 + dlr=1e-5 | 0.0616 | -3.3% | lower dlr hurt with GI=3 |
+
+**Key findings:**
+- GI=8 was optimal for the broken pipeline (noise-vs-noise "real"). With proper
+  teacher latents, **GI=3** is better — the student needs more frequent updates
+  to learn from the now-meaningful adversarial signal.
+- Lower disc LR (1e-5) gives a small improvement (-2%).
+- Higher student LR (2e-5) hurts — too aggressive for adversarial training.
+- d_loss=0 at bs=1 is expected (hinge loss saturates), not a sign of disc dominance.
+
+### Current Best Config (v2, KID = 0.0589)
+
+```python
+STUDENT_LR = 5e-6
+DISC_LR = 5e-5
+GEN_UPDATE_INTERVAL = 3
+RENOISE_M = 0.5
+RENOISE_S = 1.0
+LR_WARMUP_STEPS = 0
+WARMUP_SCHEDULE_STEPS = 0
+```
+
 ## Next Steps
 
-1. Update `train_ladd.sh` with validated hyperparameters
-2. Precompute train embeddings if needed (not needed on cluster — text encoder fits)
-3. Launch 8-GPU production run: `make train-cluster`
-4. Monitor W&B for FID, disc metrics, and visual samples
-5. Expected: ~30 hours, FID should reach <100 by 10K steps
+1. Run best config (GI=3) at 2000 steps to verify scaling
+2. Explore further: GI=2, GI=4 to bracket optimal
+3. Complete val teacher image regeneration (for KID eval)
+4. Precompute val + train teacher latents
+5. Update `train_ladd.sh` with validated hyperparameters
+6. Launch 8-GPU production run
 
 ## Dependencies Installed
 

@@ -94,7 +94,8 @@ class TextDataset(Dataset):
     """
 
     def __init__(self, ann_path: str, text_drop_ratio: float = 0.0,
-                 embeddings_dir: Optional[str] = None):
+                 embeddings_dir: Optional[str] = None,
+                 teacher_latents_dir: Optional[str] = None):
         with open(ann_path, "r") as f:
             self.dataset = json.load(f)
         self.text_drop_ratio = text_drop_ratio
@@ -112,6 +113,9 @@ class TextDataset(Dataset):
                     f"Embedding count {len(self.embeddings)} != dataset count {len(self.dataset)}"
             if os.path.exists(empty_path):
                 self.empty_embedding = torch.load(empty_path, map_location="cpu", weights_only=True)
+
+        # Teacher latents directory (one .pt file per prompt)
+        self.teacher_latents_dir = teacher_latents_dir
 
     def __len__(self):
         return len(self.dataset)
@@ -131,11 +135,18 @@ class TextDataset(Dataset):
                 emb = self.empty_embedding
             else:
                 emb = self.embeddings[idx]
-            return {"text": text, "idx": idx, "embedding": emb}
+            result = {"text": text, "idx": idx, "embedding": emb}
+        else:
+            if is_dropped:
+                text = ""
+            result = {"text": text, "idx": idx}
 
-        if is_dropped:
-            text = ""
-        return {"text": text, "idx": idx}
+        # Load teacher latent on-demand
+        if self.teacher_latents_dir is not None:
+            latent_path = os.path.join(self.teacher_latents_dir, f"{idx:05d}.pt")
+            result["teacher_latent"] = torch.load(latent_path, map_location="cpu", weights_only=True)
+
+        return result
 
 
 # ---------------------------------------------------------------------------

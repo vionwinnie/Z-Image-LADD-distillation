@@ -76,8 +76,8 @@ class FlowMatchEulerDiscreteScheduler:
         if sigmas is None:
             if timesteps is None:
                 timesteps = np.linspace(
-                    self._sigma_to_t(self.sigma_max), self._sigma_to_t(self.sigma_min), num_inference_steps + 1
-                )[:-1]
+                    self._sigma_to_t(self.sigma_max), self._sigma_to_t(self.sigma_min), num_inference_steps
+                )
             sigmas = timesteps / self.num_train_timesteps
         else:
             sigmas = np.array(sigmas).astype(np.float32)

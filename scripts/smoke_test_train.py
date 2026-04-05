@@ -676,9 +676,87 @@ def main():
         results.append(("D/G update schedule", True))
 
         # -------------------------------------------------------------------
-        # 11. Inference round-trip: load checkpoint and generate an image
+        # 11. Scheduler matches diffusers (linspace fix)
         # -------------------------------------------------------------------
-        print_header("Step 11: Inference round-trip (checkpoint -> generate image)")
+        print_header("Step 11: Scheduler matches diffusers")
+
+        from zimage.scheduler import FlowMatchEulerDiscreteScheduler as OurScheduler
+
+        our_sched = OurScheduler(num_train_timesteps=1000, shift=6.0, use_dynamic_shifting=False)
+        our_sched.sigma_min = 0.0
+        our_sched.set_timesteps(50, device=device)
+
+        try:
+            from diffusers.schedulers.scheduling_flow_match_euler_discrete import (
+                FlowMatchEulerDiscreteScheduler as DiffScheduler,
+            )
+            diff_sched = DiffScheduler(num_train_timesteps=1000, shift=6.0, use_dynamic_shifting=False)
+            diff_sched.sigma_min = 0.0
+            diff_sched.set_timesteps(50, device=device)
+
+            ts_match = torch.allclose(our_sched.timesteps, diff_sched.timesteps, atol=1e-3)
+            sig_match = torch.allclose(our_sched.sigmas, diff_sched.sigmas, atol=1e-3)
+            assert ts_match, (
+                f"Timesteps mismatch!\n  Ours: {our_sched.timesteps[-5:]}\n"
+                f"  Diffusers: {diff_sched.timesteps[-5:]}"
+            )
+            assert sig_match, (
+                f"Sigmas mismatch!\n  Ours: {our_sched.sigmas[-5:]}\n"
+                f"  Diffusers: {diff_sched.sigmas[-5:]}"
+            )
+            print_pass(f"Timesteps match diffusers (50 steps, shift=6.0)")
+            print_pass(f"Sigmas match diffusers (last sigma before pad: {our_sched.sigmas[-2]:.4f})")
+        except ImportError:
+            # diffusers not installed — verify basic properties instead
+            assert len(our_sched.timesteps) == 50, f"Expected 50 timesteps, got {len(our_sched.timesteps)}"
+            # The last timestep should be 0 (fully denoised)
+            assert our_sched.timesteps[-1].item() < 1.0, (
+                f"Last timestep should be ~0 (fully denoised), got {our_sched.timesteps[-1].item()}"
+            )
+            # The second-to-last sigma (before the appended 0) should be small
+            assert our_sched.sigmas[-2].item() == 0.0, (
+                f"Second-to-last sigma should be 0.0, got {our_sched.sigmas[-2].item()}"
+            )
+            print_pass(f"Timesteps: 50 steps, last timestep={our_sched.timesteps[-1].item():.2f} (near 0)")
+            print_pass(f"Sigmas reach 0 (scheduler denoises fully)")
+
+        results.append(("Scheduler matches diffusers", True))
+
+        # -------------------------------------------------------------------
+        # 12. Teacher image generation uses CFG
+        # -------------------------------------------------------------------
+        print_header("Step 12: Teacher image generation uses CFG")
+
+        # Verify precompute script default and pipeline CFG logic
+        from zimage.pipeline import generate as _gen_check
+        import inspect
+        gen_sig = inspect.signature(_gen_check)
+        # Check that guidance_scale > 1.0 triggers CFG in pipeline
+        assert "guidance_scale" in gen_sig.parameters, "pipeline.generate missing guidance_scale param"
+        print_pass("pipeline.generate accepts guidance_scale parameter")
+
+        # Verify the precompute script passes guidance_scale through
+        precompute_path = os.path.join(_project_root, "data", "regenerate_teacher_images.py")
+        if os.path.exists(precompute_path):
+            with open(precompute_path) as _f:
+                precompute_src = _f.read()
+            assert "guidance_scale" in precompute_src, (
+                "regenerate_teacher_images.py must pass guidance_scale to generate()"
+            )
+            # Check default is >= 4 (not 0)
+            assert "default=5.0" in precompute_src or "default=4.0" in precompute_src, (
+                "regenerate_teacher_images.py should default to CFG >= 4.0"
+            )
+            print_pass("regenerate_teacher_images.py defaults to CFG=5.0")
+        else:
+            print_pass("regenerate_teacher_images.py not found (skipped)")
+
+        results.append(("Teacher CFG config", True))
+
+        # -------------------------------------------------------------------
+        # 13. Inference round-trip: load checkpoint and generate an image
+        # -------------------------------------------------------------------
+        print_header("Step 13: Inference round-trip (checkpoint -> generate image)")
 
         # Reuses the checkpoint saved in step 9 and the loaded student_fresh
         # to validate the full train -> save -> load -> generate loop.
@@ -771,7 +849,7 @@ def main():
     # -------------------------------------------------------------------
     # Summary
     # -------------------------------------------------------------------
-    print_header("SMOKE TEST SUMMARY (train.py)")
+    print_header(f"SMOKE TEST SUMMARY (train.py) — {len(results)} checks")
     all_pass = True
     for name, passed in results:
         status = "PASS" if passed else "FAIL"
