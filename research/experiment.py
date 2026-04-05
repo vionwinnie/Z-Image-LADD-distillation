@@ -31,14 +31,14 @@ GRADIENT_ACCUMULATION_STEPS = 1
 # === TUNABLE HYPERPARAMETERS START ===
 
 # Learning rates
-STUDENT_LR = 1e-5
-DISC_LR = 1e-4
+STUDENT_LR = 5e-6
+DISC_LR = 5e-5
 
 # LR schedule
 LR_WARMUP_STEPS = 50
 
 # LADD dynamics
-GEN_UPDATE_INTERVAL = 5           # D steps per G step
+GEN_UPDATE_INTERVAL = 3           # D steps per G step
 WARMUP_SCHEDULE_STEPS = 50        # timestep warmup
 STUDENT_TIMESTEPS = [1.0, 0.75, 0.5, 0.25]
 
@@ -93,7 +93,7 @@ RUN_LOG="{OUTPUT_DIR}/run.log"
 echo "============================================================"
 echo "  Training + Evaluation ({MAX_TRAIN_STEPS} steps, {IMAGE_SIZE}px)"
 echo "  Inline validation at step {MAX_TRAIN_STEPS} (KID)"
-echo "  Early stopping enabled (disc health every 50 steps)"
+echo "  Early stopping disabled (bs=1)"
 echo "============================================================"
 
 accelerate launch --num_processes=1 \\
@@ -119,7 +119,7 @@ accelerate launch --num_processes=1 \\
     --validation_steps={val_interval} \\
     --num_inference_steps=4 \\
     --image_sample_size={IMAGE_SIZE} \\
-    --eval_num_images=50 \\
+    --eval_num_images=1000 \\
     --val_data_meta=data/val/metadata.json \\
     --teacher_image_dir=data/val/teacher_images \\
     --gen_update_interval={GEN_UPDATE_INTERVAL} \\
@@ -145,8 +145,13 @@ echo ""
 echo "--- RESULTS ---"
 # Training summary (disc metrics, early stopping)
 grep "^training_steps:\\|^early_stopped:\\|^disc/\\|^d_loss:\\|^g_loss:\\|^peak_vram_mb:" "$RUN_LOG" | tail -20
-# KID from inline validation (logged by ladd_eval subprocess)
-grep "KID = " "$RUN_LOG" | tail -1 || echo "kid: not computed (early stopped or failed)"
+# KID from eval results JSON (inline validation saves to this file)
+EVAL_JSON="{OUTPUT_DIR}/eval_results/step_{MAX_TRAIN_STEPS:06d}.json"
+if [ -f "$EVAL_JSON" ]; then
+    python3 -c "import json; d=json.load(open('$EVAL_JSON')); print(f'[Eval step {MAX_TRAIN_STEPS}] KID = {{d[\"kid_mean\"]:.6f}} ± {{d[\"kid_std\"]:.6f}}')"
+else
+    echo "kid: not computed (early stopped or failed)"
+fi
 echo "--- END ---"
 """
 
