@@ -1,0 +1,26 @@
+# Core training
+torch>=2.5.0
+torchvision
+accelerate>=1.0.0
+transformers>=4.40.0
+diffusers>=0.30.0
+safetensors>=0.4.0
+bitsandbytes>=0.43.0
+
+# Logging & tracking
+wandb>=0.16.0
+tqdm
+
+# Evaluation
+torch-fidelity>=0.4.0
+torchmetrics>=1.0.0
+scipy>=1.10.0
+
+# Model loading & config
+omegaconf>=2.3.0
+loguru
+Pillow>=10.0.0
+
+# Optional (for DeepSpeed, not used in current setup)
+# deepspeed>=0.14.0
+# mpi4py
