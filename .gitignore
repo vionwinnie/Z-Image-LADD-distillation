@@ -215,4 +215,20 @@ models/
 *.DS_Store
 
 # Ignore generated images
-/*.pngwandb/
+/*.png
+
+# Training outputs
+output/
+research/output/
+wandb/
+
+# Precomputed embeddings (large, regenerate with scripts/precompute_embeddings.py)
+data/*/embeddings/
+data/*/embeddings_*/
+
+# Scratch files
+data/sharded_embeddings_plan.md
+data/embedding-shard-instruction.md
+scripts/profile_batch.py
+scripts/test_teacache.py
+scripts/precompute_embeddings_sharded.py
