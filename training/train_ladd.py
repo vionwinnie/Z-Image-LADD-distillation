@@ -485,7 +485,8 @@ def main():
     val_prompts_text = []
     val_emb_path = os.path.join(os.path.dirname(args.val_data_meta), "embeddings", "embeddings.pt")
     if os.path.exists(val_emb_path):
-        val_embeddings = torch.load(val_emb_path, map_location="cpu", weights_only=True)
+        val_emb_data = torch.load(val_emb_path, map_location="cpu", weights_only=True)
+        val_embeddings = val_emb_data["embeddings"]  # list of (seq_len, hidden_dim) tensors
         logger.info(f"Loaded {len(val_embeddings)} validation embeddings from {val_emb_path}")
     if os.path.exists(args.val_data_meta):
         try:
