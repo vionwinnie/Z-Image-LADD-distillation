@@ -34,6 +34,7 @@ sys.path.insert(0, _project_root)
 MODEL_DIR = "models/Z-Image"
 VAL_DATA = "data/val/metadata.json"
 TEACHER_IMAGES_DIR = "data/val/teacher_images"
+FID_REFERENCE_STATS = "data/val/fid_reference_stats.npz"
 NUM_EVAL_IMAGES = 50
 NUM_INFERENCE_STEPS = 4
 IMAGE_SIZE = 512
@@ -99,40 +100,54 @@ def main():
     gc.collect()
     torch.cuda.empty_cache()
 
-    # FID via torch-fidelity (GPU-native, fast)
+    # FID: extract student Inception features, compute against precomputed stats.
     fid = -1.0
-    teacher_dir = os.path.join(_project_root, TEACHER_IMAGES_DIR)
-    if os.path.isdir(teacher_dir):
-        # Copy matching count of teacher images to temp dir (avoid corrupt partial files)
-        import shutil, tempfile
-        teacher_all = sorted([f for f in os.listdir(teacher_dir)
-                              if f.endswith(".png") and os.path.getsize(os.path.join(teacher_dir, f)) > 0])
-        n = min(len(image_paths), len(teacher_all))
-        if n >= 10:
-            tmpdir = tempfile.mkdtemp(prefix="fid_teacher_")
-            student_tmpdir = tempfile.mkdtemp(prefix="fid_student_")
-            try:
-                for f in teacher_all[:n]:
-                    shutil.copy2(os.path.join(teacher_dir, f), tmpdir)
-                for p in image_paths[:n]:
-                    shutil.copy2(p, student_tmpdir)
-                logger.info(f"Computing FID: {n} student vs {n} teacher images...")
-                import torch_fidelity
-                metrics = torch_fidelity.calculate_metrics(
-                    input1=student_tmpdir, input2=tmpdir,
-                    cuda=True, fid=True, verbose=False,
-                )
-                fid = metrics["frechet_inception_distance"]
-                logger.info(f"FID = {fid:.2f}")
-            except Exception as e:
-                logger.warning(f"FID computation failed: {e}")
-            finally:
-                shutil.rmtree(tmpdir, ignore_errors=True)
-                shutil.rmtree(student_tmpdir, ignore_errors=True)
-        else:
-            logger.warning(f"Only {n} valid image pairs, need >= 10 for FID")
+    ref_stats_path = os.path.join(_project_root, FID_REFERENCE_STATS)
+    if os.path.exists(ref_stats_path):
+        try:
+            import numpy as np
+            from scipy import linalg
+            from torch_fidelity.feature_extractor_inceptionv3 import FeatureExtractorInceptionV3
+
+            ref = np.load(ref_stats_path)
+            mu_ref = ref["mu"]
+            sigma_ref = ref["sigma"]
+            ref_n = int(ref["num_samples"])
+
+            # Extract student Inception features on GPU
+            from torchvision import transforms
+            from PIL import Image
+
+            logger.info(f"Computing FID: {len(image_paths)} student vs {ref_n} reference...")
+            inception = FeatureExtractorInceptionV3(name="inception-v3-compat",
+                                                    features_list=["2048"], cuda=True)
+            t = transforms.Compose([transforms.Resize((299, 299)), transforms.ToTensor()])
+
+            all_features = []
+            for i in range(0, len(image_paths), 16):
+                batch = [t(Image.open(p).convert("RGB")) for p in image_paths[i:i+16]]
+                batch_tensor = torch.stack(batch).cuda()
+                with torch.no_grad():
+                    feat = inception(batch_tensor)["2048"]
+                all_features.append(feat.cpu())
+            features = torch.cat(all_features).numpy()
+
+            mu_gen = np.mean(features, axis=0)
+            sigma_gen = np.cov(features, rowvar=False)
+
+            diff = mu_ref - mu_gen
+            covmean, _ = linalg.sqrtm(sigma_ref @ sigma_gen, disp=False)
+            if np.iscomplexobj(covmean):
+                covmean = covmean.real
+            fid = float(diff @ diff + np.trace(sigma_ref + sigma_gen - 2 * covmean))
+            logger.info(f"FID = {fid:.2f}")
+            del inception, features
+        except Exception as e:
+            logger.warning(f"FID computation failed: {e}")
+            import traceback
+            traceback.print_exc()
     else:
-        logger.warning(f"Teacher images not found at {teacher_dir}")
+        logger.warning(f"FID reference stats not found at {ref_stats_path}")
 
     # Print standardized metrics block
     print("\n---")
