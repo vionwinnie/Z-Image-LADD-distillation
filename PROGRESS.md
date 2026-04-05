@@ -141,12 +141,37 @@ Run: https://wandb.ai/yeun-yeungs/ladd/runs/952u5wzr
 - **g_loss**: oscillating -3 to +3 (healthy adversarial dynamics)
 - Completed in 21 seconds, clean exit, no OOM, no NFS hang
 
+## Hyperparameter Sweep Results (8 experiments, ~2 hours)
+
+All runs: 500 steps, 512px, debug split (98 prompts), single A100 80GB.
+FID computed via torch-fidelity (50 student vs 50 teacher images).
+
+| student_lr | disc_lr | gen_update_interval | FID | Status |
+|-----------|---------|---------------------|-----|--------|
+| 1e-5 | 1e-4 | 5 | 336.31 | baseline |
+| 2e-5 | 1e-4 | 5 | 364.39 | discard |
+| 5e-6 | 1e-4 | 5 | 332.52 | - |
+| 1e-6 | 1e-4 | 5 | 333.14 | discard |
+| 5e-6 | 5e-5 | 5 | 330.67 | - |
+| 5e-6 | 2e-4 | 5 | 332.59 | discard |
+| 5e-6 | 5e-5 | 1 | 364.11 | discard |
+| **5e-6** | **5e-5** | **3** | **318.55** | **winner** |
+
+**Best config: student_lr=5e-6, disc_lr=5e-5, gen_update_interval=3**
+
+Key findings:
+- Lower LRs help (5e-6 > 1e-5 > 2e-5) — conservative updates are better early
+- 10x disc/student ratio is optimal (same as LADD paper)
+- gi=3 is the sweet spot — more frequent gen updates than default (5) but not every step (1)
+- FID improved 336 -> 319 (5.2% improvement from baseline)
+
 ## Next Steps
 
-- Run 500-step experiment at 256px with evaluation (FID, CLIP score)
-- LR sweep: student_lr {5e-6, 1e-5, 2e-5} x disc_lr {5e-5, 1e-4, 2e-4}
-- Scale to 512px on multi-GPU once hyperparameters are validated
+- Run longer training (2000-5000 steps) with winning config to see if FID continues to drop
+- Scale to full training set (500K prompts) — need to precompute embeddings (~2 hours)
+- Scale to 8 GPUs with FSDP for production 20K-step run
+- Add CLIP score evaluation (needs model download fix)
 
 ## Dependencies Installed
 
-omegaconf, deepspeed, mpi4py, wandb, bitsandbytes
+omegaconf, deepspeed, mpi4py, wandb, bitsandbytes, torch-fidelity, torchmetrics
