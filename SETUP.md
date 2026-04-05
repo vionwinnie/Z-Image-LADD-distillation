@@ -10,17 +10,8 @@ Base image: `runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04`
 git clone git@github.com:vionwinnie/Z-Image-LADD-distillation.git
 cd Z-Image-LADD-distillation
 
-# Install uv
-curl -LsSf https://astral.sh/uv/install.sh | sh
-source $HOME/.local/bin/env
-
-# Create venv inheriting system torch+CUDA
-uv venv --python python3.11 --system-site-packages
-source .venv/bin/activate
-
-# Install dependencies not in the base image
-# Pre-installed by RunPod: torch, torchvision, torchaudio, numpy, Pillow, tqdm
-uv pip install \
+# Install dependencies (torch/torchvision/numpy/Pillow/tqdm pre-installed by RunPod)
+pip install \
     accelerate \
     transformers \
     diffusers \
@@ -31,6 +22,9 @@ uv pip install \
     scipy \
     omegaconf \
     loguru
+
+# Clean up pip cache to save disk
+pip cache purge
 ```
 
 ### 2. Download Model Weights
