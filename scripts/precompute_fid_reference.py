@@ -167,8 +167,8 @@ def extract_inception_stats(
     batch_size: int = 64,
     num_workers: int = 8,
 ) -> tuple[np.ndarray, np.ndarray, int]:
-    """Extract Inception-v3 features and compute (mu, sigma)."""
-    from torchmetrics.image.fid import FrechetInceptionDistance
+    """Extract Inception-v3 features and compute (mu, sigma) using torch-fidelity."""
+    from torch_fidelity.feature_extractor_inceptionv3 import FeatureExtractorInceptionV3
     from torchvision import transforms
 
     transform = transforms.Compose([
@@ -177,26 +177,39 @@ def extract_inception_stats(
     ])
 
     dataset = _ImageDirDataset(image_dir, transform)
-    logger.info(f"Extracting Inception features from {len(dataset)} images (batch={batch_size}, workers={num_workers})...")
-    fid = FrechetInceptionDistance(feature=2048, normalize=True).to(device)
+    n = len(dataset)
+    logger.info(f"Extracting Inception features from {n} images (batch={batch_size}, workers={num_workers})...")
+
+    use_cuda = device.startswith("cuda")
+    extractor = FeatureExtractorInceptionV3(
+        name="inception-v3-compat",
+        features_list=["2048"],
+    )
+    if use_cuda:
+        extractor = extractor.to(device)
+    extractor.eval()
 
     loader = torch.utils.data.DataLoader(
         dataset, batch_size=batch_size, num_workers=num_workers,
-        pin_memory=True, persistent_workers=True,
+        pin_memory=use_cuda, persistent_workers=num_workers > 0,
     )
 
-    for i, imgs in enumerate(loader):
-        fid.update(imgs.to(device, non_blocking=True), real=True)
-        if i % 25 == 0:
-            logger.info(f"  Processed {min((i + 1) * batch_size, len(dataset))}/{len(dataset)}")
+    all_features = []
+    with torch.no_grad():
+        for i, imgs in enumerate(loader):
+            if use_cuda:
+                imgs = imgs.to(device, non_blocking=True)
+            # torch-fidelity expects [0, 255] uint8-range input
+            features = extractor(imgs * 255)["2048"]
+            all_features.append(features.cpu())
+            if i % 25 == 0:
+                logger.info(f"  Processed {min((i + 1) * batch_size, n)}/{n}")
 
-    n = fid.real_features_num_samples.item()
-    mu = (fid.real_features_sum / n).cpu().numpy()
-    sigma = ((fid.real_features_cov_sum - n * torch.outer(
-        fid.real_features_sum / n, fid.real_features_sum / n
-    )) / (n - 1)).cpu().numpy()
+    all_features = torch.cat(all_features, dim=0).numpy()
+    mu = np.mean(all_features, axis=0)
+    sigma = np.cov(all_features, rowvar=False)
 
-    del fid
+    del extractor
     torch.cuda.empty_cache()
 
     return mu, sigma, n

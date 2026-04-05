@@ -18,7 +18,46 @@ To set up a new experiment run, work with the user to:
 6. **Initialize results.tsv**: If starting fresh, create `results.tsv` with just the header row. The baseline will be recorded after the first run.
 7. **Confirm and go**: Confirm setup looks good.
 
-Once you get confirmation, kick off the experimentation.
+Once you get confirmation, kick off the calibration runs, then the experimentation.
+
+## Calibration runs (do these first)
+
+Previous experiments measured FID, not KID. We need KID baselines before we can compare new results. Run these 3 configs **before** starting the experiment loop. Do NOT change `MAX_TRAIN_STEPS` for any of these — use whatever value is currently set in `experiment.py`. Log results to `results.tsv` as `keep` (these are reference points, not new experiments). Do not discard or reset after these runs.
+
+**Run 1 — Original baseline** (recover KID for the config that scored FID 336.31):
+```python
+STUDENT_LR = 1e-5
+DISC_LR = 1e-4
+GEN_UPDATE_INTERVAL = 5
+LR_WARMUP_STEPS = 50
+WARMUP_SCHEDULE_STEPS = 50
+# all other tunable params at defaults
+```
+Log as: `baseline-recal: slr=1e-5 dlr=1e-4 gi=5 (was FID 336.31)`
+
+**Run 2 — First improvement** (recover KID for the config that scored FID 332.52):
+```python
+STUDENT_LR = 5e-6
+DISC_LR = 1e-4
+GEN_UPDATE_INTERVAL = 5
+LR_WARMUP_STEPS = 50
+WARMUP_SCHEDULE_STEPS = 50
+# all other tunable params at defaults
+```
+Log as: `recal: slr=5e-6 dlr=1e-4 gi=5 (was FID 332.52)`
+
+**Run 3 — Current best** (recover KID for the config that scored FID 313.19 at 2000 steps):
+```python
+STUDENT_LR = 5e-6
+DISC_LR = 5e-5
+GEN_UPDATE_INTERVAL = 3
+LR_WARMUP_STEPS = 50
+WARMUP_SCHEDULE_STEPS = 50
+# all other tunable params at defaults
+```
+Log as: `recal-best: slr=5e-6 dlr=5e-5 gi=3 (was FID 313.19)`
+
+After these 3 runs, the best KID among them becomes your baseline to beat. Reset `experiment.py` to the config from Run 3 (current best), commit, and begin the experiment loop.
 
 ## Experimentation
 
@@ -48,26 +87,35 @@ Each experiment runs on a single A100 80GB. The training script runs for a **fix
 
 ## Output format
 
-Once the script finishes training, it automatically runs `evaluate.py` which prints a summary like this:
+Everything runs in a single process. Training computes disc metrics inline, then runs KID evaluation at the final step (inline validation: offloads training models to CPU, generates student images, computes KID against cached teacher images).
 
+The log contains two summary blocks:
+
+**1. Training summary** (printed at end of training):
 ```
 ---
-kid_mean:         0.1234
-kid_std:          0.0056
-num_images:       50
+training_steps:     500
+early_stopped:      False
+d_loss:  1.234567
+disc/accuracy_fake:  0.750000
+disc/accuracy_real:  0.680000
+disc/logit_gap:  2.345678
+g_loss:  -0.567890
+peak_vram_mb:       72300.0
 ---
 ```
 
-You can extract the key metric from the log file:
+**2. KID from inline validation** (printed by eval subprocess):
+```
+[Eval step 500] KID = 0.123456 ± 0.005678
+```
+
+**Early stopping**: Training has built-in health checks every 50 steps (after warmup). If disc metrics fail 3 consecutive checks (collapsed, diverging, or stuck), training aborts early and skips KID evaluation entirely. Log these as `discard` and move on — you just saved 10+ minutes on a bad config.
+
+**At the end**, the bash script prints a `--- RESULTS ---` block summarizing all metrics. Extract key info:
 
 ```
-grep "^kid_mean:" research/run.log
-```
-
-For discriminator health metrics, check the wandb run or grep training logs:
-
-```
-grep "disc/accuracy_real\|disc/accuracy_fake\|disc/logit_gap" research/run.log | tail -5
+grep "early_stopped:\|KID = \|peak_vram_mb:" research/run.log
 ```
 
 ## Logging results
@@ -107,21 +155,22 @@ LOOP FOREVER:
 3. Tune `experiment.py` with ONE experimental idea — change one thing in the tunable section
 4. git commit: `git add research/experiment.py && git commit -m "<description>"`
 5. Run the experiment: `python research/experiment.py > research/run.log 2>&1` (redirect everything — do NOT use tee or let output flood your context)
-6. Read out the results: `grep "^kid_mean:" research/run.log`
-7. If the grep output is empty, the run crashed. Run `tail -n 50 research/run.log` to read the Python stack trace and attempt a fix. If you can't get things to work after more than a few attempts, give up.
-8. Record the results in the tsv (NOTE: do not commit the results.tsv file, leave it untracked by git)
-9. If kid_mean improved (lower), you "advance" the branch, keeping the git commit
-10. If kid_mean is equal or worse, you `git reset --hard HEAD~1` back to where you started
+6. Read out the results: `grep "early_stopped:\|KID = \|peak_vram_mb:" research/run.log`
+7. If early_stopped is True: log as `discard` with kid_mean=0.0 and move on immediately. You just saved 10+ minutes.
+8. If the grep output is empty, the run crashed. Run `tail -n 50 research/run.log` to read the Python stack trace and attempt a fix. If you can't get things to work after more than a few attempts, give up.
+9. Record the results in the tsv (NOTE: do not commit the results.tsv file, leave it untracked by git)
+10. If kid_mean improved (lower), you "advance" the branch, keeping the git commit
+11. If kid_mean is equal or worse, you `git reset --hard HEAD~1` back to where you started
 
 The idea is that you are a completely autonomous researcher trying things out. If they work, keep. If they don't, discard. And you're advancing the branch so that you can iterate. If you feel like you're getting stuck in some way, you can rewind but you should probably do this very very sparingly (if ever).
 
-**Timeout**: Each experiment should take ~15 minutes total (10 min training + 5 min eval). If a run exceeds 25 minutes, kill it and treat it as a failure (discard and revert).
+**Timeout**: Good experiments take ~15 minutes (10 min training + 5 min eval). Bad experiments with early stopping finish in ~2-3 minutes (training aborts, eval is skipped). If a run exceeds 25 minutes, kill it and treat it as a failure (discard and revert).
 
 **Crashes**: If a run crashes (OOM, or a bug, or etc.), use your judgment: If it's something dumb and easy to fix (e.g. a typo, a missing import), fix it and re-run. If the idea itself is fundamentally broken, just skip it, log "crash" as the status in the tsv, and move on.
 
 **NEVER STOP**: Once the experiment loop has begun (after the initial setup), do NOT pause to ask the human if you should continue. Do NOT ask "should I keep going?" or "is this a good stopping point?". The human might be asleep, or gone from a computer and expects you to continue working *indefinitely* until you are manually stopped. You are autonomous. If you run out of ideas, think harder — re-read the LADD paper references in the code, re-read PROGRESS.md for clues, try combining previous near-misses, try more radical changes. The loop runs until the human interrupts you, period.
 
-As an example use case, a user might leave you running while they sleep. If each experiment takes ~15 minutes then you can run approx 4/hour, for a total of about 30-35 over the duration of the average human sleep. The user then wakes up to experimental results, all completed by you while they slept.
+As an example use case, a user might leave you running while they sleep. Good experiments take ~15 min, early-stopped bad experiments take ~3 min. With a mix, expect ~6-8 experiments/hour, for a total of about 50-65 over the duration of the average human sleep. The user then wakes up to experimental results, all completed by you while they slept.
 
 ## What to explore
 
