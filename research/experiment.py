@@ -24,7 +24,7 @@ IMAGE_SIZE = 512
 SEED = 42
 
 # Training budget (fixed for comparability — do not change)
-MAX_TRAIN_STEPS = 500
+MAX_TRAIN_STEPS = 2000
 TRAIN_BATCH_SIZE = 1
 GRADIENT_ACCUMULATION_STEPS = 1
 
