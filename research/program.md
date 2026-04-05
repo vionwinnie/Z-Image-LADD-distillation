@@ -20,47 +20,23 @@ To set up a new experiment run, work with the user to:
 
 Once you get confirmation, kick off the calibration runs, then the experimentation.
 
-## Calibration runs (do these first)
+## Calibration runs
 
-Previous experiments measured FID, not KID. We need KID baselines before we can compare new results. Run these 3 configs **before** starting the experiment loop. Log results to `results.tsv` as `keep` (these are reference points, not new experiments). Do not discard or reset after these runs.
+### v2 corrected pipeline (2026-04-05)
 
-**Run 1 — Original baseline** (500 steps, recover KID for the config that scored FID 336.31):
-```python
-MAX_TRAIN_STEPS = 500
-STUDENT_LR = 1e-5
-DISC_LR = 1e-4
-GEN_UPDATE_INTERVAL = 5
-LR_WARMUP_STEPS = 50
-WARMUP_SCHEDULE_STEPS = 50
-# all other tunable params at defaults
-```
-Log as: `baseline-recal: slr=1e-5 dlr=1e-4 gi=5 500steps (was FID 336.31)`
+The training pipeline was corrected with 5 bug fixes (see PROGRESS.md). All previous
+KID numbers are invalid. New baseline with corrected pipeline:
 
-**Run 2 — Current best at 500 steps** (recover KID for the config that scored FID 313.19):
-```python
-MAX_TRAIN_STEPS = 500
-STUDENT_LR = 5e-6
-DISC_LR = 5e-5
-GEN_UPDATE_INTERVAL = 3
-LR_WARMUP_STEPS = 50
-WARMUP_SCHEDULE_STEPS = 50
-# all other tunable params at defaults
-```
-Log as: `recal-best-500: slr=5e-6 dlr=5e-5 gi=3 500steps (was FID 313.19)`
+| Steps | KID (vs 416 teacher images, CFG=5) | d_loss (final) | Config |
+|-------|-------------------------------------|----------------|--------|
+| 500   | 0.0637 ± 0.0053                    | 0.0            | slr=5e-6 dlr=5e-5 GI=8 M=0.5 |
+| 2000  | 0.0702 ± 0.0058                    | 0.0            | same |
 
-**Run 3 — Current best at 2000 steps** (same config, longer training):
-```python
-MAX_TRAIN_STEPS = 2000
-STUDENT_LR = 5e-6
-DISC_LR = 5e-5
-GEN_UPDATE_INTERVAL = 3
-LR_WARMUP_STEPS = 50
-WARMUP_SCHEDULE_STEPS = 50
-# all other tunable params at defaults
-```
-Log as: `recal-best-2000: slr=5e-6 dlr=5e-5 gi=3 2000steps (was FID 313.19)`
+**Problem:** d_loss=0 means discriminator is too strong. KID worsens with more training.
+The hyperparameters from the old broken pipeline need re-tuning. Priority: weaken the
+discriminator (lower disc_lr, increase GI, or raise student_lr).
 
-After these 3 runs, the best KID among them becomes your baseline to beat. Reset `experiment.py` to the best config, commit, and begin the experiment loop.
+The baseline to beat is **KID = 0.0637** (500 steps).
 
 ## Experimentation
 

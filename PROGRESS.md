@@ -456,17 +456,35 @@ Config: slr=5e-6, dlr=5e-5, GI=8, M=0.5, S=1.0, debug split (98 prompts),
 512px, single A100 80GB, precomputed teacher latents (CFG=5, 50 steps).
 
 - W&B training: https://wandb.ai/yeun-yeungs/ladd/runs/au7vsbzy
-- W&B eval: https://wandb.ai/yeun-yeungs/ladd/runs/idj1oc8i
-- 500 steps completed, peak VRAM 68.4 GB
-- Final d_loss=0.0, g_loss=1.75
+- W&B eval (500 steps): https://wandb.ai/yeun-yeungs/ladd/runs/idj1oc8i
+- W&B eval (2000 steps): https://wandb.ai/yeun-yeungs/ladd/runs/2389e6fo
+- W&B training (2000 steps): https://wandb.ai/yeun-yeungs/ladd/runs/j0n7eah3
 
-**Observation:** d_loss collapses to 0 — discriminator perfectly classifies
-real vs fake. With proper teacher latents as "real", the adversarial signal
-is much stronger than before (noise-vs-noise was trivial). The hyperparameters
-tuned against the broken pipeline likely need re-tuning:
-- GI=8 may be too many disc steps now (disc too strong)
+| Steps | KID (vs 416 teacher images, CFG=5) | d_loss (final) | peak VRAM |
+|-------|-------------------------------------|----------------|-----------|
+| 500   | 0.0637 ± 0.0053                    | 0.0            | 68.4 GB   |
+| 2000  | 0.0702 ± 0.0058                    | 0.0            | 68.4 GB   |
+
+**Observation:** KID worsens from 500→2000 steps. d_loss collapses to 0 —
+discriminator perfectly classifies real vs fake. With proper teacher latents
+as "real", the adversarial signal is much stronger than before (noise-vs-noise
+was trivial). The hyperparameters tuned against the broken pipeline need
+re-tuning:
+- GI=8 may be too many disc steps (disc too strong)
 - disc_lr=5e-5 may need to be lower
 - student_lr=5e-6 may need to be higher to keep up
+
+### Teacher Batch Inference Benchmark (A100 80GB, 512px, CFG=5, 50 steps)
+
+| bs | per_img_s | peak_GB |
+|----|-----------|---------|
+| 1  | 8.9       | 21.9    |
+| 4  | 7.5       | 25.2    |
+| 8  | 7.3       | 29.5    |
+| 12 | 7.3       | 29.5    |
+
+Peak VRAM plateaus at 29.5 GB (bs≥8). Per-image time flattens at bs=8.
+No OOM at bs=12. **Recommended: batch_size=8** for teacher latent precompute.
 
 ### Precomputed Data
 
@@ -474,7 +492,7 @@ tuned against the broken pipeline likely need re-tuning:
 |-------|------|-------|------|------|--------|
 | Debug | Teacher latents (.pt) | 98 | 25.8 MB | data/debug/teacher_latents/ | Done |
 | Debug | Embeddings | 98 | 106 MB | data/debug/embeddings/ | Done |
-| Val | Teacher images (CFG=5) | 130/1000 | partial | data/val/teacher_images/ | Interrupted |
+| Val | Teacher images (CFG=5) | 416/1000 | partial | data/val/teacher_images/ | Interrupted |
 | Val | Teacher latents | 0 | - | data/val/teacher_latents/ | Not started |
 
 ## Next Steps
