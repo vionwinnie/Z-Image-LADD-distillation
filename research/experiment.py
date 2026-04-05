@@ -132,10 +132,7 @@ accelerate launch --num_processes=1 \\
     --renoise_s={RENOISE_S} \\
     --text_drop_ratio={TEXT_DROP_RATIO} \\
     --dataloader_num_workers=0 \\
-    --early_stop \\
-    --early_stop_check_interval=50 \\
-    --early_stop_patience=3 \\
-    --report_to=wandb \\
+--report_to=wandb \\
     --tracker_project_name=ladd \\
     --wandb_run_name={wandb_name} \\
     2>&1 | tee "$RUN_LOG"
