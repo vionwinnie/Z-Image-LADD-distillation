@@ -20,6 +20,7 @@ import tempfile
 MODEL_PATH = "/workspace/Z-Image-LADD-distillation/models/Z-Image"
 TRAIN_DATA = "data/train/metadata_latent_subset.json"
 EMBEDDINGS_DIR = "data/train/embeddings_latent_subset"
+CLIP_EMBEDDINGS_DIR = "data/train/clip_embeddings"
 TEACHER_LATENTS_DIR = "data/train/teacher_latents_subset"
 IMAGE_SIZE = 512
 SEED = 42
@@ -100,6 +101,7 @@ accelerate launch --num_processes=1 \\
     --pretrained_model_name_or_path={MODEL_PATH} \\
     --train_data_meta={TRAIN_DATA} \\
     --embeddings_dir={EMBEDDINGS_DIR} \\
+    --clip_embeddings_dir={CLIP_EMBEDDINGS_DIR} \\
     --teacher_latents_dir={TEACHER_LATENTS_DIR} \\
     --output_dir={OUTPUT_DIR} \\
     --train_batch_size={TRAIN_BATCH_SIZE} \\
