@@ -599,6 +599,13 @@ def main():
     idx_sampling = DiscreteSampling(args.train_sampling_steps, uniform_sampling=True)
 
     # -----------------------------------------------------------------------
+    # Baseline validation (step 0, before any training)
+    # -----------------------------------------------------------------------
+    _run_validation(student, vae, text_encoder, tokenizer,
+                    noise_scheduler, val_embeddings, val_prompts_text,
+                    accelerator, args, global_step, weight_dtype)
+
+    # -----------------------------------------------------------------------
     # Training loop
     # -----------------------------------------------------------------------
     for epoch in range(first_epoch, args.num_train_epochs):
