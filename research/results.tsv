@@ -1,3 +1,5 @@
 commit	kid_mean	peak_vram_gb	status	description
 n/a	0.068920	0.0	keep	untrained student KID (teacher weights baseline)
-a98a44c	0.075387	66.8	discard	baseline: GI=2 dlr=1e-5 slr=5e-6 CLIP disc 3K data (disc too powerful 100%/100% acc)
+a98a44c	0.075387	66.8	discard	baseline: GI=2 dlr=1e-5 slr=5e-6 CLIP disc 3K data (worse than untrained)
+2534efd	0.066527	66.8	keep	exp1: GI=3 dlr=1e-5 slr=5e-6 CLIP (first improvement over untrained)
+02c4f08	0.068150	66.7	discard	exp2: GI=5 dlr=1e-5 slr=5e-6 (worse than GI=3)
