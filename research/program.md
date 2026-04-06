@@ -33,6 +33,10 @@ To set up a new experiment run, work with the user to:
 
 Once you get confirmation, kick off the calibration runs, then the experimentation.
 
+## Reference KID
+
+Untrained student model (no LADD training): **KID = 0.06892 ± 0.00665**. Any result above this means training made things worse (mode collapse signal).
+
 ## Data
 
 Training uses **3072 prompts** with precomputed teacher latents and text embeddings:
