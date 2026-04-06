@@ -203,6 +203,8 @@ def parse_args():
     parser.add_argument("--device", type=str, default=None)
     parser.add_argument("--dtype", type=str, default=None,
                         choices=["fp32", "bf16", "fp16"])
+    parser.add_argument("--embeddings_dir", type=str, default=None,
+                        help="Path to precomputed embeddings dir. If provided, skips text encoder loading.")
     return parser.parse_args()
 
 
@@ -277,17 +279,22 @@ def main():
         teacher.eval()
         print_pass(f"Teacher loaded (frozen): {sum(p.numel() for p in teacher.parameters())/1e9:.2f}B params")
 
-        text_encoder_dir = os.path.join(args.pretrained_model_name_or_path, "text_encoder")
-        tokenizer_dir = os.path.join(args.pretrained_model_name_or_path, "tokenizer")
-        text_encoder = AutoModel.from_pretrained(text_encoder_dir, torch_dtype=dtype, trust_remote_code=True)
-        text_encoder.to(device)
-        text_encoder.requires_grad_(False)
-        text_encoder.eval()
-        if os.path.exists(tokenizer_dir):
-            tokenizer = AutoTokenizer.from_pretrained(tokenizer_dir, trust_remote_code=True)
+        if args.embeddings_dir:
+            text_encoder = None
+            tokenizer = None
+            print_pass(f"Using precomputed embeddings from {args.embeddings_dir} — skipping text encoder")
         else:
-            tokenizer = AutoTokenizer.from_pretrained(text_encoder_dir, trust_remote_code=True)
-        print_pass("Text encoder + tokenizer loaded")
+            text_encoder_dir = os.path.join(args.pretrained_model_name_or_path, "text_encoder")
+            tokenizer_dir = os.path.join(args.pretrained_model_name_or_path, "tokenizer")
+            text_encoder = AutoModel.from_pretrained(text_encoder_dir, torch_dtype=dtype, trust_remote_code=True)
+            text_encoder.to(device)
+            text_encoder.requires_grad_(False)
+            text_encoder.eval()
+            if os.path.exists(tokenizer_dir):
+                tokenizer = AutoTokenizer.from_pretrained(tokenizer_dir, trust_remote_code=True)
+            else:
+                tokenizer = AutoTokenizer.from_pretrained(text_encoder_dir, trust_remote_code=True)
+            print_pass("Text encoder + tokenizer loaded")
 
     discriminator = LADDDiscriminator(
         feature_dim=feature_dim,
@@ -306,19 +313,30 @@ def main():
     # -------------------------------------------------------------------
     print_header("Step 2: train.py encode_prompt")
 
-    test_prompts = ["A beautiful sunset over the ocean"]
-    with torch.no_grad():
-        prompt_embeds = encode_prompt(
-            test_prompts, device=device,
-            text_encoder=text_encoder, tokenizer=tokenizer,
-            max_sequence_length=512,
+    if args.embeddings_dir and not dummy:
+        # Load precomputed embeddings (same path as TextDataset)
+        emb_data = torch.load(
+            os.path.join(args.embeddings_dir, "embeddings.pt"),
+            map_location="cpu", weights_only=False, mmap=True,
         )
+        all_embeddings = emb_data["embeddings"]
+        prompt_embeds = [all_embeddings[0].to(device=device, dtype=dtype)]
+        print_pass(f"Loaded precomputed embeddings: {len(all_embeddings)} total, "
+                   f"using idx 0 shape {prompt_embeds[0].shape}")
+    else:
+        test_prompts = ["A beautiful sunset over the ocean"]
+        with torch.no_grad():
+            prompt_embeds = encode_prompt(
+                test_prompts, device=device,
+                text_encoder=text_encoder, tokenizer=tokenizer,
+                max_sequence_length=512,
+            )
 
-    # Free text encoder early — no longer needed (saves significant memory for real weights)
-    del text_encoder, tokenizer
-    gc.collect()
-    if device.type == "cuda":
-        torch.cuda.empty_cache()
+        # Free text encoder early — no longer needed (saves significant memory for real weights)
+        del text_encoder, tokenizer
+        gc.collect()
+        if device.type == "cuda":
+            torch.cuda.empty_cache()
 
     assert isinstance(prompt_embeds, list), "encode_prompt should return a list"
     assert len(prompt_embeds) == 1, f"Expected 1 embedding, got {len(prompt_embeds)}"

@@ -159,6 +159,8 @@ def generate(
     output_type: str = "pil",
     teacache_thresh: float = 0.0,
     teacache_coefficients: Optional[list] = None,
+    prompt_embeds_list: Optional[List[torch.Tensor]] = None,
+    negative_prompt_embeds_list: Optional[List[torch.Tensor]] = None,
 ):
     device = next(transformer.parameters()).device
 
@@ -182,47 +184,16 @@ def generate(
     do_classifier_free_guidance = guidance_scale > 1.0
     logger.info(f"Generating image: {height}x{width}, steps={num_inference_steps}, cfg={guidance_scale}")
 
-    formatted_prompts = []
-    for p in prompt:
-        messages = [{"role": "user", "content": p}]
-        formatted_prompt = tokenizer.apply_chat_template(
-            messages,
-            tokenize=False,
-            add_generation_prompt=True,
-            enable_thinking=True,
-        )
-        formatted_prompts.append(formatted_prompt)
-
-    text_inputs = tokenizer(
-        formatted_prompts,
-        padding="max_length",
-        max_length=max_sequence_length,
-        truncation=True,
-        return_tensors="pt",
-    )
-
-    text_input_ids = text_inputs.input_ids.to(device)
-    prompt_masks = text_inputs.attention_mask.to(device).bool()
-
-    prompt_embeds = text_encoder(
-        input_ids=text_input_ids,
-        attention_mask=prompt_masks,
-        output_hidden_states=True,
-    ).hidden_states[-2]
-
-    prompt_embeds_list = []
-    for i in range(len(prompt_embeds)):
-        prompt_embeds_list.append(prompt_embeds[i][prompt_masks[i]])
-
-    negative_prompt_embeds_list = []
-    if do_classifier_free_guidance:
-        if negative_prompt is None:
-            negative_prompt = ["" for _ in prompt]
-        elif isinstance(negative_prompt, str):
-            negative_prompt = [negative_prompt]
-
-        neg_formatted = []
-        for p in negative_prompt:
+    if prompt_embeds_list is not None:
+        # Use precomputed embeddings — skip text encoding entirely
+        prompt_embeds_list = [e.to(device) for e in prompt_embeds_list]
+        if negative_prompt_embeds_list is None:
+            negative_prompt_embeds_list = []
+        else:
+            negative_prompt_embeds_list = [e.to(device) for e in negative_prompt_embeds_list]
+    else:
+        formatted_prompts = []
+        for p in prompt:
             messages = [{"role": "user", "content": p}]
             formatted_prompt = tokenizer.apply_chat_template(
                 messages,
@@ -230,27 +201,66 @@ def generate(
                 add_generation_prompt=True,
                 enable_thinking=True,
             )
-            neg_formatted.append(formatted_prompt)
+            formatted_prompts.append(formatted_prompt)
 
-        neg_inputs = tokenizer(
-            neg_formatted,
+        text_inputs = tokenizer(
+            formatted_prompts,
             padding="max_length",
             max_length=max_sequence_length,
             truncation=True,
             return_tensors="pt",
         )
 
-        neg_input_ids = neg_inputs.input_ids.to(device)
-        neg_masks = neg_inputs.attention_mask.to(device).bool()
+        text_input_ids = text_inputs.input_ids.to(device)
+        prompt_masks = text_inputs.attention_mask.to(device).bool()
 
-        neg_embeds = text_encoder(
-            input_ids=neg_input_ids,
-            attention_mask=neg_masks,
+        prompt_embeds = text_encoder(
+            input_ids=text_input_ids,
+            attention_mask=prompt_masks,
             output_hidden_states=True,
         ).hidden_states[-2]
 
-        for i in range(len(neg_embeds)):
-            negative_prompt_embeds_list.append(neg_embeds[i][neg_masks[i]])
+        prompt_embeds_list = []
+        for i in range(len(prompt_embeds)):
+            prompt_embeds_list.append(prompt_embeds[i][prompt_masks[i]])
+
+        negative_prompt_embeds_list = []
+        if do_classifier_free_guidance:
+            if negative_prompt is None:
+                negative_prompt = ["" for _ in prompt]
+            elif isinstance(negative_prompt, str):
+                negative_prompt = [negative_prompt]
+
+            neg_formatted = []
+            for p in negative_prompt:
+                messages = [{"role": "user", "content": p}]
+                formatted_prompt = tokenizer.apply_chat_template(
+                    messages,
+                    tokenize=False,
+                    add_generation_prompt=True,
+                    enable_thinking=True,
+                )
+                neg_formatted.append(formatted_prompt)
+
+            neg_inputs = tokenizer(
+                neg_formatted,
+                padding="max_length",
+                max_length=max_sequence_length,
+                truncation=True,
+                return_tensors="pt",
+            )
+
+            neg_input_ids = neg_inputs.input_ids.to(device)
+            neg_masks = neg_inputs.attention_mask.to(device).bool()
+
+            neg_embeds = text_encoder(
+                input_ids=neg_input_ids,
+                attention_mask=neg_masks,
+                output_hidden_states=True,
+            ).hidden_states[-2]
+
+            for i in range(len(neg_embeds)):
+                negative_prompt_embeds_list.append(neg_embeds[i][neg_masks[i]])
 
     if num_images_per_prompt > 1:
         prompt_embeds_list = [pe for pe in prompt_embeds_list for _ in range(num_images_per_prompt)]

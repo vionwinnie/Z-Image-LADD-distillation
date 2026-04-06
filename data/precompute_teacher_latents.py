@@ -61,6 +61,9 @@ def parse_args():
     parser.add_argument("--max_sequence_length", type=int, default=512,
                         help="Maximum token length for text encoder.")
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--embeddings_dir", type=str, default=None,
+                        help="Directory with precomputed embeddings.pt and empty_embedding.pt. "
+                             "If provided, skips loading the text encoder.")
     return parser.parse_args()
 
 
@@ -104,20 +107,32 @@ def main():
     teacher.eval()
     teacher.to(device)
 
-    # Text encoder + tokenizer
-    from transformers import AutoModel, AutoTokenizer
-    text_encoder_dir = os.path.join(args.model_dir, "text_encoder")
-    text_encoder = AutoModel.from_pretrained(text_encoder_dir, dtype=weight_dtype, trust_remote_code=True)
-    text_encoder.requires_grad_(False)
-    text_encoder.eval()
-    text_encoder.to(device)
+    # Load precomputed embeddings or text encoder
+    all_embeds = None
+    empty_embed = None
+    text_encoder = None
+    tokenizer = None
 
-    os.environ["TOKENIZERS_PARALLELISM"] = "false"
-    tokenizer_dir = os.path.join(args.model_dir, "tokenizer")
-    if os.path.exists(tokenizer_dir):
-        tokenizer = AutoTokenizer.from_pretrained(tokenizer_dir, trust_remote_code=True)
+    if args.embeddings_dir:
+        print(f"[Rank {args.rank}] Loading precomputed embeddings from {args.embeddings_dir}...")
+        emb_data = torch.load(os.path.join(args.embeddings_dir, "embeddings.pt"), weights_only=True, mmap=True)
+        all_embeds = emb_data["embeddings"]  # list of [seq_len, dim] tensors
+        empty_embed = torch.load(os.path.join(args.embeddings_dir, "empty_embedding.pt"), weights_only=True, mmap=True)
+        print(f"[Rank {args.rank}] Loaded {len(all_embeds)} embeddings, empty_embed: {empty_embed.shape}")
     else:
-        tokenizer = AutoTokenizer.from_pretrained(text_encoder_dir, trust_remote_code=True)
+        from transformers import AutoModel, AutoTokenizer
+        text_encoder_dir = os.path.join(args.model_dir, "text_encoder")
+        text_encoder = AutoModel.from_pretrained(text_encoder_dir, dtype=weight_dtype, trust_remote_code=True)
+        text_encoder.requires_grad_(False)
+        text_encoder.eval()
+        text_encoder.to(device)
+
+        os.environ["TOKENIZERS_PARALLELISM"] = "false"
+        tokenizer_dir = os.path.join(args.model_dir, "tokenizer")
+        if os.path.exists(tokenizer_dir):
+            tokenizer = AutoTokenizer.from_pretrained(tokenizer_dir, trust_remote_code=True)
+        else:
+            tokenizer = AutoTokenizer.from_pretrained(text_encoder_dir, trust_remote_code=True)
 
     # Scheduler
     scheduler_dir = os.path.join(args.model_dir, "scheduler")
@@ -153,7 +168,8 @@ def main():
         indices = [item[0] for item in batch]
         prompts = [item[1]["text"] for item in batch]
 
-        latents = generate(
+        # Build generate() kwargs
+        gen_kwargs = dict(
             transformer=teacher,
             vae=vae_mock,
             text_encoder=text_encoder,
@@ -168,6 +184,12 @@ def main():
             max_sequence_length=args.max_sequence_length,
             output_type="latent",
         )
+
+        if all_embeds is not None:
+            gen_kwargs["prompt_embeds_list"] = [all_embeds[idx] for idx in indices]
+            gen_kwargs["negative_prompt_embeds_list"] = [empty_embed for _ in indices]
+
+        latents = generate(**gen_kwargs)
 
         # Save individual latents
         for i, idx in enumerate(indices):

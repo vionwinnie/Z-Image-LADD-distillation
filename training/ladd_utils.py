@@ -107,7 +107,7 @@ class TextDataset(Dataset):
             emb_path = os.path.join(embeddings_dir, "embeddings.pt")
             empty_path = os.path.join(embeddings_dir, "empty_embedding.pt")
             if os.path.exists(emb_path):
-                data = torch.load(emb_path, map_location="cpu", weights_only=False)
+                data = torch.load(emb_path, map_location="cpu", weights_only=False, mmap=True)
                 self.embeddings = data["embeddings"]
                 assert len(self.embeddings) == len(self.dataset), \
                     f"Embedding count {len(self.embeddings)} != dataset count {len(self.dataset)}"
@@ -143,7 +143,7 @@ class TextDataset(Dataset):
 
         # Load teacher latent on-demand
         if self.teacher_latents_dir is not None:
-            latent_path = os.path.join(self.teacher_latents_dir, f"{idx:05d}.pt")
+            latent_path = os.path.join(self.teacher_latents_dir, f"{idx:06d}.pt")
             result["teacher_latent"] = torch.load(latent_path, map_location="cpu", weights_only=True)
 
         return result
