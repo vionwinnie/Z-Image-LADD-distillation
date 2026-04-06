@@ -138,6 +138,8 @@ def parse_args():
     parser.add_argument("--checkpoints_total_limit", type=int, default=3)
     parser.add_argument("--resume_from_checkpoint", type=str, default=None)
     parser.add_argument("--skip_save", action="store_true")
+    parser.add_argument("--skip_baseline_validation", action="store_true",
+                        help="Skip validation at step 0 (before training)")
 
     # Validation
     parser.add_argument("--validation_steps", type=int, default=1000)
@@ -601,9 +603,10 @@ def main():
     # -----------------------------------------------------------------------
     # Baseline validation (step 0, before any training)
     # -----------------------------------------------------------------------
-    _run_validation(student, vae, text_encoder, tokenizer,
-                    noise_scheduler, val_embeddings, val_prompts_text,
-                    accelerator, args, global_step, weight_dtype)
+    if not args.skip_baseline_validation:
+        _run_validation(student, vae, text_encoder, tokenizer,
+                        noise_scheduler, val_embeddings, val_prompts_text,
+                        accelerator, args, global_step, weight_dtype)
 
     # -----------------------------------------------------------------------
     # Training loop
