@@ -76,7 +76,7 @@ accelerate launch \
     --allow_tf32 \
     --seed=42 \
     --dataloader_num_workers=0 \
-    --checkpointing_steps=99999 \
+    --checkpointing_steps=5 \
     --validation_steps=5 \
     --val_data_meta="${SCRIPT_DIR}/data/val/metadata.json" \
     --eval_num_images=4 \
@@ -94,34 +94,10 @@ accelerate launch \
     --max_grad_norm=1.0 \
     --report_to=wandb \
     --tracker_project_name=ladd \
-    --wandb_entity=yeun-yeungs \
-    --skip_save
+    --wandb_entity=yeun-yeungs
 
 echo ""
 echo "============================================"
 echo "  FSDP Smoke Test PASSED"
 echo "============================================"
-
-# Verify validation checkpoint exists (from validation at step 5)
-if [ -d "${OUTPUT_DIR}/val-checkpoint-5" ]; then
-    echo "  [OK] Validation checkpoint at step 5 exists"
-    if [ -f "${OUTPUT_DIR}/val-checkpoint-5/student_transformer/model.safetensors" ]; then
-        SIZE=$(du -sh "${OUTPUT_DIR}/val-checkpoint-5/student_transformer/model.safetensors" | cut -f1)
-        echo "  [OK] Validation student weights saved (${SIZE})"
-    else
-        echo "  [WARN] Val student weights not found (may still be saving)"
-    fi
-else
-    echo "  [WARN] No validation checkpoint at step 5"
-fi
-
-# Verify eval results exist
-if [ -d "${OUTPUT_DIR}/eval_results" ]; then
-    echo "  [OK] Eval results directory exists"
-    ls -la "${OUTPUT_DIR}/eval_results/" 2>/dev/null
-else
-    echo "  [WARN] No eval results (validation subprocess may still be running)"
-fi
-
-echo ""
 echo "Ready for full 8-GPU training run."

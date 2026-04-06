@@ -241,3 +241,4 @@ data/embedding-shard-instruction.md
 scripts/profile_batch.py
 scripts/test_teacache.py
 scripts/precompute_embeddings_sharded.py
+data/val/embeddings/

@@ -64,6 +64,81 @@ def retrieve_timesteps(
 
 
 @torch.no_grad()
+def generate_from_embeddings(
+    transformer,
+    vae,
+    prompt_embeds_list: List[torch.Tensor],
+    scheduler,
+    height: int = DEFAULT_HEIGHT,
+    width: int = DEFAULT_WIDTH,
+    num_inference_steps: int = DEFAULT_INFERENCE_STEPS,
+    generator: Optional[torch.Generator] = None,
+    output_type: str = "pil",
+):
+    """Generate images from pre-encoded prompt embeddings (no text encoder needed).
+
+    Args:
+        prompt_embeds_list: List of (seq_len, hidden_dim) tensors, one per prompt.
+    """
+    device = next(transformer.parameters()).device
+
+    if hasattr(vae, "config") and hasattr(vae.config, "block_out_channels"):
+        vae_scale_factor = 2 ** (len(vae.config.block_out_channels) - 1)
+    else:
+        vae_scale_factor = 8
+    vae_scale = vae_scale_factor * 2
+
+    batch_size = len(prompt_embeds_list)
+    height_latent = 2 * (int(height) // vae_scale)
+    width_latent = 2 * (int(width) // vae_scale)
+    shape = (batch_size, transformer.in_channels, height_latent, width_latent)
+    latents = torch.randn(shape, generator=generator, device=device, dtype=torch.float32)
+
+    image_seq_len = (latents.shape[2] // 2) * (latents.shape[3] // 2)
+    mu = calculate_shift(
+        image_seq_len,
+        scheduler.config.get("base_image_seq_len", 256),
+        scheduler.config.get("max_image_seq_len", 4096),
+        scheduler.config.get("base_shift", 0.5),
+        scheduler.config.get("max_shift", 1.15),
+    )
+    scheduler.sigma_min = 0.0
+    timesteps, num_inference_steps = retrieve_timesteps(
+        scheduler, num_inference_steps, device, sigmas=None, mu=mu,
+    )
+
+    for i, t in enumerate(timesteps):
+        if t == 0 and i == len(timesteps) - 1:
+            continue
+        timestep = t.expand(batch_size)
+        timestep = (1000 - timestep) / 1000
+
+        latent_input = latents.to(next(transformer.parameters()).dtype).unsqueeze(2)
+        latent_input_list = list(latent_input.unbind(dim=0))
+
+        model_out_list = transformer(latent_input_list, timestep, prompt_embeds_list)[0]
+        noise_pred = torch.stack([o.float() for o in model_out_list], dim=0)
+        noise_pred = -noise_pred.squeeze(2)
+        latents = scheduler.step(noise_pred.to(torch.float32), t, latents, return_dict=False)[0]
+
+    if output_type == "latent":
+        return latents
+
+    shift_factor = getattr(vae.config, "shift_factor", 0.0) or 0.0
+    latents = (latents.to(vae.dtype) / vae.config.scaling_factor) + shift_factor
+    image = vae.decode(latents, return_dict=False)[0]
+
+    if output_type == "pil":
+        from PIL import Image
+        image = (image / 2 + 0.5).clamp(0, 1)
+        image = image.cpu().permute(0, 2, 3, 1).float().numpy()
+        image = (image * 255).round().astype("uint8")
+        image = [Image.fromarray(img) for img in image]
+
+    return image
+
+
+@torch.no_grad()
 def generate(
     transformer,
     vae,

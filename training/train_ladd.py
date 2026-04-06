@@ -206,7 +206,12 @@ def _save_checkpoint(student, accelerator, save_path, args):
     """Save student checkpoint. Uses DCP sharded save under FSDP, safetensors otherwise."""
     if _is_fsdp(accelerator):
         import torch.distributed.checkpoint as dcp
-        dcp.save({"model": student.state_dict()}, checkpoint_id=save_path)
+        from torch.distributed.fsdp import (
+            FullyShardedDataParallel as FSDP,
+            StateDictType,
+        )
+        with FSDP.state_dict_type(student, StateDictType.SHARDED_STATE_DICT):
+            dcp.save({"model": student.state_dict()}, checkpoint_id=save_path)
     else:
         accelerator.save_state(save_path)
         state_dict = accelerator.get_state_dict(student)
@@ -231,55 +236,94 @@ def _save_checkpoint(student, accelerator, save_path, args):
         logger.info(f"Saved checkpoint at step {os.path.basename(save_path)}")
 
 
-def _run_validation(student, vae, noise_scheduler, accelerator, args, global_step, weight_dtype):
+def _run_validation(student, vae, text_encoder, tokenizer, noise_scheduler,
+                    val_embeddings, val_prompts_text,
+                    accelerator, args, global_step, weight_dtype):
     """Generate sample images using the FSDP-wrapped student directly (no state dict gather).
 
-    Each GPU generates its share of images from validation prompts, then rank 0
-    decodes latents through VAE, saves images, and logs to wandb.
+    All ranks must call this (FSDP forward is collective). Only rank 0 logs to wandb.
+    Uses text_encoder if available, otherwise falls back to precomputed val_embeddings.
     """
-    from zimage.pipeline import generate as pipeline_generate
+    if accelerator.is_main_process:
+        logger.info(f"Validation at step {global_step}...")
 
-    prompts = args.validation_prompts
-    if not prompts:
-        return
-
-    logger.info(f"Validation at step {global_step}: generating {len(prompts)} images...")
-
-    # Each rank generates all prompts (student is FSDP-wrapped, all ranks must participate)
     student.eval()
     images = []
+    prompts_for_log = []
+
     with torch.no_grad():
-        for prompt in prompts:
-            # Need text encoder for generation — use a lightweight encode
-            # For now, generate on rank 0's device using the pipeline
-            img_list = pipeline_generate(
-                transformer=student,
-                vae=vae,
-                text_encoder=None,  # handled inside pipeline if available
-                tokenizer=None,
-                scheduler=noise_scheduler,
-                prompt=prompt,
-                height=args.image_sample_size,
-                width=args.image_sample_size,
-                num_inference_steps=args.num_inference_steps,
-                guidance_scale=0.0,
-            )
-            images.extend(img_list)
+        if text_encoder is not None and tokenizer is not None:
+            from zimage.pipeline import generate as pipeline_generate
+            for prompt in (args.validation_prompts or []):
+                img_list = pipeline_generate(
+                    transformer=student, vae=vae,
+                    text_encoder=text_encoder, tokenizer=tokenizer,
+                    scheduler=noise_scheduler, prompt=prompt,
+                    height=args.image_sample_size, width=args.image_sample_size,
+                    num_inference_steps=args.num_inference_steps, guidance_scale=0.0,
+                )
+                images.extend(img_list)
+                prompts_for_log.append(prompt)
+        elif val_embeddings is not None and len(val_embeddings) > 0:
+            from zimage.pipeline import generate_from_embeddings
+            n = min(args.eval_num_images, len(val_embeddings))
+            for i in range(n):
+                emb = val_embeddings[i].to(accelerator.device, dtype=weight_dtype)
+                img_list = generate_from_embeddings(
+                    transformer=student, vae=vae,
+                    prompt_embeds_list=[emb], scheduler=noise_scheduler,
+                    height=args.image_sample_size, width=args.image_sample_size,
+                    num_inference_steps=args.num_inference_steps,
+                )
+                images.extend(img_list)
+                prompts_for_log.append(val_prompts_text[i][:100] if i < len(val_prompts_text) else "")
+        else:
+            if accelerator.is_main_process:
+                logger.info("Skipping validation: no text encoder or precomputed embeddings")
+            student.train()
+            return
+
     student.train()
 
-    # Log to wandb on rank 0
-    if accelerator.is_main_process and wandb is not None:
+    if accelerator.is_main_process:
+        logger.info(f"Generated {len(images)} validation images")
+
         log_dict = {}
-        try:
-            table = wandb.Table(columns=["step", "prompt", "image"])
-            for i, (prompt, img) in enumerate(zip(prompts, images)):
-                table.add_data(global_step, prompt[:100], wandb.Image(img))
-            log_dict["eval/samples"] = table
-        except Exception as e:
-            logger.warning(f"Failed to build wandb image table: {e}")
+
+        # Save student images to disk for KID
+        eval_dir = os.path.join(args.output_dir, "eval_images", f"step_{global_step:06d}")
+        os.makedirs(eval_dir, exist_ok=True)
+        for i, img in enumerate(images):
+            img.save(os.path.join(eval_dir, f"{i:05d}.png"))
+
+        # Compute KID if teacher images exist
+        teacher_dir = args.teacher_image_dir
+        if os.path.isdir(teacher_dir) and len(os.listdir(teacher_dir)) > 0:
+            try:
+                from training.ladd_eval import compute_kid
+                kid_results = compute_kid(eval_dir, teacher_dir, len(images))
+                log_dict["eval/kid_mean"] = kid_results["kid_mean"]
+                log_dict["eval/kid_std"] = kid_results["kid_std"]
+                logger.info(f"KID = {kid_results['kid_mean']:.6f} ± {kid_results['kid_std']:.6f}")
+            except Exception as e:
+                logger.warning(f"KID computation failed: {e}")
+        else:
+            logger.info(f"No teacher images at {teacher_dir}, skipping KID")
+
+        # Log sample table to wandb
+        if wandb is not None:
+            try:
+                table = wandb.Table(columns=["step", "prompt", "image"])
+                for i, img in enumerate(images):
+                    caption = prompts_for_log[i] if i < len(prompts_for_log) else ""
+                    table.add_data(global_step, caption, wandb.Image(img))
+                log_dict["eval/samples"] = table
+            except Exception as e:
+                logger.warning(f"Failed to build wandb image table: {e}")
+
         if log_dict:
             accelerator.log(log_dict, step=global_step)
-            logger.info(f"Logged {len(images)} validation images to wandb")
+            logger.info(f"Logged eval metrics to wandb")
 
 
 # ---------------------------------------------------------------------------
@@ -466,6 +510,21 @@ def main():
         text_encoder.to(accelerator.device)
     vae.to(accelerator.device, dtype=torch.float32)
 
+    # Load validation embeddings (precomputed, for validation without text encoder)
+    val_embeddings = None
+    val_prompts_text = []
+    val_emb_path = os.path.join(os.path.dirname(args.val_data_meta), "embeddings", "embeddings.pt")
+    if os.path.exists(val_emb_path):
+        val_emb_data = torch.load(val_emb_path, map_location="cpu", weights_only=True)
+        val_embeddings = val_emb_data["embeddings"]  # list of (seq_len, hidden_dim) tensors
+        logger.info(f"Loaded {len(val_embeddings)} validation embeddings from {val_emb_path}")
+    if os.path.exists(args.val_data_meta):
+        try:
+            with open(args.val_data_meta) as f:
+                val_prompts_text = [r["text"] for r in json.load(f)]
+        except Exception:
+            pass
+
     # -----------------------------------------------------------------------
     # Training state
     # -----------------------------------------------------------------------
@@ -538,6 +597,13 @@ def main():
     noise_scheduler.sigma_min = 0.0
     noise_scheduler.set_timesteps(args.train_sampling_steps, device=accelerator.device, mu=mu)
     idx_sampling = DiscreteSampling(args.train_sampling_steps, uniform_sampling=True)
+
+    # -----------------------------------------------------------------------
+    # Baseline validation (step 0, before any training)
+    # -----------------------------------------------------------------------
+    _run_validation(student, vae, text_encoder, tokenizer,
+                    noise_scheduler, val_embeddings, val_prompts_text,
+                    accelerator, args, global_step, weight_dtype)
 
     # -----------------------------------------------------------------------
     # Training loop
@@ -718,7 +784,9 @@ def main():
 
             # Validation
             if global_step % args.validation_steps == 0:
-                _run_validation(student, vae, noise_scheduler, accelerator, args, global_step, weight_dtype)
+                _run_validation(student, vae, text_encoder, tokenizer,
+                                noise_scheduler, val_embeddings, val_prompts_text,
+                                accelerator, args, global_step, weight_dtype)
 
         if global_step >= args.max_train_steps or early_stopped:
             break
@@ -735,10 +803,10 @@ def main():
             print(f"peak_vram_mb:       {torch.cuda.max_memory_allocated() / 1e6:.1f}")
         print("---\n")
 
-    # Final save
+    # Final save (skip if already saved at this step during training)
     accelerator.wait_for_everyone()
-    if not args.skip_save:
-        save_path = os.path.join(args.output_dir, f"checkpoint-{global_step}")
+    save_path = os.path.join(args.output_dir, f"checkpoint-{global_step}")
+    if not args.skip_save and not os.path.exists(save_path):
         _save_checkpoint(student, accelerator, save_path, args)
 
     if accelerator.is_main_process:
