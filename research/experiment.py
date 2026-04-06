@@ -39,7 +39,7 @@ DISC_LR = 1e-5
 LR_WARMUP_STEPS = 0
 
 # LADD dynamics
-GEN_UPDATE_INTERVAL = 3           # D steps per G step
+GEN_UPDATE_INTERVAL = 2           # D steps per G step
 WARMUP_SCHEDULE_STEPS = 10        # timestep warmup
 STUDENT_TIMESTEPS = [1.0, 0.75, 0.5, 0.25]
 
@@ -48,7 +48,7 @@ RENOISE_M = 1.0                   # logit-normal mean
 RENOISE_S = 1.0                   # logit-normal std
 
 # Discriminator architecture
-DISC_HIDDEN_DIM = 256
+DISC_HIDDEN_DIM = 128
 DISC_COND_DIM = 256
 DISC_LAYER_INDICES = [5, 10, 15, 20, 25, 29]
 
