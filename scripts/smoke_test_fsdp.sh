@@ -76,7 +76,7 @@ accelerate launch \
     --allow_tf32 \
     --seed=42 \
     --dataloader_num_workers=0 \
-    --checkpointing_steps=99999 \
+    --checkpointing_steps=5 \
     --validation_steps=5 \
     --val_data_meta="${SCRIPT_DIR}/data/val/metadata.json" \
     --eval_num_images=4 \
@@ -94,8 +94,7 @@ accelerate launch \
     --max_grad_norm=1.0 \
     --report_to=wandb \
     --tracker_project_name=ladd \
-    --wandb_entity=yeun-yeungs \
-    --skip_save
+    --wandb_entity=yeun-yeungs
 
 echo ""
 echo "============================================"

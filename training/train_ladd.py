@@ -206,7 +206,12 @@ def _save_checkpoint(student, accelerator, save_path, args):
     """Save student checkpoint. Uses DCP sharded save under FSDP, safetensors otherwise."""
     if _is_fsdp(accelerator):
         import torch.distributed.checkpoint as dcp
-        dcp.save({"model": student.state_dict()}, checkpoint_id=save_path)
+        from torch.distributed.fsdp import (
+            FullyShardedDataParallel as FSDP,
+            StateDictType,
+        )
+        with FSDP.state_dict_type(student, StateDictType.SHARDED_STATE_DICT):
+            dcp.save({"model": student.state_dict()}, checkpoint_id=save_path)
     else:
         accelerator.save_state(save_path)
         state_dict = accelerator.get_state_dict(student)
@@ -791,10 +796,10 @@ def main():
             print(f"peak_vram_mb:       {torch.cuda.max_memory_allocated() / 1e6:.1f}")
         print("---\n")
 
-    # Final save
+    # Final save (skip if already saved at this step during training)
     accelerator.wait_for_everyone()
-    if not args.skip_save:
-        save_path = os.path.join(args.output_dir, f"checkpoint-{global_step}")
+    save_path = os.path.join(args.output_dir, f"checkpoint-{global_step}")
+    if not args.skip_save and not os.path.exists(save_path):
         _save_checkpoint(student, accelerator, save_path, args)
 
     if accelerator.is_main_process:
