@@ -1,20 +1,2 @@
 commit	kid_mean	peak_vram_gb	status	description
-5681d74	0.008502	68.4	keep	baseline-recal: slr=1e-5 dlr=1e-4 gi=5 500steps (was FID 336.31)
-6b0cb13	0.008037	68.4	keep	recal-best-500: slr=5e-6 dlr=5e-5 gi=3 500steps (was FID 313.19)
-30ef11f	0.007229	68.4	keep	recal-best-2000: slr=5e-6 dlr=5e-5 gi=3 2000steps (was FID 313.19)
-d1cd46d	0.005505	68.4	discard	exp1: RENOISE_M=0.0 (was 1.0) — improved but M=0.5 better
-2a13b6d	0.004605	68.4	discard	exp2: RENOISE_M=0.5 — good but gi=4 better
-b1b3e50	0.005084	68.4	discard	exp3: RENOISE_M=-0.5 (worse than M=0.5, disc_acc_fake=0)
-5cd75bb	0.005644	68.4	discard	exp4: RENOISE_S=0.5 (tighter spread worse than S=1.0)
-ea06c03	0.005590	68.4	discard	exp5: RENOISE_S=1.5 (wider spread worse than S=1.0)
-6182c5d	0.011020	68.4	discard	exp6: GEN_UPDATE_INTERVAL=2 (much worse than gi=3)
-144a556	0.002409	68.4	discard	exp7: GEN_UPDATE_INTERVAL=4 — good but gi=6 better
-72dace2	0.002015	68.4	discard	exp8: GEN_UPDATE_INTERVAL=6 — good but gi=8 better
-53de984	0.000869	68.4	keep	exp9: GEN_UPDATE_INTERVAL=8 BEST (89% better than original baseline)
-3d4d159	0.012895	68.4	discard	exp10: GEN_UPDATE_INTERVAL=10 (too few gen steps, disc too powerful)
-n/a	0.002335	68.4	discard	exp11: no warmup + disc_layers=[10,20,29] (multiple changes, worse)
-30c4bf5	0.001469	68.4	discard	exp11b: DISC_LAYER_INDICES=[10,20,29] (3 layers, worse)
-a6ce1f8	0.001513	68.4	discard	exp12: DISC_LAYER_INDICES=[3,7,11,15,19,23,27,29] (8 layers, worse)
-2c5ff6d	0.001184	68.4	discard	exp13: DISC_HIDDEN_DIM=128 (smaller disc, worse)
-6cb4ad9	0.006385	68.4	discard	exp14: DISC_HIDDEN_DIM=512 (larger disc, much worse)
-957371f	n/a	n/a	discard	exp15: STUDENT_LR=1e-5 (OOM from stale GPU memory, no result)
+n/a	0.068920	0.0	keep	untrained student KID (teacher weights baseline)

@@ -17,10 +17,10 @@ import tempfile
 # ---------------------------------------------------------------------------
 
 # Model & data (fixed for comparability — do not change)
-MODEL_PATH = "models/Z-Image"
-TRAIN_DATA = "data/debug/metadata.json"
-EMBEDDINGS_DIR = "data/debug/embeddings"
-TEACHER_LATENTS_DIR = "data/debug/teacher_latents"
+MODEL_PATH = "/workspace/Z-Image-LADD-distillation/models/Z-Image"
+TRAIN_DATA = "/workspace/Z-Image-LADD-distillation/.claude/worktrees/autosearch2/data/train/metadata_latent_subset.json"
+EMBEDDINGS_DIR = "/workspace/Z-Image-LADD-distillation/.claude/worktrees/autosearch2/data/train/embeddings_latent_subset"
+TEACHER_LATENTS_DIR = "/workspace/Z-Image-LADD-distillation/.claude/worktrees/autosearch2/data/train/teacher_latents_subset"
 IMAGE_SIZE = 512
 SEED = 42
 
@@ -39,7 +39,7 @@ DISC_LR = 1e-5
 LR_WARMUP_STEPS = 0
 
 # LADD dynamics
-GEN_UPDATE_INTERVAL = 8           # D steps per G step
+GEN_UPDATE_INTERVAL = 2           # D steps per G step
 WARMUP_SCHEDULE_STEPS = 0         # timestep warmup
 STUDENT_TIMESTEPS = [1.0, 0.75, 0.5, 0.25]
 
