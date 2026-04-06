@@ -39,7 +39,7 @@ DISC_LR = 5e-5
 LR_WARMUP_STEPS = 0
 
 # LADD dynamics
-GEN_UPDATE_INTERVAL = 3           # D steps per G step
+GEN_UPDATE_INTERVAL = 1           # D steps per G step
 WARMUP_SCHEDULE_STEPS = 10        # timestep warmup
 STUDENT_TIMESTEPS = [1.0, 0.75, 0.5, 0.25]
 
@@ -114,6 +114,7 @@ accelerate launch --num_processes=1 \\
     --allow_tf32 \\
     --cpu_offload_optimizer \\
     --skip_save \\
+    --skip_baseline_validation \\
     --seed={SEED} \\
     --checkpointing_steps={MAX_TRAIN_STEPS} \\
     --validation_steps={val_interval} \\
