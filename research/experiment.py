@@ -50,7 +50,7 @@ RENOISE_S = 1.0                   # logit-normal std
 # Discriminator architecture
 DISC_HIDDEN_DIM = 128
 DISC_COND_DIM = 256
-DISC_LAYER_INDICES = [5, 10, 15, 20, 25, 29]
+DISC_LAYER_INDICES = [10, 20, 29]
 
 # Text
 TEXT_DROP_RATIO = 0.1
