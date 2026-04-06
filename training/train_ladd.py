@@ -283,17 +283,42 @@ def _run_validation(student, vae, text_encoder, tokenizer, noise_scheduler,
     if accelerator.is_main_process:
         logger.info(f"Generated {len(images)} validation images")
 
-        # Log to wandb
+        log_dict = {}
+
+        # Save student images to disk for KID
+        eval_dir = os.path.join(args.output_dir, "eval_images", f"step_{global_step:06d}")
+        os.makedirs(eval_dir, exist_ok=True)
+        for i, img in enumerate(images):
+            img.save(os.path.join(eval_dir, f"{i:05d}.png"))
+
+        # Compute KID if teacher images exist
+        teacher_dir = args.teacher_image_dir
+        if os.path.isdir(teacher_dir) and len(os.listdir(teacher_dir)) > 0:
+            try:
+                from training.ladd_eval import compute_kid
+                kid_results = compute_kid(eval_dir, teacher_dir, len(images))
+                log_dict["eval/kid_mean"] = kid_results["kid_mean"]
+                log_dict["eval/kid_std"] = kid_results["kid_std"]
+                logger.info(f"KID = {kid_results['kid_mean']:.6f} ± {kid_results['kid_std']:.6f}")
+            except Exception as e:
+                logger.warning(f"KID computation failed: {e}")
+        else:
+            logger.info(f"No teacher images at {teacher_dir}, skipping KID")
+
+        # Log sample table to wandb
         if wandb is not None:
             try:
                 table = wandb.Table(columns=["step", "prompt", "image"])
                 for i, img in enumerate(images):
                     caption = prompts_for_log[i] if i < len(prompts_for_log) else ""
                     table.add_data(global_step, caption, wandb.Image(img))
-                accelerator.log({"eval/samples": table}, step=global_step)
-                logger.info(f"Logged sample table to wandb")
+                log_dict["eval/samples"] = table
             except Exception as e:
-                logger.warning(f"Failed to log wandb image table: {e}")
+                logger.warning(f"Failed to build wandb image table: {e}")
+
+        if log_dict:
+            accelerator.log(log_dict, step=global_step)
+            logger.info(f"Logged eval metrics to wandb")
 
 
 # ---------------------------------------------------------------------------
