@@ -17,10 +17,10 @@ import tempfile
 # ---------------------------------------------------------------------------
 
 # Model & data (fixed for comparability — do not change)
-MODEL_PATH = "models/Z-Image"
-TRAIN_DATA = "data/debug/metadata.json"
-EMBEDDINGS_DIR = "data/debug/embeddings"
-TEACHER_LATENTS_DIR = "data/debug/teacher_latents"
+MODEL_PATH = "/workspace/Z-Image-LADD-distillation/models/Z-Image"
+TRAIN_DATA = "data/train/metadata_latent_subset.json"
+EMBEDDINGS_DIR = "data/train/embeddings_latent_subset"
+TEACHER_LATENTS_DIR = "data/train/teacher_latents_subset"
 IMAGE_SIZE = 512
 SEED = 42
 
@@ -33,18 +33,18 @@ GRADIENT_ACCUMULATION_STEPS = 1
 
 # Learning rates
 STUDENT_LR = 5e-6
-DISC_LR = 1e-5
+DISC_LR = 5e-5
 
 # LR schedule
 LR_WARMUP_STEPS = 0
 
 # LADD dynamics
-GEN_UPDATE_INTERVAL = 8           # D steps per G step
-WARMUP_SCHEDULE_STEPS = 0         # timestep warmup
+GEN_UPDATE_INTERVAL = 3           # D steps per G step
+WARMUP_SCHEDULE_STEPS = 10        # timestep warmup
 STUDENT_TIMESTEPS = [1.0, 0.75, 0.5, 0.25]
 
 # Noise schedule
-RENOISE_M = 0.5                   # logit-normal mean
+RENOISE_M = 1.0                   # logit-normal mean
 RENOISE_S = 1.0                   # logit-normal std
 
 # Discriminator architecture
@@ -73,16 +73,13 @@ def main():
     disc_layers_str = " ".join(str(l) for l in DISC_LAYER_INDICES)
     wandb_name = f"exp-lr{STUDENT_LR}-dlr{DISC_LR}-gi{GEN_UPDATE_INTERVAL}"
 
-    # Inline validation uses train_ladd.py's built-in _launch_validation at the
-    # final step. On single GPU this offloads training models to CPU, runs eval
-    # as a blocking subprocess, computes KID against cached teacher images, and
-    # logs to wandb. No separate evaluate.py needed.
+    # Inline validation uses train_ladd.py's built-in _run_validation at the
+    # final step. On single GPU this generates sample images, computes KID
+    # against cached teacher images, and logs both to wandb.
     #
-    # Two validation checkpoints:
-    #   - Midpoint (MAX_TRAIN_STEPS // 2): early KID signal — if KID is not
-    #     improving, the agent can note this for future reference
-    #   - Final step (MAX_TRAIN_STEPS): the metric that matters for keep/discard
-    val_interval = MAX_TRAIN_STEPS  # validate at final step only by default
+    # eval_num_images=20: generates 20 sample images for wandb + KID
+    val_interval = MAX_TRAIN_STEPS  # validate at final step only
+    eval_num_images = 20
 
     script = f"""#!/bin/bash
 set -e
@@ -122,7 +119,7 @@ accelerate launch --num_processes=1 \\
     --validation_steps={val_interval} \\
     --num_inference_steps=4 \\
     --image_sample_size={IMAGE_SIZE} \\
-    --eval_num_images=1000 \\
+    --eval_num_images={eval_num_images} \\
     --val_data_meta=data/val/metadata.json \\
     --teacher_image_dir=data/val/teacher_images \\
     --gen_update_interval={GEN_UPDATE_INTERVAL} \\
@@ -134,8 +131,9 @@ accelerate launch --num_processes=1 \\
     --renoise_m={RENOISE_M} \\
     --renoise_s={RENOISE_S} \\
     --text_drop_ratio={TEXT_DROP_RATIO} \\
+    --max_grad_norm=1.0 \\
     --dataloader_num_workers=0 \\
---report_to=wandb \\
+    --report_to=wandb \\
     --tracker_project_name=ladd \\
     --wandb_run_name={wandb_name} \\
     2>&1 | tee "$RUN_LOG"
@@ -148,17 +146,8 @@ echo ""
 echo "--- RESULTS ---"
 # Training summary (disc metrics, early stopping)
 grep "^training_steps:\\|^early_stopped:\\|^disc/\\|^d_loss:\\|^g_loss:\\|^peak_vram_mb:" "$RUN_LOG" | tail -20
-# KID from eval results JSON (inline validation saves to this file)
-EVAL_JSON="{OUTPUT_DIR}/eval_results/step_{MAX_TRAIN_STEPS:06d}.json"
-if [ -f "$EVAL_JSON" ]; then
-    python3 << PYEOF
-import json
-d = json.load(open("$EVAL_JSON"))
-print("KID = %.6f +/- %.6f" % (d["kid_mean"], d["kid_std"]))
-PYEOF
-else
-    echo "kid: not computed (early stopped or failed)"
-fi
+# KID from logger output (printed by _run_validation)
+grep "KID = " "$RUN_LOG" | tail -1
 echo "--- END ---"
 """
 
