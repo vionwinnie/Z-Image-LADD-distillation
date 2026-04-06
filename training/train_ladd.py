@@ -85,6 +85,8 @@ def parse_args():
     parser.add_argument("--train_data_meta", type=str, required=True)
     parser.add_argument("--text_drop_ratio", type=float, default=0.1)
     parser.add_argument("--embeddings_dir", type=str, default=None)
+    parser.add_argument("--clip_embeddings_dir", type=str, default=None,
+                        help="Dir with precomputed CLIP text embeddings for disc conditioning")
     parser.add_argument("--teacher_latents_dir", type=str, default=None)
     parser.add_argument("--max_sequence_length", type=int, default=512)
 
@@ -138,6 +140,8 @@ def parse_args():
     parser.add_argument("--checkpoints_total_limit", type=int, default=3)
     parser.add_argument("--resume_from_checkpoint", type=str, default=None)
     parser.add_argument("--skip_save", action="store_true")
+    parser.add_argument("--skip_baseline_validation", action="store_true",
+                        help="Skip validation at step 0 (before training)")
 
     # Validation
     parser.add_argument("--validation_steps", type=int, default=1000)
@@ -380,11 +384,22 @@ def main():
     teacher.requires_grad_(False)
     teacher.eval()
 
+    # Determine CLIP dim if using CLIP embeddings
+    clip_dim = 0
+    if args.clip_embeddings_dir:
+        clip_emb_path = os.path.join(args.clip_embeddings_dir, "clip_embeddings.pt")
+        if os.path.exists(clip_emb_path):
+            _clip_meta = torch.load(clip_emb_path, map_location="cpu", weights_only=False)
+            clip_dim = _clip_meta.get("embed_dim", _clip_meta["embeddings"].shape[-1])
+            del _clip_meta
+            logger.info(f"Using CLIP text embeddings (dim={clip_dim}) for discriminator conditioning")
+
     discriminator = LADDDiscriminator(
         feature_dim=DEFAULT_TRANSFORMER_DIM,
         hidden_dim=args.disc_hidden_dim,
         cond_dim=args.disc_cond_dim,
         layer_indices=tuple(args.disc_layer_indices),
+        clip_dim=clip_dim,
     )
 
     vae = load_vae(args.pretrained_model_name_or_path)
@@ -462,7 +477,8 @@ def main():
     # Dataset and dataloader
     train_dataset = TextDataset(args.train_data_meta, text_drop_ratio=args.text_drop_ratio,
                                 embeddings_dir=args.embeddings_dir,
-                                teacher_latents_dir=args.teacher_latents_dir)
+                                teacher_latents_dir=args.teacher_latents_dir,
+                                clip_embeddings_dir=args.clip_embeddings_dir)
 
     def collate_fn(examples):
         batch = {"text": [ex["text"] for ex in examples]}
@@ -470,6 +486,8 @@ def main():
             batch["embeddings"] = [ex["embedding"] for ex in examples]
         if "teacher_latent" in examples[0]:
             batch["teacher_latents"] = torch.stack([ex["teacher_latent"] for ex in examples])
+        if "clip_embedding" in examples[0]:
+            batch["clip_embeddings"] = torch.stack([ex["clip_embedding"] for ex in examples])
         return batch
 
     batch_sampler_gen = torch.Generator().manual_seed(args.seed if args.seed else 0)
@@ -601,9 +619,10 @@ def main():
     # -----------------------------------------------------------------------
     # Baseline validation (step 0, before any training)
     # -----------------------------------------------------------------------
-    _run_validation(student, vae, text_encoder, tokenizer,
-                    noise_scheduler, val_embeddings, val_prompts_text,
-                    accelerator, args, global_step, weight_dtype)
+    if not args.skip_baseline_validation:
+        _run_validation(student, vae, text_encoder, tokenizer,
+                        noise_scheduler, val_embeddings, val_prompts_text,
+                        accelerator, args, global_step, weight_dtype)
 
     # -----------------------------------------------------------------------
     # Training loop
@@ -682,10 +701,15 @@ def main():
 
                 # 7. Discriminator
                 spatial_sizes = [(H_tokens, W_tokens)] * bsz
+                clip_embeds = batch.get("clip_embeddings")
+                if clip_embeds is not None:
+                    clip_embeds = clip_embeds.to(accelerator.device, dtype=weight_dtype)
                 fake_result = discriminator(fake_extras["hidden_states"], fake_extras["x_item_seqlens"],
-                                            fake_extras["cap_item_seqlens"], spatial_sizes, t_hat)
+                                            fake_extras["cap_item_seqlens"], spatial_sizes, t_hat,
+                                            clip_text_embeds=clip_embeds)
                 real_result = discriminator(real_extras["hidden_states"], real_extras["x_item_seqlens"],
-                                            real_extras["cap_item_seqlens"], spatial_sizes, t_hat)
+                                            real_extras["cap_item_seqlens"], spatial_sizes, t_hat,
+                                            clip_text_embeds=clip_embeds)
 
                 # 8. Losses
                 d_loss, g_loss = LADDDiscriminator.compute_loss(real_result["total_logit"], fake_result["total_logit"])
@@ -710,6 +734,7 @@ def main():
                     fake_result_grad = discriminator(
                         fake_extras_grad["hidden_states"], fake_extras_grad["x_item_seqlens"],
                         fake_extras_grad["cap_item_seqlens"], spatial_sizes, t_hat,
+                        clip_text_embeds=clip_embeds,
                     )
                     g_loss_update = -torch.mean(fake_result_grad["total_logit"])
 
