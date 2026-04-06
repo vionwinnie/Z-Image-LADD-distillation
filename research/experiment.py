@@ -33,7 +33,7 @@ GRADIENT_ACCUMULATION_STEPS = 1
 
 # Learning rates
 STUDENT_LR = 5e-6
-DISC_LR = 1e-5
+DISC_LR = 2e-5
 
 # LR schedule
 LR_WARMUP_STEPS = 0
