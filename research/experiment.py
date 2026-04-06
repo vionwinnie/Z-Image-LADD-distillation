@@ -103,6 +103,7 @@ accelerate launch --num_processes=1 \\
     --embeddings_dir={EMBEDDINGS_DIR} \\
     --clip_embeddings_dir={CLIP_EMBEDDINGS_DIR} \\
     --teacher_latents_dir={TEACHER_LATENTS_DIR} \\
+    --clip_embeddings_dir=data/train/clip_embeddings \\
     --output_dir={OUTPUT_DIR} \\
     --train_batch_size={TRAIN_BATCH_SIZE} \\
     --gradient_accumulation_steps={GRADIENT_ACCUMULATION_STEPS} \\
