@@ -21,6 +21,7 @@ MODEL_PATH = "/workspace/Z-Image-LADD-distillation/models/Z-Image"
 TRAIN_DATA = "/workspace/Z-Image-LADD-distillation/.claude/worktrees/autosearch2/data/train/metadata_latent_subset.json"
 EMBEDDINGS_DIR = "/workspace/Z-Image-LADD-distillation/.claude/worktrees/autosearch2/data/train/embeddings_latent_subset"
 TEACHER_LATENTS_DIR = "/workspace/Z-Image-LADD-distillation/.claude/worktrees/autosearch2/data/train/teacher_latents_subset"
+CLIP_EMBEDDINGS_DIR = "/workspace/Z-Image-LADD-distillation/.claude/worktrees/autosearch2/data/train/clip_embeddings"
 IMAGE_SIZE = 512
 SEED = 42
 
@@ -104,6 +105,7 @@ accelerate launch --num_processes=1 \\
     --train_data_meta={TRAIN_DATA} \\
     --embeddings_dir={EMBEDDINGS_DIR} \\
     --teacher_latents_dir={TEACHER_LATENTS_DIR} \\
+    --clip_embeddings_dir={CLIP_EMBEDDINGS_DIR} \\
     --output_dir={OUTPUT_DIR} \\
     --train_batch_size={TRAIN_BATCH_SIZE} \\
     --gradient_accumulation_steps={GRADIENT_ACCUMULATION_STEPS} \\
@@ -134,8 +136,9 @@ accelerate launch --num_processes=1 \\
     --renoise_m={RENOISE_M} \\
     --renoise_s={RENOISE_S} \\
     --text_drop_ratio={TEXT_DROP_RATIO} \\
+    --skip_baseline_validation \\
     --dataloader_num_workers=0 \\
---report_to=wandb \\
+    --report_to=wandb \\
     --tracker_project_name=ladd \\
     --wandb_run_name={wandb_name} \\
     2>&1 | tee "$RUN_LOG"
