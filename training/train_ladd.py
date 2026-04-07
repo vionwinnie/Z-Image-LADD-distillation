@@ -207,17 +207,8 @@ def _is_fsdp(accelerator):
 
 
 def _save_checkpoint(student, accelerator, save_path, args):
-    """Save student checkpoint. Uses DCP sharded save under FSDP (checkpoint dir with .metadata)."""
-    if _is_fsdp(accelerator):
-        import torch.distributed.checkpoint as dcp
-        from torch.distributed.fsdp import (
-            FullyShardedDataParallel as FSDP,
-            StateDictType,
-        )
-        with FSDP.state_dict_type(student, StateDictType.SHARDED_STATE_DICT):
-            dcp.save({"model": student.state_dict()}, checkpoint_id=save_path)
-    else:
-        accelerator.save_state(save_path)
+    """Save checkpoint using accelerator (handles FSDP state dict automatically)."""
+    accelerator.save_state(save_path)
 
     if accelerator.is_main_process:
         if args.checkpoints_total_limit is not None:
@@ -441,6 +432,7 @@ def main():
     if args.allow_tf32:
         torch.backends.cuda.matmul.allow_tf32 = True
 
+    logger.info("Creating optimizers...")
     # Optimizers
     if args.cpu_offload_optimizer:
         import bitsandbytes as bnb
@@ -462,6 +454,7 @@ def main():
         weight_decay=args.adam_weight_decay, eps=args.adam_epsilon,
     )
 
+    logger.info("Creating dataset and dataloader...")
     # Dataset and dataloader
     train_dataset = TextDataset(args.train_data_meta, text_drop_ratio=args.text_drop_ratio,
                                 embeddings_dir=args.embeddings_dir,
@@ -489,6 +482,7 @@ def main():
         persistent_workers=args.dataloader_num_workers > 0,
     )
 
+    logger.info("Creating LR schedulers...")
     # LR schedulers
     from diffusers.optimization import get_scheduler
     student_lr_scheduler = get_scheduler(
@@ -503,6 +497,7 @@ def main():
     )
 
     # Prepare with accelerator
+    logger.info("About to call accelerator.prepare()...")
     student, student_optimizer, train_dataloader, student_lr_scheduler = accelerator.prepare(
         student, student_optimizer, train_dataloader, student_lr_scheduler,
     )
@@ -511,17 +506,20 @@ def main():
     )
 
     # Move frozen models to device
+    logger.info("Moving teacher to GPU...")
     teacher.to(accelerator.device, dtype=weight_dtype)
+    logger.info("Teacher on GPU. Moving VAE...")
     if text_encoder is not None:
         text_encoder.to(accelerator.device)
     vae.to(accelerator.device, dtype=torch.float32)
+    logger.info("All models on device.")
 
     # Load validation embeddings (precomputed, for validation without text encoder)
     val_embeddings = None
     val_prompts_text = []
     val_emb_path = os.path.join(os.path.dirname(args.val_data_meta), "embeddings", "embeddings.pt")
     if os.path.exists(val_emb_path):
-        val_emb_data = torch.load(val_emb_path, map_location="cpu", weights_only=True)
+        val_emb_data = torch.load(val_emb_path, map_location="cpu", weights_only=False, mmap=True)
         val_embeddings = val_emb_data["embeddings"]  # list of (seq_len, hidden_dim) tensors
         logger.info(f"Loaded {len(val_embeddings)} validation embeddings from {val_emb_path}")
     if os.path.exists(args.val_data_meta):
@@ -794,7 +792,7 @@ def main():
                 _save_checkpoint(student, accelerator, save_path, args)
 
             # Validation
-            if global_step % args.validation_steps == 0:
+            if global_step > 0 and global_step % args.validation_steps == 0:
                 _run_validation(student, vae, text_encoder, tokenizer,
                                 noise_scheduler, val_embeddings, val_prompts_text,
                                 accelerator, args, global_step, weight_dtype)
