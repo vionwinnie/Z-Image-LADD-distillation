@@ -54,9 +54,10 @@ accelerate launch \
     --allow_tf32 \
     --seed=42 \
     --dataloader_num_workers=4 \
-    --checkpointing_steps=1000 \
+    --checkpointing_steps=5000 \
     --checkpoints_total_limit=2 \
-    --validation_steps=2000 \
+    --validation_steps=500 \
+    --eval_num_images=20 \
     --num_inference_steps=4 \
     --image_sample_size=512 \
     --gen_update_interval=3 \
