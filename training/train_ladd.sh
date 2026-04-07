@@ -45,7 +45,7 @@ accelerate launch \
     --allow_tf32 \
     --seed=42 \
     --dataloader_num_workers=4 \
-    --checkpointing_steps=2000 \
+    --checkpointing_steps=1000 \
     --checkpoints_total_limit=3 \
     --validation_steps=2000 \
     --num_inference_steps=4 \
