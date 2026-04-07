@@ -46,7 +46,7 @@ accelerate launch \
     --seed=42 \
     --dataloader_num_workers=4 \
     --checkpointing_steps=1000 \
-    --checkpoints_total_limit=3 \
+    --checkpoints_total_limit=2 \
     --validation_steps=2000 \
     --num_inference_steps=4 \
     --image_sample_size=512 \
