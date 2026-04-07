@@ -25,6 +25,14 @@ DATA_META="${DATA_META:-data/train/metadata_subsample.json}"
 OUTPUT_DIR="${OUTPUT_DIR:-output/ladd}"
 NUM_GPUS="${NUM_GPUS:-8}"
 
+# Pre-cache model weights and embeddings to avoid I/O contention across ranks
+cat models/Z-Image/transformer/diffusion_pytorch_model-*.safetensors \
+    models/Z-Image/vae/diffusion_pytorch_model.safetensors \
+    data/train/embeddings_subsample/embeddings.pt \
+    data/train/clip_embeddings_10k/clip_embeddings.pt \
+    data/val/embeddings/embeddings.pt \
+    > /dev/null 2>/dev/null
+
 accelerate launch \
     --config_file training/fsdp_config.yaml \
     training/train_ladd.py \
