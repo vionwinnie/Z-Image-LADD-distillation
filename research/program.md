@@ -100,7 +100,7 @@ Untrained KID is 0.0689, so the best config improves ~4% on average (vs the -15.
 
 5. **Warmup doesn't help at 500 steps.** LR_WARMUP=50 was second-best overall but still worse than no warmup. With only 500 steps, warmup wastes 10% of the training budget.
 
-6. **1000 steps degrades on 3K data.** KID=0.097 at 1000 steps vs ~0.069 at 500 steps. The model overfits. 10K data should enable longer training.
+6. **1000 steps degrades on 3K data.** 5-run analysis: mean KID=0.0913±0.0044 at 1000 steps vs 0.0661±0.0044 at 500 steps (+32.5% vs untrained). The model clearly overfits with more steps on only 3K data. 10K+ data is needed before longer training helps.
 
 ### What to explore next
 
