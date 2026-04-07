@@ -1,5 +1,20 @@
 """LADD (Latent Adversarial Diffusion Distillation) training script for Z-Image.
 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!! WARNING: DO NOT MODIFY THIS FILE WITHOUT RUNNING THE FULL SMOKE TEST SUITE !!
+!!                                                                             !!
+!! This code has been extensively debugged for FSDP compatibility, checkpoint  !!
+!! saving, gradient flow, mmap loading, and validation. Seemingly minor        !!
+!! changes (removing mmap, changing state_dict type, wrapping teacher in FSDP, !!
+!! enabling CPU offload) WILL cause deadlocks, NaN losses, or OOM.            !!
+!!                                                                             !!
+!! Before ANY change, run:                                                     !!
+!!   python scripts/smoke_test_train.py --dummy                                !!
+!!   bash scripts/smoke_test_fsdp.sh                                           !!
+!!                                                                             !!
+!! See DEBUG_CHECKLIST.md for known issues and pitfalls.                        !!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 Trains a student transformer to produce high-quality images in fewer denoising
 steps by using a frozen teacher transformer + lightweight discriminator heads
 in an adversarial distillation setup.
