@@ -384,15 +384,13 @@ def main():
     teacher.requires_grad_(False)
     teacher.eval()
 
-    # Determine CLIP dim if using CLIP embeddings
-    clip_dim = 0
-    if args.clip_embeddings_dir:
-        clip_emb_path = os.path.join(args.clip_embeddings_dir, "clip_embeddings.pt")
-        if os.path.exists(clip_emb_path):
-            _clip_meta = torch.load(clip_emb_path, map_location="cpu", weights_only=False)
-            clip_dim = _clip_meta.get("embed_dim", _clip_meta["embeddings"].shape[-1])
-            del _clip_meta
-            logger.info(f"Using CLIP text embeddings (dim={clip_dim}) for discriminator conditioning")
+    # Determine CLIP dim from precomputed embeddings
+    assert args.clip_embeddings_dir, "--clip_embeddings_dir is required for discriminator conditioning"
+    clip_emb_path = os.path.join(args.clip_embeddings_dir, "clip_embeddings.pt")
+    _clip_meta = torch.load(clip_emb_path, map_location="cpu", weights_only=False)
+    clip_dim = _clip_meta.get("embed_dim", _clip_meta["embeddings"].shape[-1])
+    del _clip_meta
+    logger.info(f"Using CLIP text embeddings (dim={clip_dim}) for discriminator conditioning")
 
     discriminator = LADDDiscriminator(
         feature_dim=DEFAULT_TRANSFORMER_DIM,
@@ -701,9 +699,7 @@ def main():
 
                 # 7. Discriminator
                 spatial_sizes = [(H_tokens, W_tokens)] * bsz
-                clip_embeds = batch.get("clip_embeddings")
-                if clip_embeds is not None:
-                    clip_embeds = clip_embeds.to(accelerator.device, dtype=weight_dtype)
+                clip_embeds = batch["clip_embeddings"].to(accelerator.device, dtype=weight_dtype)
                 fake_result = discriminator(fake_extras["hidden_states"], fake_extras["x_item_seqlens"],
                                             fake_extras["cap_item_seqlens"], spatial_sizes, t_hat,
                                             clip_text_embeds=clip_embeds)
