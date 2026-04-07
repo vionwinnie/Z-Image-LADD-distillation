@@ -17,6 +17,7 @@ set -euo pipefail
 export NCCL_P2P_DISABLE=0
 export NCCL_IB_DISABLE=0
 export TOKENIZERS_PARALLELISM=false
+export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 
 # --- Configuration ---
 MODEL_PATH="${MODEL_PATH:-models/Z-Image}"
@@ -29,14 +30,16 @@ accelerate launch \
     training/train_ladd.py \
     --pretrained_model_name_or_path="${MODEL_PATH}" \
     --train_data_meta="${DATA_META}" \
+    --clip_embeddings_dir=data/train/clip_embeddings_10k \
+    --embeddings_dir=data/train/embeddings_subsample \
     --output_dir="${OUTPUT_DIR}" \
-    --train_batch_size=4 \
+    --train_batch_size=2 \
     --gradient_accumulation_steps=2 \
     --max_train_steps=20000 \
     --learning_rate=5e-6 \
-    --learning_rate_disc=5e-5 \
+    --learning_rate_disc=1e-5 \
     --lr_scheduler=constant_with_warmup \
-    --lr_warmup_steps=500 \
+    --lr_warmup_steps=0 \
     --mixed_precision=bf16 \
     --gradient_checkpointing \
     --allow_tf32 \
@@ -52,10 +55,11 @@ accelerate launch \
     --disc_hidden_dim=256 \
     --disc_cond_dim=256 \
     --student_timesteps 1.0 0.75 0.5 0.25 \
-    --warmup_schedule_steps=500 \
+    --warmup_schedule_steps=0 \
     --renoise_m=1.0 \
     --renoise_s=1.0 \
     --max_grad_norm=1.0 \
+    --skip_baseline_validation \
     --report_to=wandb \
     --tracker_project_name=ladd \
     --wandb_entity=yeun-yeungs \

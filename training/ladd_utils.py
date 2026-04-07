@@ -4,10 +4,13 @@ Includes timestep sampling, text dataset, prompt encoding, and noise utilities.
 """
 
 import json
+import logging
 import math
 import os
 import random
 from typing import List, Optional, Union
+
+logger = logging.getLogger(__name__)
 
 import numpy as np
 import torch
@@ -135,13 +138,12 @@ class TextDataset(Dataset):
     def has_precomputed_embeddings(self):
         return self.embeddings is not None
 
-    def __getitem__(self, idx):
+    def _build_result(self, idx, is_dropped):
+        """Build a result dict for the given index. Raises on corrupt/missing .pt files."""
         item = self.dataset[idx]
         text = item.get("text", item.get("prompt", ""))
-        is_dropped = random.random() < self.text_drop_ratio
 
         if self.embeddings is not None:
-            # Return precomputed embedding
             if is_dropped and self.empty_embedding is not None:
                 emb = self.empty_embedding
             else:
@@ -162,6 +164,26 @@ class TextDataset(Dataset):
             result["clip_embedding"] = self.clip_embeddings[idx]
 
         return result
+
+    def __getitem__(self, idx, _max_retries=5):
+        is_dropped = random.random() < self.text_drop_ratio
+        try:
+            return self._build_result(idx, is_dropped)
+        except Exception as e:
+            for attempt in range(_max_retries):
+                alt_idx = random.randint(0, len(self.dataset) - 1)
+                try:
+                    result = self._build_result(alt_idx, is_dropped)
+                    logger.warning(
+                        f"Corrupt/unreadable data at index {idx} (error: {e}). "
+                        f"Substituting random sample {alt_idx}."
+                    )
+                    return result
+                except Exception:
+                    continue
+            raise RuntimeError(
+                f"Failed to load data for index {idx} and {_max_retries} random substitutes"
+            ) from e
 
 
 # ---------------------------------------------------------------------------

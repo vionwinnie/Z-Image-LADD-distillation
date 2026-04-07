@@ -34,14 +34,14 @@ from zimage.transformer import ZImageTransformer2DModel
 from zimage.autoencoder import AutoencoderKL
 
 
-def load_transformer(model_dir: str, dtype: torch.dtype) -> ZImageTransformer2DModel:
-    """Load a ZImageTransformer2DModel from a directory with config.json + safetensors."""
-    from utils.loader import load_config, load_sharded_safetensors
+def _build_transformer_from_config(model_dir: str, dtype: torch.dtype, device: str = "meta"):
+    """Create a ZImageTransformer2DModel shell on the given device (no weights loaded)."""
+    from utils.loader import load_config
 
     transformer_dir = Path(model_dir) / "transformer"
     config = load_config(str(transformer_dir / "config.json"))
 
-    with torch.device("meta"):
+    with torch.device(device):
         transformer = ZImageTransformer2DModel(
             all_patch_size=tuple(config.get("all_patch_size", DEFAULT_TRANSFORMER_PATCH_SIZE)),
             all_f_patch_size=tuple(config.get("all_f_patch_size", DEFAULT_TRANSFORMER_F_PATCH_SIZE)),
@@ -59,11 +59,24 @@ def load_transformer(model_dir: str, dtype: torch.dtype) -> ZImageTransformer2DM
             axes_dims=config.get("axes_dims", ROPE_AXES_DIMS),
             axes_lens=config.get("axes_lens", ROPE_AXES_LENS),
         ).to(dtype)
+    return transformer
 
+
+def load_transformer(model_dir: str, dtype: torch.dtype) -> ZImageTransformer2DModel:
+    """Load a ZImageTransformer2DModel from a directory with config.json + safetensors."""
+    from utils.loader import load_sharded_safetensors
+
+    transformer = _build_transformer_from_config(model_dir, dtype, device="meta")
+    transformer_dir = Path(model_dir) / "transformer"
     state_dict = load_sharded_safetensors(transformer_dir, device="cpu", dtype=dtype)
     transformer.load_state_dict(state_dict, strict=False, assign=True)
     del state_dict
     return transformer
+
+
+def load_transformer_meta(model_dir: str, dtype: torch.dtype) -> ZImageTransformer2DModel:
+    """Create a ZImageTransformer2DModel on meta device (no weights). For FSDP sync_module_states."""
+    return _build_transformer_from_config(model_dir, dtype, device="meta")
 
 
 def load_vae(model_dir: str) -> AutoencoderKL:

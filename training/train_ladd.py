@@ -207,7 +207,7 @@ def _is_fsdp(accelerator):
 
 
 def _save_checkpoint(student, accelerator, save_path, args):
-    """Save student checkpoint. Uses DCP sharded save under FSDP, safetensors otherwise."""
+    """Save student checkpoint. Uses DCP sharded save under FSDP (checkpoint dir with .metadata)."""
     if _is_fsdp(accelerator):
         import torch.distributed.checkpoint as dcp
         from torch.distributed.fsdp import (
@@ -218,16 +218,6 @@ def _save_checkpoint(student, accelerator, save_path, args):
             dcp.save({"model": student.state_dict()}, checkpoint_id=save_path)
     else:
         accelerator.save_state(save_path)
-        state_dict = accelerator.get_state_dict(student)
-        if accelerator.is_main_process and state_dict is not None:
-            from safetensors.torch import save_file
-            student_dir = os.path.join(save_path, "student_transformer")
-            os.makedirs(student_dir, exist_ok=True)
-            save_file(
-                {k: v.contiguous().cpu() for k, v in state_dict.items()},
-                os.path.join(student_dir, "model.safetensors"),
-            )
-        del state_dict
 
     if accelerator.is_main_process:
         if args.checkpoints_total_limit is not None:
