@@ -94,19 +94,17 @@ class LADDDiscriminator(nn.Module):
         hidden_dim: int = 256,
         cond_dim: int = 256,
         layer_indices: tuple = (5, 10, 15, 20, 25, 29),
-        clip_dim: int = 0,
+        clip_dim: int = 512,
     ):
         super().__init__()
         self.layer_indices = list(layer_indices)
-        self.use_clip = clip_dim > 0
         self.heads = nn.ModuleDict(
             {str(i): LADDDiscriminatorHead(feature_dim, hidden_dim, cond_dim) for i in layer_indices}
         )
         # Shared timestep embedder
         self.t_embedder = TimestepEmbedder(cond_dim, mid_size=1024)
-        # Project text embed -> cond_dim
-        text_input_dim = clip_dim if self.use_clip else feature_dim
-        self.text_proj = nn.Linear(text_input_dim, cond_dim)
+        # Project CLIP text embed -> cond_dim
+        self.text_proj = nn.Linear(clip_dim, cond_dim)
 
     def _extract_image_features(self, hidden_states, x_item_seqlens):
         """Extract image-only tokens from unified hidden states.
@@ -129,27 +127,6 @@ class LADDDiscriminator(nn.Module):
             image_features[i, :img_len] = hidden_states[i, :img_len]
         return image_features
 
-    def _extract_text_pooled(self, hidden_states, x_item_seqlens, cap_item_seqlens):
-        """Extract mean-pooled text embedding from unified hidden states.
-
-        Args:
-            hidden_states: (B, max_seq, dim)
-            x_item_seqlens: list of int -- image token counts
-            cap_item_seqlens: list of int -- text token counts
-
-        Returns:
-            text_pooled: (B, dim)
-        """
-        B = hidden_states.shape[0]
-        dim = hidden_states.shape[-1]
-        text_pooled = hidden_states.new_zeros(B, dim)
-        for i in range(B):
-            img_len = x_item_seqlens[i]
-            cap_len = cap_item_seqlens[i]
-            text_tokens = hidden_states[i, img_len:img_len + cap_len]
-            text_pooled[i] = text_tokens.mean(dim=0)
-        return text_pooled
-
     def forward(
         self,
         hidden_states_list: list,
@@ -157,7 +134,7 @@ class LADDDiscriminator(nn.Module):
         cap_item_seqlens: list,
         spatial_sizes: list,
         timesteps: torch.Tensor,
-        clip_text_embeds: torch.Tensor = None,
+        clip_text_embeds: torch.Tensor,
     ) -> dict:
         """Compute per-head logits.
 
@@ -167,7 +144,7 @@ class LADDDiscriminator(nn.Module):
             cap_item_seqlens: list of int -- text token counts per sample
             spatial_sizes: list of (H_tokens, W_tokens) per sample (use first for batch)
             timesteps: (B,) -- float timesteps in [0, 1]
-            clip_text_embeds: (B, clip_dim) -- precomputed CLIP text embeddings (optional)
+            clip_text_embeds: (B, clip_dim) -- precomputed CLIP text embeddings
 
         Returns:
             dict with keys: 'logits' (dict of layer_idx -> (B,)), 'total_logit' (B,)
@@ -180,11 +157,8 @@ class LADDDiscriminator(nn.Module):
         # Timestep embedding -- t_embedder expects raw timesteps, scale by 1000 as in transformer
         t_embed = self.t_embedder(timesteps * 1000.0)  # (B, cond_dim)
 
-        # Text embedding: use CLIP if provided, otherwise extract from teacher hidden states
-        if self.use_clip and clip_text_embeds is not None:
-            text_embed = self.text_proj(clip_text_embeds.to(param_dtype))  # (B, cond_dim)
-        else:
-            text_embed = None  # computed per-layer below
+        # Text embedding from CLIP
+        text_embed = self.text_proj(clip_text_embeds.to(param_dtype))  # (B, cond_dim)
 
         # Use the first spatial size (assumes uniform batch for simplicity)
         spatial_size = spatial_sizes[0] if isinstance(spatial_sizes[0], tuple) else spatial_sizes
@@ -194,18 +168,8 @@ class LADDDiscriminator(nn.Module):
 
         for layer_idx in self.layer_indices:
             hs = hidden_states_list[layer_idx]  # (B, max_seq, dim)
-
-            # Extract image features
             img_feats = self._extract_image_features(hs, x_item_seqlens)
-
-            # Per-layer text pooling fallback (original behavior)
-            if text_embed is None:
-                text_pooled = self._extract_text_pooled(hs, x_item_seqlens, cap_item_seqlens)
-                layer_text_embed = self.text_proj(text_pooled)
-            else:
-                layer_text_embed = text_embed
-
-            head_logits = self.heads[str(layer_idx)](img_feats, spatial_size, t_embed, layer_text_embed)
+            head_logits = self.heads[str(layer_idx)](img_feats, spatial_size, t_embed, text_embed)
             logits_dict[layer_idx] = head_logits
 
             if total_logit is None:
