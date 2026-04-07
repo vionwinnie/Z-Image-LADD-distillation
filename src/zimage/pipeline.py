@@ -74,13 +74,16 @@ def generate_from_embeddings(
     num_inference_steps: int = DEFAULT_INFERENCE_STEPS,
     generator: Optional[torch.Generator] = None,
     output_type: str = "pil",
+    device: Optional[torch.device] = None,
 ):
     """Generate images from pre-encoded prompt embeddings (no text encoder needed).
 
     Args:
         prompt_embeds_list: List of (seq_len, hidden_dim) tensors, one per prompt.
+        device: Override device (needed when FSDP offloads params to CPU).
     """
-    device = next(transformer.parameters()).device
+    if device is None:
+        device = next(transformer.parameters()).device
 
     if hasattr(vae, "config") and hasattr(vae.config, "block_out_channels"):
         vae_scale_factor = 2 ** (len(vae.config.block_out_channels) - 1)

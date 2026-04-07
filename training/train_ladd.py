@@ -169,6 +169,8 @@ def parse_args():
     parser.add_argument("--num_inference_steps", type=int, default=4)
     parser.add_argument("--eval_num_images", type=int, default=1000)
     parser.add_argument("--val_data_meta", type=str, default="data/val/metadata.json")
+    parser.add_argument("--val_embeddings_dir", type=str, default=None,
+                        help="Precomputed val text embeddings dir (like --embeddings_dir for training)")
     parser.add_argument("--teacher_image_dir", type=str, default="data/val/teacher_images")
     parser.add_argument("--eval_device", type=str, default=None)
 
@@ -251,8 +253,24 @@ def _run_validation(student, vae, text_encoder, tokenizer, noise_scheduler,
     images = []
     prompts_for_log = []
 
+    # All ranks must participate in generate_from_embeddings (FSDP collective forward).
+    # Determine n_images on all ranks so the loop count is synchronized.
     with torch.no_grad():
-        if text_encoder is not None and tokenizer is not None:
+        if val_embeddings is not None and len(val_embeddings) > 0:
+            from zimage.pipeline import generate_from_embeddings
+            n = min(args.eval_num_images, len(val_embeddings))
+            for i in range(n):
+                emb = val_embeddings[i].to(accelerator.device, dtype=weight_dtype)
+                img_list = generate_from_embeddings(
+                    transformer=student, vae=vae,
+                    prompt_embeds_list=[emb], scheduler=noise_scheduler,
+                    height=args.image_sample_size, width=args.image_sample_size,
+                    num_inference_steps=args.num_inference_steps,
+                    device=accelerator.device,
+                )
+                images.extend(img_list)
+                prompts_for_log.append(val_prompts_text[i][:100] if i < len(val_prompts_text) else "")
+        elif text_encoder is not None and tokenizer is not None:
             from zimage.pipeline import generate as pipeline_generate
             for prompt in (args.validation_prompts or []):
                 img_list = pipeline_generate(
@@ -264,19 +282,6 @@ def _run_validation(student, vae, text_encoder, tokenizer, noise_scheduler,
                 )
                 images.extend(img_list)
                 prompts_for_log.append(prompt)
-        elif val_embeddings is not None and len(val_embeddings) > 0:
-            from zimage.pipeline import generate_from_embeddings
-            n = min(args.eval_num_images, len(val_embeddings))
-            for i in range(n):
-                emb = val_embeddings[i].to(accelerator.device, dtype=weight_dtype)
-                img_list = generate_from_embeddings(
-                    transformer=student, vae=vae,
-                    prompt_embeds_list=[emb], scheduler=noise_scheduler,
-                    height=args.image_sample_size, width=args.image_sample_size,
-                    num_inference_steps=args.num_inference_steps,
-                )
-                images.extend(img_list)
-                prompts_for_log.append(val_prompts_text[i][:100] if i < len(val_prompts_text) else "")
         else:
             if accelerator.is_main_process:
                 logger.info("Skipping validation: no text encoder or precomputed embeddings")
@@ -340,6 +345,25 @@ def main():
         log_with=args.report_to if args.report_to != "none" else None,
         project_config=ProjectConfiguration(project_dir=args.output_dir, logging_dir=logging_dir),
     )
+
+    # Register FSDP save hook: gather full state dict and save as safetensors
+    # (avoids DCP metadata deadlock with sharded saves)
+    def save_model_hook(models, weights, output_dir):
+        for i, model in enumerate(models):
+            state_dict = accelerator.get_state_dict(model, unwrap=True)
+            if accelerator.is_main_process and state_dict is not None:
+                from safetensors.torch import save_file
+                model_name = model.__class__.__name__
+                safetensors_path = os.path.join(output_dir, f"{model_name}.safetensors")
+                save_file(
+                    {k: v.contiguous().cpu() for k, v in state_dict.items()},
+                    safetensors_path,
+                )
+            del state_dict
+            if weights:
+                weights.pop()
+
+    accelerator.register_save_state_pre_hook(save_model_hook)
 
     logging.basicConfig(
         format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
@@ -532,10 +556,11 @@ def main():
     # Load validation embeddings (precomputed, for validation without text encoder)
     val_embeddings = None
     val_prompts_text = []
-    val_emb_path = os.path.join(os.path.dirname(args.val_data_meta), "embeddings", "embeddings.pt")
+    val_emb_dir = args.val_embeddings_dir or os.path.join(os.path.dirname(args.val_data_meta), "embeddings")
+    val_emb_path = os.path.join(val_emb_dir, "embeddings.pt")
     if os.path.exists(val_emb_path):
         val_emb_data = torch.load(val_emb_path, map_location="cpu", weights_only=False, mmap=True)
-        val_embeddings = val_emb_data["embeddings"]  # list of (seq_len, hidden_dim) tensors
+        val_embeddings = val_emb_data["embeddings"]
         logger.info(f"Loaded {len(val_embeddings)} validation embeddings from {val_emb_path}")
     if os.path.exists(args.val_data_meta):
         try:
@@ -616,14 +641,6 @@ def main():
     noise_scheduler.sigma_min = 0.0
     noise_scheduler.set_timesteps(args.train_sampling_steps, device=accelerator.device, mu=mu)
     idx_sampling = DiscreteSampling(args.train_sampling_steps, uniform_sampling=True)
-
-    # -----------------------------------------------------------------------
-    # Baseline validation (step 0, before any training)
-    # -----------------------------------------------------------------------
-    if not args.skip_baseline_validation:
-        _run_validation(student, vae, text_encoder, tokenizer,
-                        noise_scheduler, val_embeddings, val_prompts_text,
-                        accelerator, args, global_step, weight_dtype)
 
     # -----------------------------------------------------------------------
     # Training loop
@@ -801,16 +818,16 @@ def main():
             if early_stopped:
                 break
 
+            # Validation (must run BEFORE checkpoint save — save changes FSDP state)
+            if global_step % args.validation_steps == 0:
+                _run_validation(student, vae, text_encoder, tokenizer,
+                                noise_scheduler, val_embeddings, val_prompts_text,
+                                accelerator, args, global_step, weight_dtype)
+
             # Checkpointing
             if not args.skip_save and global_step % args.checkpointing_steps == 0:
                 save_path = os.path.join(args.output_dir, f"checkpoint-{global_step}")
                 _save_checkpoint(student, accelerator, save_path, args)
-
-            # Validation
-            if global_step > 0 and global_step % args.validation_steps == 0:
-                _run_validation(student, vae, text_encoder, tokenizer,
-                                noise_scheduler, val_embeddings, val_prompts_text,
-                                accelerator, args, global_step, weight_dtype)
 
         if global_step >= args.max_train_steps or early_stopped:
             break

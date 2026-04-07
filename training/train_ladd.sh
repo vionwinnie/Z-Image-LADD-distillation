@@ -40,6 +40,7 @@ accelerate launch \
     --train_data_meta="${DATA_META}" \
     --clip_embeddings_dir=data/train/clip_embeddings_10k \
     --embeddings_dir=data/train/embeddings_subsample \
+    --val_embeddings_dir=data/val/embeddings \
     --output_dir="${OUTPUT_DIR}" \
     --train_batch_size=2 \
     --gradient_accumulation_steps=2 \
