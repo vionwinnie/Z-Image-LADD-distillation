@@ -82,10 +82,11 @@ Repeated runs of the best config (GI=3, M=1.0) show significant variance at 500 
 | exp3 (original) | 0.058232 |
 | run2 | 0.069161 |
 | run3 | 0.069966 |
-| run4 | pending |
-| run5 | pending |
+| run4 | 0.065788 |
+| run5 | 0.067490 |
+| **Mean ± Std** | **0.0661 ± 0.0044** |
 
-The exp3 result (0.058) appears to be an outlier. True expected KID is likely ~0.069. This level of variance is inherent to bs=1 training over only 500 steps — small numerical differences from GPU non-determinism compound. Longer training and larger data (10K) should reduce variance.
+Untrained KID is 0.0689, so the best config improves ~4% on average (vs the -15.5% originally reported from a single lucky run). This level of variance is inherent to bs=1 training over only 500 steps — GPU non-determinism compounds. Longer training and larger data (10K) should reduce variance and increase the improvement margin.
 
 ### Key findings
 
