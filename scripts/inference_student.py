@@ -33,11 +33,23 @@ Usage:
 """
 
 import argparse
+import json
 import os
 import sys
 import time
 
 import torch
+import torch.distributed as dist
+import torch.distributed.checkpoint as dcp
+from PIL import Image
+from safetensors.torch import load_file, save_file
+from transformers import AutoModel, AutoTokenizer
+
+try:
+    import wandb
+    HAS_WANDB = True
+except ImportError:
+    HAS_WANDB = False
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src"))
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -49,7 +61,6 @@ from zimage.scheduler import FlowMatchEulerDiscreteScheduler
 
 def load_student_from_fsdp_bin(path: str, model_dir: str, dtype: torch.dtype) -> torch.nn.Module:
     """Load student from Accelerate FSDP checkpoint (pytorch_model_fsdp.bin)."""
-    from training.ladd_model_utils import _build_transformer_from_config
     student = _build_transformer_from_config(model_dir, dtype, device="cpu")
     state_dict = torch.load(path, map_location="cpu", weights_only=True)
     # Cast to target dtype if saved in fp32
@@ -61,9 +72,6 @@ def load_student_from_fsdp_bin(path: str, model_dir: str, dtype: torch.dtype) ->
 
 def load_student_from_dcp(checkpoint_dir: str, model_dir: str, dtype: torch.dtype) -> torch.nn.Module:
     """Load student from DCP sharded checkpoint (requires torch.distributed init)."""
-    import torch.distributed as dist
-    import torch.distributed.checkpoint as dcp
-
     if not dist.is_initialized():
         os.environ.setdefault("MASTER_ADDR", "localhost")
         os.environ.setdefault("MASTER_PORT", "29500")
@@ -83,7 +91,6 @@ def load_student_from_dcp(checkpoint_dir: str, model_dir: str, dtype: torch.dtyp
 
 def load_student_from_safetensors(path: str, model_dir: str, dtype: torch.dtype) -> torch.nn.Module:
     """Load student from a single safetensors file."""
-    from safetensors.torch import load_file
     student = load_transformer(model_dir, dtype)
     student.load_state_dict(load_file(path), strict=False)
     return student
@@ -91,8 +98,6 @@ def load_student_from_safetensors(path: str, model_dir: str, dtype: torch.dtype)
 
 def consolidate_checkpoint(checkpoint_dir: str, model_dir: str, dtype: torch.dtype, output_path: str = None):
     """Convert FSDP/DCP checkpoint to a single safetensors file."""
-    from safetensors.torch import save_file
-
     if output_path is None:
         output_path = os.path.join(checkpoint_dir, "model.safetensors")
 
@@ -207,9 +212,6 @@ def main():
 
     # Load shared components
     print("Loading VAE, text encoder, scheduler...")
-    import json
-    from transformers import AutoModel, AutoTokenizer
-
     vae = load_vae(args.model_dir)
     vae.to(args.device, dtype=torch.float32)
     vae.eval()
@@ -247,7 +249,8 @@ def main():
     # Initialize wandb
     wb_run = None
     if args.wandb_project:
-        import wandb
+        if not HAS_WANDB:
+            raise ImportError("wandb is required for --wandb_project. Install with: pip install wandb")
         checkpoint_name = os.path.basename(args.checkpoint.rstrip("/").rstrip(".bin").rstrip("pytorch_model_fsdp"))
         if not checkpoint_name or checkpoint_name == "pytorch_model_fsdp":
             checkpoint_name = os.path.basename(os.path.dirname(args.checkpoint))
@@ -307,7 +310,6 @@ def main():
 
         # Log each image to wandb
         if wb_run:
-            import wandb
             wb_run.log({
                 f"student/{i:03d}": wandb.Image(images[0], caption=prompt[:200]),
                 "latency": elapsed,
@@ -352,14 +354,12 @@ def main():
             print(f"Teacher image saved to {teacher_path} ({elapsed:.2f}s)")
 
             if wb_run:
-                import wandb
                 wb_run.log({
                     f"teacher/{i:03d}": wandb.Image(teacher_images[0], caption=prompt[:200]),
                 }, step=i)
 
             # Side-by-side comparison
             try:
-                from PIL import Image
                 s_img = all_results[i]["image"]
                 t_img = teacher_images[0]
                 combined = Image.new("RGB", (s_img.width + t_img.width + 20, max(s_img.height, t_img.height) + 40), "white")
@@ -382,7 +382,6 @@ def main():
 
     # Log summary table to wandb
     if wb_run:
-        import wandb
         columns = ["idx", "prompt", "student", "latency_s"]
         table = wandb.Table(columns=columns)
         for i, r in enumerate(all_results):
