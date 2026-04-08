@@ -41,7 +41,6 @@ import time
 import torch
 import torch.distributed as dist
 import torch.distributed.checkpoint as dcp
-from PIL import Image
 from safetensors.torch import load_file, save_file
 from transformers import AutoModel, AutoTokenizer
 
@@ -146,12 +145,6 @@ def main():
     parser.add_argument("--compile", action="store_true", help="torch.compile for faster inference")
     parser.add_argument("--consolidate_only", action="store_true",
                         help="Only consolidate DCP checkpoint to safetensors, then exit")
-    parser.add_argument("--compare_teacher", action="store_true",
-                        help="Also generate with teacher model for side-by-side comparison")
-    parser.add_argument("--teacher_steps", type=int, default=50,
-                        help="Teacher denoising steps for comparison")
-    parser.add_argument("--teacher_cfg", type=float, default=5.0,
-                        help="Teacher CFG scale for comparison")
     parser.add_argument("--wandb_project", type=str, default=None,
                         help="W&B project name (e.g. 'ladd-eval'). Enables wandb logging.")
     parser.add_argument("--wandb_entity", type=str, default=None,
@@ -314,71 +307,6 @@ def main():
                 f"student/{i:03d}": wandb.Image(images[0], caption=prompt[:200]),
                 "latency": elapsed,
             }, step=i)
-
-    # Compare with teacher
-    if args.compare_teacher:
-        teacher = load_transformer(args.model_dir, dtype)
-        teacher.to(args.device)
-        teacher.eval()
-
-        for i, prompt in enumerate(prompts):
-            print(f"\n{'='*60}")
-            print(f"[{i+1}/{len(prompts)}] Teacher: {args.teacher_steps} steps, CFG={args.teacher_cfg}")
-            print(f"{'='*60}")
-
-            generator = torch.Generator(args.device).manual_seed(args.seed + i)
-            start = time.time()
-            teacher_images = generate(
-                transformer=teacher,
-                vae=vae,
-                text_encoder=text_encoder,
-                tokenizer=tokenizer,
-                scheduler=scheduler,
-                prompt=prompt,
-                negative_prompt=args.negative_prompt or "",
-                height=args.height,
-                width=args.width,
-                num_inference_steps=args.teacher_steps,
-                guidance_scale=args.teacher_cfg,
-                generator=generator,
-            )
-            elapsed = time.time() - start
-
-            if args.output_dir:
-                teacher_path = os.path.join(args.output_dir, f"teacher_{i:03d}.png")
-            else:
-                base, ext = os.path.splitext(args.output)
-                teacher_path = f"{base}_teacher_{i:03d}{ext}"
-
-            teacher_images[0].save(teacher_path)
-            print(f"Teacher image saved to {teacher_path} ({elapsed:.2f}s)")
-
-            if wb_run:
-                wb_run.log({
-                    f"teacher/{i:03d}": wandb.Image(teacher_images[0], caption=prompt[:200]),
-                }, step=i)
-
-            # Side-by-side comparison
-            try:
-                s_img = all_results[i]["image"]
-                t_img = teacher_images[0]
-                combined = Image.new("RGB", (s_img.width + t_img.width + 20, max(s_img.height, t_img.height) + 40), "white")
-                combined.paste(s_img, (0, 40))
-                combined.paste(t_img, (s_img.width + 20, 40))
-                if args.output_dir:
-                    cmp_path = os.path.join(args.output_dir, f"comparison_{i:03d}.png")
-                else:
-                    base, ext = os.path.splitext(args.output)
-                    cmp_path = f"{base}_comparison_{i:03d}{ext}"
-                combined.save(cmp_path)
-                print(f"Comparison saved to {cmp_path}")
-
-                if wb_run:
-                    wb_run.log({
-                        f"comparison/{i:03d}": wandb.Image(combined, caption=prompt[:200]),
-                    }, step=i)
-            except Exception as e:
-                print(f"Could not create comparison image: {e}")
 
     # Log summary table to wandb
     if wb_run:
